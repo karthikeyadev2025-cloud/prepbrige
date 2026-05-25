@@ -37,96 +37,115 @@ const TESTIMONIALS = [
 function DemoPlayer() {
   const [playing, setPlaying] = useState(false)
   const [slide, setSlide] = useState(0)
-  const slideRef = useRef(null)
 
   const SLIDES = [
-    { label: 'Dashboard', icon: '📊', title: 'Your AI Study Dashboard', desc: 'Gemini AI builds your daily study plan based on target exam & weak areas', color: '#7c3aed', stats: ['🔥7 Day Streak','🎯 73.4% Accuracy','📋 24 Tests Done'] },
-    { label: 'Mock Test', icon: '📝', title: 'Full-Length Mock Tests', desc: 'Real exam environment with timer, negative marking & All India Rank', color: '#0080ff', stats: ['⏱️ 120 min','❓ 100 Questions','🏆 AIR 423'] },
-    { label: 'AI Tutor', icon: '🤖', title: 'Gemini AI Answers Doubts', desc: 'Ask anything in Hindi, Tamil, Telugu, Bengali — real AI, not chatbot', color: '#10b981', stats: ['🌐 22 Languages','⚡ Instant Answers','📖 Any Topic'] },
-    { label: 'Current Affairs', icon: '📰', title: 'Daily Current Affairs', desc: 'Auto-loads every morning. Exam-ready news for UPSC, SSC, Banking & more', color: '#f59e0b', stats: ['🔴 Live Updates','📅 Daily Digest','🎯 Exam-Focused'] },
+    { label: 'Dashboard', icon: '📊', title: 'Your AI Study Dashboard', desc: 'Gemini AI builds your daily study plan based on your target exam and weak areas', color: '#7c3aed', stats: ['🔥 7 Day Streak', '🎯 73.4% Accuracy', '📋 24 Tests Done'] },
+    { label: 'Mock Test', icon: '📝', title: 'Full-Length Mock Tests', desc: 'Real exam pattern with timer, negative marking and instant All India Rank', color: '#0080ff', stats: ['⏱️ 120 min', '❓ 100 Questions', '🏆 AIR 423'] },
+    { label: 'AI Tutor', icon: '🤖', title: 'AI Answers Your Doubts', desc: 'Ask any question in Hindi, Tamil, Telugu, Bengali — get instant answers in your language', color: '#10b981', stats: ['🌐 22 Languages', '⚡ Instant Reply', '📖 Any Topic'] },
+    { label: 'Current Affairs', icon: '📰', title: 'Daily Current Affairs', desc: 'Auto-loads every morning. Exam-ready news for UPSC, SSC, Banking and more', color: '#f59e0b', stats: ['🔴 Live', '📅 Daily Digest', '🎯 Exam Focused'] },
   ]
 
   useEffect(() => {
     if (!playing) return
-    const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 3000)
+    const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 3200)
     return () => clearInterval(t)
   }, [playing])
 
   return (
-    <div style={{ position: 'relative', maxWidth: 800, margin: '0 auto 72px', borderRadius: 24, overflow: 'hidden', border: '1px solid rgba(124,58,237,0.3)', boxShadow: '0 0 60px rgba(124,58,237,0.2), 0 0 120px rgba(0,212,255,0.08)' }}>
-      <div style={{ background: 'linear-gradient(135deg,#0d0a1a 0%,#080d14 100%)', aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
-        {/* Animated grid */}
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(124,58,237,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,0.07) 1px,transparent 1px)', backgroundSize: '40px 40px', animation: 'gridMove 8s linear infinite' }} />
-        {/* Glows */}
-        <div style={{ position: 'absolute', top: '15%', left: '15%', width: 300, height: 300, background: `radial-gradient(circle,${playing ? SLIDES[slide].color : '#7c3aed'}44,transparent 70%)`, borderRadius: '50%', filter: 'blur(40px)', transition: 'background 0.8s' }} />
-        <div style={{ position: 'absolute', bottom: '10%', right: '10%', width: 200, height: 200, background: 'radial-gradient(circle,rgba(0,212,255,0.2),transparent 70%)', borderRadius: '50%', filter: 'blur(30px)' }} />
+    <div style={{ position: 'relative', maxWidth: 820, margin: '0 auto 72px' }}>
+      {/* Outer glow border */}
+      <div style={{ borderRadius: 24, overflow: 'hidden', border: '1px solid rgba(124,58,237,0.4)', boxShadow: '0 0 60px rgba(124,58,237,0.25), 0 0 120px rgba(0,212,255,0.1)', position: 'relative' }}>
 
-        {/* Floating cards (always visible) */}
-        <div style={{ position: 'absolute', top: '8%', left: '3%', background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, padding: '10px 14px', fontSize: '0.72rem', color: 'white', animation: 'floatCard 5s ease-in-out infinite', zIndex: 3 }}>🎯 AI Study Plan Ready</div>
-        <div style={{ position: 'absolute', bottom: '14%', right: '3%', background: 'rgba(16,185,129,0.15)', backdropFilter: 'blur(12px)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 12, padding: '10px 14px', fontSize: '0.72rem', color: '#10b981', animation: 'floatCard 6s ease-in-out 1s infinite', zIndex: 3 }}>🎉 IAS Rank 23 — 2024</div>
-        <div style={{ position: 'absolute', top: '58%', left: '2%', background: 'rgba(0,212,255,0.1)', backdropFilter: 'blur(12px)', border: '1px solid rgba(0,212,255,0.25)', borderRadius: 12, padding: '10px 14px', fontSize: '0.72rem', color: '#00d4ff', animation: 'floatCard 7s ease-in-out 2s infinite', zIndex: 3 }}>📊 Score 89.4% · Rank ↑12</div>
+        {/* Fixed-height container — no aspectRatio */}
+        <div style={{ height: 450, background: 'linear-gradient(135deg,#0d0a1a 0%,#080d14 100%)', position: 'relative', overflow: 'hidden' }}>
 
-        {/* Center: Play state or Demo Slides */}
-        {!playing ? (
-          <div style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-            {/* Outer ring pulse */}
-            <div style={{ position: 'relative' }}>
-              <div style={{ position: 'absolute', inset: -14, borderRadius: '50%', border: '2px solid rgba(124,58,237,0.35)', animation: 'ringPulse 2s ease-in-out infinite' }} />
-              <div style={{ position: 'absolute', inset: -28, borderRadius: '50%', border: '1px solid rgba(124,58,237,0.15)', animation: 'ringPulse 2s ease-in-out 0.4s infinite' }} />
-              <button
-                onClick={() => setPlaying(true)}
-                style={{ width: 80, height: 80, borderRadius: '50%', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 50px rgba(124,58,237,0.7)', transition: 'transform 0.2s,box-shadow 0.2s', animation: 'playPulse 2.5s ease-in-out infinite' }}
-                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.12)'; e.currentTarget.style.boxShadow = '0 0 80px rgba(124,58,237,0.9)' }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 50px rgba(124,58,237,0.7)' }}
-              >
-                <Play size={30} color="white" fill="white" style={{ marginLeft: 5 }} />
-              </button>
-            </div>
-            <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.82rem', letterSpacing: '0.05em' }}>▶ See PrepBridge in action</div>
-          </div>
-        ) : (
-          <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', padding: '20px 28px', transition: 'all 0.5s' }}>
-            {/* Demo nav tabs */}
-            <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-              {SLIDES.map((s, i) => (
-                <button key={i} onClick={() => setSlide(i)} style={{ padding: '6px 14px', borderRadius: 8, border: `1px solid ${i === slide ? s.color : 'rgba(255,255,255,0.1)'}`, background: i === slide ? `${s.color}22` : 'rgba(255,255,255,0.04)', color: i === slide ? s.color : 'rgba(255,255,255,0.4)', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.3s' }}>
-                  {s.icon} {s.label}
+          {/* Animated grid bg */}
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(124,58,237,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,0.06) 1px,transparent 1px)', backgroundSize: '44px 44px', animation: 'gridMove 10s linear infinite', zIndex: 0 }} />
+
+          {/* Dynamic colour glow */}
+          <div style={{ position: 'absolute', top: '10%', left: '10%', width: 320, height: 320, background: `radial-gradient(circle,${SLIDES[slide].color}33,transparent 70%)`, borderRadius: '50%', filter: 'blur(50px)', transition: 'background 0.8s ease', zIndex: 0 }} />
+          <div style={{ position: 'absolute', bottom: '5%', right: '5%', width: 220, height: 220, background: 'radial-gradient(circle,rgba(0,212,255,0.18),transparent 70%)', borderRadius: '50%', filter: 'blur(35px)', zIndex: 0 }} />
+
+          {/* Always-visible floating status cards */}
+          <div style={{ position: 'absolute', top: 18, left: 18, background: 'rgba(255,255,255,0.07)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 12, padding: '9px 14px', fontSize: '0.73rem', color: 'white', fontWeight: 600, animation: 'floatCard 5s ease-in-out infinite', zIndex: 5 }}>🎯 AI Study Plan Ready</div>
+          <div style={{ position: 'absolute', bottom: 60, right: 18, background: 'rgba(16,185,129,0.15)', backdropFilter: 'blur(16px)', border: '1px solid rgba(16,185,129,0.35)', borderRadius: 12, padding: '9px 14px', fontSize: '0.73rem', color: '#10b981', fontWeight: 600, animation: 'floatCard 6s ease-in-out 1.2s infinite', zIndex: 5 }}>🎉 IAS Rank 23 — 2024</div>
+          <div style={{ position: 'absolute', top: '52%', left: 18, background: 'rgba(0,212,255,0.1)', backdropFilter: 'blur(16px)', border: '1px solid rgba(0,212,255,0.28)', borderRadius: 12, padding: '9px 14px', fontSize: '0.73rem', color: '#00d4ff', fontWeight: 600, animation: 'floatCard 7s ease-in-out 2.5s infinite', zIndex: 5 }}>📊 Score 89.4% · Rank ↑12</div>
+
+          {/* ── PLAY STATE ── */}
+          {!playing && (
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 10, gap: 18 }}>
+              {/* Triple pulsing rings */}
+              <div style={{ position: 'relative', width: 80, height: 80 }}>
+                <div style={{ position: 'absolute', top: -20, left: -20, right: -20, bottom: -20, borderRadius: '50%', border: '2px solid rgba(124,58,237,0.4)', animation: 'ringPulse 2s ease-in-out infinite' }} />
+                <div style={{ position: 'absolute', top: -36, left: -36, right: -36, bottom: -36, borderRadius: '50%', border: '1px solid rgba(124,58,237,0.18)', animation: 'ringPulse 2s ease-in-out 0.5s infinite' }} />
+                <button
+                  onClick={() => { setPlaying(true); setSlide(0) }}
+                  style={{ width: 80, height: 80, borderRadius: '50%', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 50px rgba(124,58,237,0.8)', transition: 'transform 0.2s, box-shadow 0.2s', animation: 'playGlow 2.5s ease-in-out infinite', position: 'relative', zIndex: 2 }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.12)'; e.currentTarget.style.boxShadow = '0 0 90px rgba(124,58,237,1)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 50px rgba(124,58,237,0.8)' }}
+                >
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="white" style={{ marginLeft: 4 }}><polygon points="5,3 19,12 5,21"/></svg>
                 </button>
-              ))}
-              <button onClick={() => setPlaying(false)} style={{ marginLeft: 'auto', padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.5)', fontSize: '0.72rem', cursor: 'pointer' }}>✕ Close</button>
+              </div>
+              <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.83rem', letterSpacing: '0.06em', fontWeight: 500 }}>▶ &nbsp;See PrepBridge in action</div>
             </div>
-            {/* Slide content */}
-            <div style={{ flex: 1, display: 'flex', gap: 20, alignItems: 'center' }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '2.5rem', marginBottom: 10 }}>{SLIDES[slide].icon}</div>
-                <h3 style={{ marginBottom: 8, color: SLIDES[slide].color, fontSize: '1.1rem' }}>{SLIDES[slide].title}</h3>
-                <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, marginBottom: 16 }}>{SLIDES[slide].desc}</p>
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  {SLIDES[slide].stats.map(st => (
-                    <span key={st} style={{ fontSize: '0.75rem', background: `${SLIDES[slide].color}18`, border: `1px solid ${SLIDES[slide].color}44`, color: SLIDES[slide].color, borderRadius: 8, padding: '5px 10px', fontWeight: 700 }}>{st}</span>
-                  ))}
+          )}
+
+          {/* ── DEMO SLIDE STATE ── */}
+          {playing && (
+            <div style={{ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', flexDirection: 'column', padding: '18px 24px' }}>
+              {/* Tab bar */}
+              <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+                {SLIDES.map((s, i) => (
+                  <button key={i} onClick={() => setSlide(i)} style={{ padding: '7px 16px', borderRadius: 10, border: `1px solid ${i === slide ? s.color : 'rgba(255,255,255,0.1)'}`, background: i === slide ? `${s.color}28` : 'rgba(255,255,255,0.04)', color: i === slide ? s.color : 'rgba(255,255,255,0.4)', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', transition: 'all 0.25s', fontFamily: 'inherit' }}>
+                    {s.icon} {s.label}
+                  </button>
+                ))}
+                <button onClick={() => setPlaying(false)} style={{ marginLeft: 'auto', padding: '7px 14px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.45)', fontSize: '0.75rem', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
+                >✕ Close</button>
+              </div>
+
+              {/* Slide content */}
+              <div style={{ flex: 1, display: 'flex', gap: 24, alignItems: 'center' }}>
+                {/* Left info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '3rem', marginBottom: 12, lineHeight: 1 }}>{SLIDES[slide].icon}</div>
+                  <h3 style={{ margin: '0 0 10px', color: SLIDES[slide].color, fontSize: '1.15rem', fontWeight: 800 }}>{SLIDES[slide].title}</h3>
+                  <p style={{ margin: '0 0 18px', fontSize: '0.87rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.65 }}>{SLIDES[slide].desc}</p>
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    {SLIDES[slide].stats.map(st => (
+                      <span key={st} style={{ fontSize: '0.77rem', background: `${SLIDES[slide].color}18`, border: `1px solid ${SLIDES[slide].color}50`, color: SLIDES[slide].color, borderRadius: 10, padding: '6px 12px', fontWeight: 700 }}>{st}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Right: mock UI */}
+                <div style={{ width: 210, height: 150, background: 'rgba(255,255,255,0.04)', border: `1px solid ${SLIDES[slide].color}44`, borderRadius: 14, padding: 16, flexShrink: 0, transition: 'border-color 0.4s' }}>
+                  <div style={{ height: 9, background: `${SLIDES[slide].color}88`, borderRadius: 5, marginBottom: 10, width: '65%', transition: 'background 0.4s' }} />
+                  <div style={{ height: 5, background: 'rgba(255,255,255,0.09)', borderRadius: 4, marginBottom: 6 }} />
+                  <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 4, marginBottom: 6, width: '75%' }} />
+                  <div style={{ display: 'flex', gap: 6, marginTop: 14, alignItems: 'flex-end', height: 48 }}>
+                    {[55, 80, 40, 90, 65, 75].map((h, i) => (
+                      <div key={i} style={{ flex: 1, height: `${h}%`, background: `${SLIDES[slide].color}${50 + i * 8}`, borderRadius: '3px 3px 0 0', transition: 'background 0.4s' }} />
+                    ))}
+                  </div>
                 </div>
               </div>
-              {/* Mock screen */}
-              <div style={{ width: 200, height: 130, background: 'rgba(255,255,255,0.04)', border: `1px solid ${SLIDES[slide].color}44`, borderRadius: 12, padding: 12, flexShrink: 0 }}>
-                <div style={{ height: 8, background: `${SLIDES[slide].color}66`, borderRadius: 4, marginBottom: 8, width: '70%' }} />
-                <div style={{ height: 5, background: 'rgba(255,255,255,0.1)', borderRadius: 4, marginBottom: 5 }} />
-                <div style={{ height: 5, background: 'rgba(255,255,255,0.07)', borderRadius: 4, marginBottom: 5, width: '80%' }} />
-                <div style={{ display: 'flex', gap: 6, marginTop: 10 }}>
-                  {[60,80,45,90,70].map((h,i) => <div key={i} style={{ flex:1, height: h/5, background: `${SLIDES[slide].color}${40+i*10}`, borderRadius: 3, alignSelf: 'flex-end' }} />)}
-                </div>
+
+              {/* Progress bar */}
+              <div style={{ height: 3, background: 'rgba(255,255,255,0.08)', borderRadius: 2, marginTop: 16, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${((slide + 1) / SLIDES.length) * 100}%`, background: `linear-gradient(90deg,#7c3aed,${SLIDES[slide].color})`, borderRadius: 2, transition: 'width 0.5s ease' }} />
               </div>
             </div>
-            {/* Progress bar */}
-            <div style={{ height: 3, background: 'rgba(255,255,255,0.08)', borderRadius: 2, marginTop: 12, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${((slide + 1) / SLIDES.length) * 100}%`, background: `linear-gradient(90deg,#7c3aed,${SLIDES[slide].color})`, borderRadius: 2, transition: 'width 0.4s' }} />
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )
 }
+
 
 function HowItWorksSection() {
   return (
@@ -344,10 +363,11 @@ export default function Landing() {
 
       <style>{`
         @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-        @keyframes ringPulse { 0%,100%{transform:scale(1);opacity:0.6} 50%{transform:scale(1.2);opacity:0.15} }
+        @keyframes ringPulse { 0%,100%{transform:scale(1);opacity:0.5} 50%{transform:scale(1.25);opacity:0.1} }
+        @keyframes playGlow { 0%,100%{box-shadow:0 0 50px rgba(124,58,237,0.8)} 50%{box-shadow:0 0 100px rgba(124,58,237,1),0 0 150px rgba(0,212,255,0.5)} }
         @keyframes playPulse { 0%,100%{box-shadow:0 0 50px rgba(124,58,237,0.7)} 50%{box-shadow:0 0 90px rgba(124,58,237,1),0 0 130px rgba(0,212,255,0.4)} }
-        @keyframes floatCard { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        @keyframes gridMove { from{backgroundPosition:0 0} to{backgroundPosition:40px 40px} }
+        @keyframes floatCard { 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-12px)} }
+        @keyframes gridMove { 0%{background-position:0 0} 100%{background-position:44px 44px} }
       `}</style>
     </div>
   )
