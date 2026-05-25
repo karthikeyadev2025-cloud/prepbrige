@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useUserStore } from '../store/useStore'
 import { Zap, CheckCircle, ArrowRight, Play } from 'lucide-react'
 import HeroVideo from '../components/HeroVideo'
+import StorySection from '../components/StorySection'
 
 /* ─────────────────────────────────────────────────────────────────────────────
    DATA
@@ -405,6 +406,9 @@ export default function Landing() {
           ))}
         </div>
       </section>
+
+      {/* ── STORY SECTION ── */}
+      <StorySection />
 
       {/* ── TYPEWRITER BANNER ── */}
       <section style={{ padding: '80px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
