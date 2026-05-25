@@ -24,6 +24,11 @@ const EXAMS = [
   'WBPSC','GPSC','HPSC','KPSC','OPSC','RPSC','MPPSC','CDS',
 ]
 
+const TESTIMONIALS = [
+  { name: 'Ramesh Kumar', state: 'Bihar', exam: 'IAS Rank 23 — UPSC 2024', text: 'I\'m from a small village in Bihar. I couldn\'t afford coaching. PrepBridge AI explained everything in Hindi. Today I\'m an IAS officer.', avatar: 'R', color: '#7c3aed' },
+  { name: 'Priya Nair', state: 'Kerala', exam: 'SSC CGL AIR 4 — 2024', text: 'The mock tests were exactly like the real exam. Current affairs auto-loaded every morning. Best ₹599 I ever spent.', avatar: 'P', color: '#00d4ff' },
+  { name: 'Suresh Patel', state: 'Gujarat', exam: 'RRB NTPC AIR 11 — 2024', text: 'I studied in Gujarati. The app translated everything perfectly. Mock tests, PYQs, AI tutor — all in my language!', avatar: 'S', color: '#10b981' },
+]
 
 
 /* ─────────────────────────────────────────────────────────────────────────────
