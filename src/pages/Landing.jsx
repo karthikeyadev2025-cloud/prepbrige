@@ -338,31 +338,45 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* ── HOW IT WORKS ── */}
-      <section id="how-it-works" style={{ padding: '100px 24px', background: 'var(--bg-2)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: '20%', left: '-5%', width: 400, height: 400, background: 'var(--purple)', borderRadius: '50%', filter: 'blur(100px)', opacity: 0.07 }} />
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <RevealDiv style={{ textAlign: 'center', marginBottom: 60 }}>
-            <div style={{ display: 'inline-block', background: 'rgba(0,212,255,0.1)', border: '1px solid rgba(0,212,255,0.25)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--cyan)', marginBottom: 16, letterSpacing: '0.05em', textTransform: 'uppercase' }}>How It Works</div>
-            <h2 style={{ marginBottom: 12 }}>From Registration to <span style={{ background: 'linear-gradient(90deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Selection — In 4 Steps</span></h2>
-            <p style={{ fontSize: '1rem', color: 'var(--text-3)', maxWidth: 520, margin: '0 auto' }}>No confusion. No complicated setup. Start preparing within 2 minutes of signing up.</p>
+      {/* ── DEMO SHOWCASE (replaces How It Works) ── */}
+      <section id="how-it-works" style={{ padding: '80px 24px 100px', background: 'var(--bg-2)', position: 'relative', overflow: 'hidden' }}>
+        {/* Background atmosphere */}
+        <div style={{ position: 'absolute', top: '10%', left: '5%', width: 500, height: 500, background: 'radial-gradient(circle,rgba(124,58,237,0.1),transparent 70%)', borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: '5%', right: '5%', width: 400, height: 400, background: 'radial-gradient(circle,rgba(0,212,255,0.08),transparent 70%)', borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none' }} />
+
+        <div style={{ maxWidth: 940, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          {/* Minimal pill label */}
+          <RevealDiv style={{ textAlign: 'center', marginBottom: 40 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: 'rgba(0,212,255,0.06)', border: '1px solid rgba(0,212,255,0.2)', borderRadius: 999, padding: '8px 22px' }}>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00d4ff', display: 'inline-block', animation: 'playGlow 2s ease-in-out infinite', boxShadow: '0 0 8px #00d4ff' }} />
+              <span style={{ fontSize: '0.82rem', fontWeight: 800, color: '#00d4ff', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Live Platform Preview</span>
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#00d4ff', display: 'inline-block', animation: 'playGlow 2s ease-in-out 0.6s infinite', boxShadow: '0 0 8px #00d4ff' }} />
+            </div>
           </RevealDiv>
+
+          {/* The full-width cinematic demo player */}
           <DemoPlayer />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 20 }}>
-            {HOW_IT_WORKS.map((step, i) => (
-              <RevealDiv key={i} delay={i * 0.12}>
-                <TiltCard style={{ padding: '28px 24px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 20, height: '100%', cursor: 'default' }}>
-                  <div style={{ fontSize: '0.65rem', fontWeight: 900, color: 'rgba(124,58,237,0.5)', letterSpacing: '0.12em', marginBottom: 12 }}>{step.step}</div>
-                  <div style={{ fontSize: '2.2rem', marginBottom: 14, animation: `floatCard ${5 + i}s ease-in-out ${i * 0.5}s infinite` }}>{step.icon}</div>
-                  <h4 style={{ marginBottom: 8, fontSize: '1rem' }}>{step.title}</h4>
-                  <p style={{ fontSize: '0.83rem', color: 'var(--text-3)', lineHeight: 1.65, margin: 0 }}>{step.desc}</p>
-                </TiltCard>
-              </RevealDiv>
-            ))}
-          </div>
+
+          {/* Feature pills below player — replacing the 4 step cards */}
+          <RevealDiv delay={0.2}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', marginTop: 8 }}>
+              {[
+                { icon: '📋', text: 'Register in 30 seconds', color: '#7c3aed' },
+                { icon: '🎯', text: 'Pick your exam', color: '#00d4ff' },
+                { icon: '🤖', text: 'AI builds your plan', color: '#10b981' },
+                { icon: '🚀', text: 'Crack the exam', color: '#f59e0b' },
+              ].map((p, i) => (
+                <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 9, background: `${p.color}10`, border: `1px solid ${p.color}30`, borderRadius: 999, padding: '10px 20px', fontSize: '0.85rem', fontWeight: 700, color: p.color, animation: `floatCard ${5 + i * 0.8}s ease-in-out ${i * 0.4}s infinite`, cursor: 'default' }}>
+                  <span style={{ fontSize: '1.1rem' }}>{p.icon}</span> {p.text}
+                  {i < 3 && <span style={{ marginLeft: 6, color: 'rgba(255,255,255,0.15)', fontSize: '0.7rem' }}>→</span>}
+                </div>
+              ))}
+            </div>
+          </RevealDiv>
         </div>
         <style>{`@keyframes borderSpin{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}`}</style>
       </section>
+
 
       {/* ── FEATURES ── */}
       <section id="features" style={{ padding: '100px 24px', maxWidth: 1100, margin: '0 auto' }}>
