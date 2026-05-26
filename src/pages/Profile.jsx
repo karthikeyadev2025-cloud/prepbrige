@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { useUserStore } from '../store/useStore'
-import { User, Lock, Globe, Bell, LogOut, Camera, Edit3, ChevronRight, Shield, Flame, Star, Target, BookOpen, Clock } from 'lucide-react'
+import { User, Lock, Globe, Bell, LogOut, Camera, Edit3, ChevronRight, Shield, Flame, Star, Target, BookOpen, Clock, Zap } from 'lucide-react'
 import { signOutUser } from '../firebase/auth'
 import { useNavigate } from 'react-router-dom'
 import { ALL_LANGUAGES, EXAM_CATEGORIES } from '../data/exams'
 import { toast } from 'react-hot-toast'
+import { initiatePremiumCheckout } from '../services/paymentService'
 
 export default function Profile() {
   const { profile, user, logout, updateProfile } = useUserStore()
@@ -76,11 +77,73 @@ export default function Profile() {
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {profile?.state && <span style={{ fontSize: '0.75rem', background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', padding: '3px 10px', color: 'var(--text-3)' }}>📍 {profile.state}</span>}
               {profile?.exams?.slice(0,2).map(e => <span key={e} style={{ fontSize: '0.75rem', background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.3)', borderRadius: 'var(--r-full)', padding: '3px 10px', color: 'var(--purple)' }}>{e.toUpperCase()}</span>)}
-              <span style={{ fontSize: '0.75rem', background: 'var(--emerald-10)', border: '1px solid var(--emerald-20)', borderRadius: 'var(--r-full)', padding: '3px 10px', color: 'var(--emerald)' }}>✓ All Access ₹599/yr</span>
+              {profile?.subscription?.plan === 'paid' ? (
+                <span style={{ fontSize: '0.75rem', background: 'var(--amber-10)', border: '1px solid var(--amber-20)', borderRadius: 'var(--r-full)', padding: '3px 10px', color: 'var(--amber)', fontWeight: 700 }}>⭐ PREMIUM VIP</span>
+              ) : (
+                <span style={{ fontSize: '0.75rem', background: 'var(--emerald-10)', border: '1px solid var(--emerald-20)', borderRadius: 'var(--r-full)', padding: '3px 10px', color: 'var(--emerald)' }}>Free Tier</span>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Premium Upgrade Banner for Free Users */}
+      {profile?.subscription?.plan !== 'paid' && (
+        <div className="card card-p animate-fade-in" style={{
+          marginBottom: 20,
+          background: 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(0,212,255,0.1))',
+          border: '1px solid rgba(124,58,237,0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 16,
+          padding: '20px 24px'
+        }}>
+          <div style={{ flex: 1, minWidth: 260 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <Star size={18} color="var(--amber)" style={{ fill: 'var(--amber)' }} />
+              <h4 style={{ margin: 0, fontSize: '1.05rem', color: 'white' }}>Unlock All-Access Premium 🚀</h4>
+            </div>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-3)', margin: 0, lineHeight: 1.5 }}>
+              Get unlimited visual doubt solving, full access to All India mock tests, and direct expert study plan revisions for only <strong>₹599/year</strong>.
+            </p>
+          </div>
+          <button onClick={() => initiatePremiumCheckout(user, profile, updateProfile)} className="btn btn-primary" style={{ gap: 8, boxShadow: 'var(--glow-purple)', fontWeight: 700 }}>
+            <Zap size={14} /> Upgrade Now (₹599)
+          </button>
+        </div>
+      )}
+
+      {/* Premium Active Subscription Status Card */}
+      {profile?.subscription?.plan === 'paid' && (
+        <div className="card card-p animate-fade-in" style={{
+          marginBottom: 20,
+          background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.03))',
+          border: '1px solid rgba(245,158,11,0.25)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 16,
+          padding: '16px 20px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(245,158,11,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Star size={20} color="var(--amber)" style={{ fill: 'var(--amber)' }} />
+            </div>
+            <div>
+              <h4 style={{ margin: 0, fontSize: '0.98rem', color: 'var(--amber)' }}>PrepBridge All-Access Active 💎</h4>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', marginTop: 2 }}>
+                Payment ID: {profile?.subscription?.paymentId || 'rzp_test_VIP'} • Member since {new Date(profile?.subscription?.startDate || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </div>
+            </div>
+          </div>
+          <span style={{ fontSize: '0.75rem', background: 'rgba(245,158,11,0.15)', color: 'var(--amber)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 'var(--r-full)', padding: '4px 12px', fontWeight: 700 }}>
+            Active Subscription
+          </span>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="grid-3" style={{ gap: 12, marginBottom: 24 }}>

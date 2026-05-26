@@ -4,6 +4,7 @@ import { Send, BrainCircuit, Sparkles, RefreshCw, Mic, Lightbulb, BookOpen, Zap,
 import { toast } from 'react-hot-toast'
 import { askGemini, generateQuestions } from '../services/gemini'
 import { ALL_LANGUAGES } from '../data/exams'
+import { Link } from 'react-router-dom'
 
 const SUGGESTED_QUESTIONS = [
   'Explain Fundamental Rights in simple words',
@@ -58,7 +59,27 @@ export default function AITutor() {
     }
   }
 
+  const getDailyQueryCount = () => {
+    const todayStr = new Date().toDateString()
+    const stored = localStorage.getItem(`pb_ai_count_${todayStr}`)
+    return stored ? parseInt(stored, 10) : 0
+  }
+  
+  const incrementDailyQueryCount = () => {
+    const todayStr = new Date().toDateString()
+    const current = getDailyQueryCount()
+    localStorage.setItem(`pb_ai_count_${todayStr}`, (current + 1).toString())
+  }
+
   const sendMessage = async (text = input) => {
+    const isPremium = profile?.subscription?.plan === 'paid'
+    const dailyCount = getDailyQueryCount()
+    
+    if (!isPremium && dailyCount >= 5) {
+      toast.error('You have reached your daily limit of 5 free AI Doubt Solver questions! Please upgrade to Premium for unlimited scans.')
+      return
+    }
+
     const msg = text.trim()
     const imgData = selectedImage
     const imgType = imageType
@@ -71,6 +92,10 @@ export default function AITutor() {
     setSelectedImage(null)
     setImagePreview(null)
     setShowSuggest(false)
+
+    if (!isPremium) {
+      incrementDailyQueryCount()
+    }
 
     const userMsg = { 
       role: 'user', 
@@ -272,65 +297,85 @@ export default function AITutor() {
         )}
 
         <div id="recaptcha-container" />
-        <form onSubmit={e => { e.preventDefault(); sendMessage() }} style={{ display: 'flex', gap: 10 }}>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-2)', borderRadius: 'var(--r-xl)', padding: '10px 18px', transition: 'var(--t)' }}
-            onFocusCapture={e => e.currentTarget.style.borderColor = 'var(--cyan)'}
-            onBlurCapture={e => e.currentTarget.style.borderColor = 'var(--border-2)'}
-          >
-            <Sparkles size={16} color="var(--purple)" style={{ flexShrink: 0 }} />
-            <input
-              style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: 'var(--text-1)', fontSize: '0.92rem', fontFamily: 'inherit' }}
-              placeholder={`Ask anything in English, हिंदी, தமிழ், తెలుగు, বাংলা...`}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              disabled={loading}
-            />
-            {/* Hidden Input for file uploads */}
-            <input 
-              type="file" 
-              id="ai-scan-upload" 
-              accept="image/*" 
-              onChange={handleImageChange} 
-              style={{ display: 'none' }} 
-            />
-            {/* Hidden Input for camera capture specifically */}
-            <input 
-              type="file" 
-              id="ai-camera-capture" 
-              accept="image/*" 
-              capture="environment" 
-              onChange={handleImageChange} 
-              style={{ display: 'none' }} 
-            />
-            
-            <button 
-              type="button" 
-              onClick={() => document.getElementById('ai-camera-capture').click()} 
-              style={{ background: 'none', border: 'none', color: 'var(--text-3)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'var(--t)' }} 
-              title="Take question photo"
-              onMouseEnter={e => e.currentTarget.style.color = 'var(--cyan)'}
-              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-3)'}
-            >
-              <Camera size={18} />
-            </button>
-            <button 
-              type="button" 
-              onClick={() => document.getElementById('ai-scan-upload').click()} 
-              style={{ background: 'none', border: 'none', color: 'var(--text-3)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'var(--t)' }} 
-              title="Upload textbook query image"
-              onMouseEnter={e => e.currentTarget.style.color = 'var(--purple)'}
-              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-3)'}
-            >
-              <Paperclip size={18} />
-            </button>
+        {profile?.subscription?.plan !== 'paid' && getDailyQueryCount() >= 5 ? (
+          <div style={{
+            padding: '18px 24px',
+            background: 'linear-gradient(135deg, rgba(124,58,237,0.12), rgba(0,212,255,0.08))',
+            border: '1px solid rgba(124,58,237,0.3)',
+            borderRadius: 'var(--r-lg)',
+            textAlign: 'center',
+            animation: 'fadeUp 0.3s ease'
+          }}>
+            <div style={{ fontSize: '1.6rem', marginBottom: 6 }}>🔒 Daily Limit Reached</div>
+            <h4 style={{ margin: 0, marginBottom: 8, color: 'white', fontSize: '1.05rem' }}>Unlock Unlimited Gemini AI Doubt Solver</h4>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-3)', margin: 0, marginBottom: 14, lineHeight: 1.55, maxWidth: 640, marginLeft: 'auto', marginRight: 'auto' }}>
+              You have completed all 5 free daily competitive exam doubt scans for today. Upgrade to All-Access Premium for only <strong>₹599/year</strong> to solve unlimited textbook, test-series, and paper queries instantly!
+            </p>
+            <Link to="/app/profile" className="btn btn-primary" style={{ display: 'inline-flex', gap: 8, fontWeight: 700, boxShadow: 'var(--glow-purple)' }}>
+              <Zap size={14} /> Go Premium Now (₹599)
+            </Link>
           </div>
-          <button type="submit" className="btn btn-primary" disabled={(!input.trim() && !selectedImage) || loading} style={{ borderRadius: '50%', width: 46, height: 46, padding: 0, flexShrink: 0 }}>
-            {loading
-              ? <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} />
-              : <Send size={18} />
-            }
-          </button>
-        </form>
+        ) : (
+          <form onSubmit={e => { e.preventDefault(); sendMessage() }} style={{ display: 'flex', gap: 10 }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-2)', borderRadius: 'var(--r-xl)', padding: '10px 18px', transition: 'var(--t)' }}
+              onFocusCapture={e => e.currentTarget.style.borderColor = 'var(--cyan)'}
+              onBlurCapture={e => e.currentTarget.style.borderColor = 'var(--border-2)'}
+            >
+              <Sparkles size={16} color="var(--purple)" style={{ flexShrink: 0 }} />
+              <input
+                style={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: 'var(--text-1)', fontSize: '0.92rem', fontFamily: 'inherit' }}
+                placeholder={`Ask anything in English, हिंदी, தமிழ், తెలుగు, বাংলা...`}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                disabled={loading}
+              />
+              {/* Hidden Input for file uploads */}
+              <input 
+                type="file" 
+                id="ai-scan-upload" 
+                accept="image/*" 
+                onChange={handleImageChange} 
+                style={{ display: 'none' }} 
+              />
+              {/* Hidden Input for camera capture specifically */}
+              <input 
+                type="file" 
+                id="ai-camera-capture" 
+                accept="image/*" 
+                capture="environment" 
+                onChange={handleImageChange} 
+                style={{ display: 'none' }} 
+              />
+              
+              <button 
+                type="button" 
+                onClick={() => document.getElementById('ai-camera-capture').click()} 
+                style={{ background: 'none', border: 'none', color: 'var(--text-3)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'var(--t)' }} 
+                title="Take question photo"
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--cyan)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'var(--text-3)'}
+              >
+                <Camera size={18} />
+              </button>
+              <button 
+                type="button" 
+                onClick={() => document.getElementById('ai-scan-upload').click()} 
+                style={{ background: 'none', border: 'none', color: 'var(--text-3)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'var(--t)' }} 
+                title="Upload textbook query image"
+                onMouseEnter={e => e.currentTarget.style.color = 'var(--purple)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'var(--text-3)'}
+              >
+                <Paperclip size={18} />
+              </button>
+            </div>
+            <button type="submit" className="btn btn-primary" disabled={(!input.trim() && !selectedImage) || loading} style={{ borderRadius: '50%', width: 46, height: 46, padding: 0, flexShrink: 0 }}>
+              {loading
+                ? <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                : <Send size={18} />
+              }
+            </button>
+          </form>
+        )}
         <p style={{ fontSize: '0.7rem', color: 'var(--text-4)', marginTop: 6, textAlign: 'center' }}>
           Powered by Google Gemini 2.0 Flash • PrepBridge AI may make mistakes. Verify with official sources.
         </p>

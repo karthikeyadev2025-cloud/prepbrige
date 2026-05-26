@@ -392,6 +392,37 @@ export default function Dashboard() {
         <StatCard icon={<Target size={20} color="var(--emerald)" />} label="Accuracy" value="73.4%" trend={5} bg="var(--emerald-10)" />
       </div>
 
+      {/* Premium Upgrade Banner for Free Tier Users */}
+      {profile?.subscription?.plan !== 'paid' && (
+        <div className="card card-p animate-fade-in" style={{
+          marginBottom: 28,
+          background: 'linear-gradient(135deg, rgba(124,58,237,0.18), rgba(0,212,255,0.12))',
+          border: '1px solid rgba(124,58,237,0.3)',
+          boxShadow: '0 8px 32px rgba(124,58,237,0.1)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 16,
+          padding: '20px 24px'
+        }}>
+          <div style={{ flex: 1, minWidth: 280 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              <Star size={20} color="var(--amber)" style={{ fill: 'var(--amber)' }} style={{ flexShrink: 0 }} />
+              <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'white' }}>Unlock All-Access Premium Prep 💎</h4>
+            </div>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5 }}>
+              Upgrade to Premium for just <strong>₹599/yr</strong>. Unlock unlimited visual doubt solving, full coverage of All India test series, and direct expert study plan revisions.
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <Link to="/app/profile" className="btn btn-primary" style={{ gap: 8, boxShadow: 'var(--glow-purple)', fontWeight: 700 }}>
+              <Zap size={14} /> Upgrade Now (₹599)
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Main grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, marginBottom: 28 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
