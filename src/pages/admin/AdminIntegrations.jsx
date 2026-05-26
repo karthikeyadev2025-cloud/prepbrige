@@ -6,12 +6,16 @@ import { db } from '../../firebase/config'
 
 const DEFAULT_SETTINGS = {
   // Razorpay
-  razorpayKeyId: 'rzp_test_pWA599PrepBridge2026',
+  razorpayKeyId: 'rzp_test_PrepBridge2026',
   razorpayKeySecret: '••••••••••••••••••••••••••••',
-  planPrice: '599',
+  planPrice: '249',
   currency: 'INR',
   razorpayMode: 'test', // test | live
   autoUpgradeUser: true,
+
+  // Google OAuth Credentials (paste actual keys in Admin integrations dashboard)
+  googleClientId: 'YOUR_GOOGLE_CLIENT_ID',
+  googleClientSecret: 'YOUR_GOOGLE_CLIENT_SECRET',
 
   // Firebase
   firebaseApiKey: 'AIzaSyBphAmrAzMyHn4n4PQ0GQ9Ixj0xnWhVmZk',
@@ -21,6 +25,11 @@ const DEFAULT_SETTINGS = {
   firebaseSenderId: '1074613140786',
   firebaseAppId: '1:1074613140786:web:6092d00d86da43c8426b2b',
   forcePhoneOtp: false,
+
+  // Supabase Storage
+  supabaseUrl: 'https://prepbridge-85189.supabase.co',
+  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByZXBicmlkZ2UtODUxODkiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc3OTc3MDEyNywiZXhwIjoyMDk1MzQ2MTI3fQ.xxxx-placeholder',
+  supabaseBucket: 'profile_photos',
 
   // General App Settings
   supportEmail: 'support@prepbridge.in',
@@ -102,9 +111,11 @@ export default function AdminIntegrations() {
         <div>
           <div className="card" style={{ overflow: 'hidden', position: 'sticky', top: 80 }}>
             {[
-              { id: 'razorpay', icon: CreditCard, label: 'Razorpay Payment Gateway' },
-              { id: 'firebase', icon: Shield, label: 'Firebase Services' },
-              { id: 'app', icon: CloudLightning, label: 'Support & Global Config' }
+              { id: 'razorpay', icon: CreditCard, label: 'Razorpay Gateway' },
+              { id: 'google', icon: Key, label: 'Google OAuth Config' },
+              { id: 'firebase', icon: Shield, label: 'Firebase Platform' },
+              { id: 'supabase', icon: CloudLightning, label: 'Supabase Storage' },
+              { id: 'app', icon: Settings, label: 'Support & Globals' }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -281,6 +292,124 @@ export default function AdminIntegrations() {
                   onChange={e => updateSetting('forcePhoneOtp', e.target.checked)}
                   style={{ width: '18px', height: '18px', accentColor: 'var(--purple)', cursor: 'pointer' }}
                 />
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'google' && (
+            <div className="card card-p animate-fade-in">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <Key size={20} color="var(--purple)" />
+                <h4 style={{ margin: 0 }}>Google OAuth API Credentials</h4>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 18 }}>
+                <label className="form-label">Google Client ID</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={settings.googleClientId || ''}
+                    onChange={e => updateSetting('googleClientId', e.target.value)}
+                    placeholder="123456-abcdef.apps.googleusercontent.com"
+                    style={{ paddingRight: '40px', fontFamily: 'monospace', fontSize: '0.85rem' }}
+                  />
+                  <Key size={14} style={{ position: 'absolute', right: '14px', top: '16px', color: 'var(--text-4)' }} />
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 24 }}>
+                <label className="form-label">Google Client Secret</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showSecret ? 'text' : 'password'}
+                    className="form-input"
+                    value={settings.googleClientSecret || ''}
+                    onChange={e => updateSetting('googleClientSecret', e.target.value)}
+                    placeholder="Client Secret..."
+                    style={{ paddingRight: '40px', fontFamily: 'monospace', fontSize: '0.85rem' }}
+                  />
+                  <button
+                    onClick={() => setShowSecret(!showSecret)}
+                    style={{ position: 'absolute', right: '14px', top: '16px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-4)' }}
+                  >
+                    {showSecret ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ padding: '16px', background: 'rgba(124, 58, 237, 0.05)', border: '1px solid rgba(124, 58, 237, 0.2)', borderRadius: 'var(--r-md)', fontSize: '0.82rem', lineHeight: '1.5' }}>
+                <div style={{ fontWeight: 700, color: 'var(--purple)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <HelpCircle size={14} /> Google Cloud Security Setup Instructions
+                </div>
+                <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text-2)' }}>
+                  <li>Whitelists are essential for redirect loops. Add your Vercel deployment domain to your <b>Authorized JavaScript Origins</b>.</li>
+                  <li>Configure <b>Authorized Redirect URIs</b> under Google Credentials using your Firebase auth handler link: <br /><code style={{ display: 'inline-block', background: 'var(--bg-3)', padding: '2px 6px', borderRadius: 4, marginTop: 4, fontFamily: 'monospace', fontSize: '0.75rem' }}>https://prepbridge-85189.firebaseapp.com/__/auth/handler</code></li>
+                  <li>Enable Google Sign-in inside your Firebase Console and paste your Web client ID and Client Secret in the <b>Web SDK Configuration</b>.</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'supabase' && (
+            <div className="card card-p animate-fade-in">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
+                <CloudLightning size={20} color="var(--cyan)" />
+                <h4 style={{ margin: 0 }}>Supabase Storage Configuration</h4>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 18 }}>
+                <label className="form-label">Supabase Project URL</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={settings.supabaseUrl || ''}
+                  onChange={e => updateSetting('supabaseUrl', e.target.value)}
+                  placeholder="https://your-project-id.supabase.co"
+                  style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 18 }}>
+                <label className="form-label">Supabase Anon Public API Key</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showSecret ? 'text' : 'password'}
+                    className="form-input"
+                    value={settings.supabaseAnonKey || ''}
+                    onChange={e => updateSetting('supabaseAnonKey', e.target.value)}
+                    placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpX..."
+                    style={{ paddingRight: '40px', fontFamily: 'monospace', fontSize: '0.85rem' }}
+                  />
+                  <button
+                    onClick={() => setShowSecret(!showSecret)}
+                    style={{ position: 'absolute', right: '14px', top: '16px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-4)' }}
+                  >
+                    {showSecret ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 24 }}>
+                <label className="form-label">Storage Bucket Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={settings.supabaseBucket || ''}
+                  onChange={e => updateSetting('supabaseBucket', e.target.value)}
+                  placeholder="profile_photos"
+                  style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}
+                />
+              </div>
+
+              <div style={{ padding: '16px', background: 'rgba(0, 212, 255, 0.05)', border: '1px solid rgba(0, 212, 255, 0.2)', borderRadius: 'var(--r-md)', fontSize: '0.82rem', lineHeight: '1.5' }}>
+                <div style={{ fontWeight: 700, color: 'var(--cyan)', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <HelpCircle size={14} /> Supabase Bucket Requirements
+                </div>
+                <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text-2)' }}>
+                  <li>Your storage bucket (default: <code style={{ fontFamily: 'monospace' }}>profile_photos</code>) MUST be set to <b>Public</b> inside the Supabase Storage dashboard.</li>
+                  <li>Enable open Read/Write CORS rules in the Supabase Storage tab so Vercel can upload profile images directly.</li>
+                </ul>
               </div>
             </div>
           )}

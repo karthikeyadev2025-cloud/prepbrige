@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Outlet, useLocation, useNavigate, NavLink } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../../store/useStore'
+import { getSubscriptionStatus } from '../../services/paymentService'
 import {
   LayoutDashboard, BookOpen, FileText, Newspaper, BrainCircuit,
   GraduationCap, Trophy, Bell, User, Settings, LogOut,
@@ -110,7 +111,15 @@ export default function AppLayout({ isAdmin = false }) {
               {!collapsed && (
                 <div className="user-info">
                   <div className="user-name">{profile?.name || 'User'}</div>
-                  <div className="user-plan">All Access ₹599</div>
+                  <div className="user-plan">
+                    {(() => {
+                      const s = getSubscriptionStatus(profile?.subscription)
+                      if (s.isPaid) return '✅ Premium'
+                      if (s.isTrial && s.isActive) return `🌟 Trial · ${s.daysLeft}d left`
+                      if (s.isTrial && s.isExpired) return '🔒 Trial Ended'
+                      return '🚀 Try Free'
+                    })()}
+                  </div>
                 </div>
               )}
             </NavLink>

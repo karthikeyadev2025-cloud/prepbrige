@@ -26,7 +26,7 @@ const EXAMS = [
 
 const TESTIMONIALS = [
   { name: 'Ramesh Kumar', state: 'Bihar', exam: 'IAS Rank 23 — UPSC 2024', text: 'I\'m from a small village in Bihar. I couldn\'t afford coaching. PrepBridge AI explained everything in Hindi. Today I\'m an IAS officer.', avatar: 'R', color: '#7c3aed' },
-  { name: 'Priya Nair', state: 'Kerala', exam: 'SSC CGL AIR 4 — 2024', text: 'The mock tests were exactly like the real exam. Current affairs auto-loaded every morning. Best ₹599 I ever spent.', avatar: 'P', color: '#00d4ff' },
+  { name: 'Priya Nair', state: 'Kerala', exam: 'SSC CGL AIR 4 — 2024', text: 'The mock tests were exactly like the real exam. Current affairs auto-loaded every morning. Only ₹249/month — best investment I ever made in my life.', avatar: 'P', color: '#00d4ff' },
   { name: 'Suresh Patel', state: 'Gujarat', exam: 'RRB NTPC AIR 11 — 2024', text: 'I studied in Gujarati. The app translated everything perfectly. Mock tests, PYQs, AI tutor — all in my language!', avatar: 'S', color: '#10b981' },
 ]
 
@@ -341,33 +341,53 @@ export default function Landing() {
           </RevealDiv>
           <RevealDiv delay={0.2} direction="scale">
             {/* Animated border pricing card */}
-            <div style={{ display: 'inline-block', padding: 2, borderRadius: 30, background: 'linear-gradient(135deg,#7c3aed,#00d4ff,#10b981,#7c3aed)', backgroundSize: '300% 300%', animation: 'borderSpin 4s linear infinite', boxShadow: '0 0 80px rgba(124,58,237,0.3)' }}>
-              <div style={{ maxWidth: 440, background: '#0d0a1a', borderRadius: 28, padding: 44, textAlign: 'center' }}>
-                <div style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-4)', marginBottom: 14 }}>All Access Plan</div>
-                <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 'var(--r-full)', padding: '4px 14px', fontSize: '0.78rem', fontWeight: 800, color: '#10b981', marginBottom: 10 }}
-                >✨ 2-Day Free Trial for New Students</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4, marginBottom: 6 }}>
-                  <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-3)' }}>₹</span>
-                  <span style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>249</span>
-                  <span style={{ color: 'var(--text-3)' }}>/month</span>
+            <div style={{ display: 'inline-block', padding: 2, borderRadius: 30, background: 'linear-gradient(135deg,#7c3aed,#00d4ff,#10b981,#f59e0b)', backgroundSize: '300% 300%', animation: 'borderSpin 4s linear infinite', boxShadow: '0 0 80px rgba(124,58,237,0.3)' }}>
+              <div style={{ maxWidth: 500, background: '#0d0a1a', borderRadius: 28, padding: '36px 40px', textAlign: 'center' }}>
+                {/* Trial badge */}
+                <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 'var(--r-full)', padding: '5px 16px', fontSize: '0.78rem', fontWeight: 800, color: '#10b981', marginBottom: 20 }}>
+                  ✨ 2-Day Free Trial for All New Students
                 </div>
-                <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 'var(--r-full)', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', marginBottom: 20, fontSize: '0.82rem' }}>
-                  <span style={{ color: '#10b981', fontWeight: 800 }}>20% OFF</span>
-                  <span style={{ color: 'var(--text-3)' }}>6-Month Plan — only ₹1,195 (save ₹299)</span>
+
+                {/* 3-plan mini grid */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 24 }}>
+                  {[
+                    { label: 'Monthly', price: '₹249', sub: '/month', tag: null, discount: null, border: 'rgba(124,58,237,0.4)', glow: 'rgba(124,58,237,0.1)' },
+                    { label: '6 Months', price: '₹1,195', sub: '≈₹199/mo', tag: 'Popular', discount: '20% OFF', border: 'rgba(0,212,255,0.5)', glow: 'rgba(0,212,255,0.1)' },
+                    { label: 'Annual', price: '₹1,999', sub: '≈₹167/mo', tag: 'Best Value', discount: '33% OFF', border: 'rgba(245,158,11,0.6)', glow: 'rgba(245,158,11,0.12)' },
+                  ].map((p, i) => (
+                    <div key={i} style={{
+                      background: p.glow, border: `1px solid ${p.border}`,
+                      borderRadius: 16, padding: '14px 8px', position: 'relative',
+                      boxShadow: `0 0 20px ${p.glow}`
+                    }}>
+                      {p.tag && (
+                        <div style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: i === 2 ? '#f59e0b' : '#00d4ff', color: i === 2 ? '#000' : '#000', fontSize: '0.58rem', fontWeight: 900, padding: '2px 8px', borderRadius: 999, whiteSpace: 'nowrap' }}>
+                          {p.tag}
+                        </div>
+                      )}
+                      <div style={{ fontSize: '0.62rem', fontWeight: 700, color: 'rgba(148,163,184,0.7)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6, marginTop: p.tag ? 4 : 0 }}>{p.label}</div>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'white', lineHeight: 1 }}>{p.price}</div>
+                      <div style={{ fontSize: '0.6rem', color: 'rgba(148,163,184,0.6)', marginTop: 3 }}>{p.sub}</div>
+                      {p.discount && <div style={{ fontSize: '0.62rem', color: '#10b981', fontWeight: 800, marginTop: 4 }}>{p.discount}</div>}
+                    </div>
+                  ))}
                 </div>
-                {['All 200+ exams & question papers', '5 Lakh+ questions unlimited', 'Unlimited mock tests + All India Rank', 'AI Tutor in your language', 'Live current affairs every morning', 'Push notifications for every exam', 'All 22 Indian languages', 'Offline access on any Android phone'].map((f, i) => (
+
+                {/* Features */}
+                {['All 200+ exams & question papers', '5 Lakh+ questions unlimited', 'Unlimited mock tests + All India Rank', 'AI Tutor in your language (22 langs)', 'Live current affairs every morning', 'Push notifications for every exam', 'Offline access on any Android phone'].map((f, i) => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, textAlign: 'left', animation: `slideInRight 0.4s ease ${i * 0.06}s both` }}>
                     <CheckCircle size={15} color="#10b981" />
                     <span style={{ fontSize: '0.87rem', color: 'var(--text-2)' }}>{f}</span>
                   </div>
                 ))}
                 <MagneticBtn to="/auth?signup=1" style={{ display: 'flex', justifyContent: 'center', marginTop: 28, padding: '16px 28px', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', borderRadius: 'var(--r-full)', fontWeight: 800, fontSize: '1rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 30px rgba(124,58,237,0.5)', width: '100%' }}>
-                  Start Free Trial — then from ₹249/mo <ArrowRight size={18} />
+                  Start Free Trial — Pick Plan Inside <ArrowRight size={18} />
                 </MagneticBtn>
-                <div style={{ marginTop: 14, fontSize: '0.78rem', color: 'var(--text-4)' }}>2-day free trial · No card needed · 6-month plan saves ₹299</div>
+                <div style={{ marginTop: 14, fontSize: '0.78rem', color: 'var(--text-4)' }}>2-day free trial · No card needed · Annual plan saves ₹989</div>
               </div>
             </div>
           </RevealDiv>
+
         </div>
       </section>
 

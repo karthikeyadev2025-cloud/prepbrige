@@ -13,7 +13,7 @@ export default function Profile() {
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(profile?.name || '')
   const [activeTab, setActiveTab] = useState('profile')
-  const [selectedPlan, setSelectedPlan] = useState('sixMonth')
+  const [selectedPlan, setSelectedPlan] = useState('annual') // default: best value annual plan
   const sub = getSubscriptionStatus(profile?.subscription)
 
   const handleLogout = async () => {
@@ -119,36 +119,38 @@ export default function Profile() {
               : 'Unlimited AI doubt solving, all-India mock tests, live current affairs, 5L+ questions & more.'}
           </p>
 
-          {/* Plan selector */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 18 }}>
-            {/* Monthly Plan */}
-            <div
-              onClick={() => setSelectedPlan('monthly')}
-              style={{
-                padding: '14px 16px', borderRadius: 'var(--r-lg)', cursor: 'pointer', transition: 'var(--t)',
-                background: selectedPlan === 'monthly' ? 'rgba(124,58,237,0.18)' : 'rgba(255,255,255,0.03)',
-                border: selectedPlan === 'monthly' ? '2px solid var(--purple)' : '2px solid var(--border)'
-              }}
-            >
-              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Monthly</div>
-              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: selectedPlan === 'monthly' ? 'var(--purple)' : 'white', lineHeight: 1 }}>₹249</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-3)', marginTop: 2 }}>/month</div>
-            </div>
-
-            {/* 6-Month Plan (recommended) */}
-            <div
-              onClick={() => setSelectedPlan('sixMonth')}
-              style={{
-                padding: '14px 16px', borderRadius: 'var(--r-lg)', cursor: 'pointer', transition: 'var(--t)', position: 'relative',
-                background: selectedPlan === 'sixMonth' ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.03)',
-                border: selectedPlan === 'sixMonth' ? '2px solid var(--emerald)' : '2px solid var(--border)'
-              }}
-            >
-              <div style={{ position: 'absolute', top: -10, right: 10, background: 'var(--emerald)', color: 'white', fontSize: '0.65rem', fontWeight: 800, padding: '2px 8px', borderRadius: 'var(--r-full)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Best Value</div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>6 Months <span style={{ color: 'var(--emerald)' }}>• 20% OFF</span></div>
-              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: selectedPlan === 'sixMonth' ? 'var(--emerald)' : 'white', lineHeight: 1 }}>₹1,195</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-3)', marginTop: 2 }}>≈ ₹{PRICING.sixMonth.perMonth}/mo · Save ₹{PRICING.sixMonth.savings}</div>
-            </div>
+          {/* 3-Plan Selector */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 18 }}>
+            {[
+              { key: 'monthly',  label: 'Monthly',  price: '₹249',   sub: '/month',         tag: null,          tagColor: null,          accent: 'var(--purple)',  accentRgb: '124,58,237' },
+              { key: 'sixMonth', label: '6 Months', price: '₹1,195', sub: `≈₹${PRICING.sixMonth.perMonth}/mo`, tag: 'Popular',    tagColor: 'var(--cyan)',   accent: 'var(--cyan)',    accentRgb: '0,212,255' },
+              { key: 'annual',   label: 'Annual',   price: '₹1,999', sub: `≈₹${PRICING.annual.perMonth}/mo`,   tag: 'Best Value', tagColor: 'var(--amber)', accent: 'var(--amber)',   accentRgb: '245,158,11' },
+            ].map(p => {
+              const isSelected = selectedPlan === p.key
+              return (
+                <div key={p.key} onClick={() => setSelectedPlan(p.key)} style={{
+                  padding: '12px 10px', borderRadius: 'var(--r-lg)', cursor: 'pointer',
+                  transition: 'all 0.2s', position: 'relative', textAlign: 'center',
+                  background: isSelected ? `rgba(${p.accentRgb},0.14)` : 'rgba(255,255,255,0.03)',
+                  border: isSelected ? `2px solid ${p.accent}` : '2px solid var(--border)',
+                  boxShadow: isSelected ? `0 0 16px rgba(${p.accentRgb},0.25)` : 'none',
+                }}>
+                  {p.tag && (
+                    <div style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: p.tagColor, color: p.key === 'annual' ? '#000' : 'white', fontSize: '0.6rem', fontWeight: 800, padding: '2px 8px', borderRadius: 'var(--r-full)', whiteSpace: 'nowrap', letterSpacing: '0.04em' }}>
+                      {p.tag}
+                    </div>
+                  )}
+                  <div style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4, marginTop: p.tag ? 4 : 0 }}>{p.label}</div>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 900, color: isSelected ? p.accent : 'white', lineHeight: 1 }}>{p.price}</div>
+                  <div style={{ fontSize: '0.62rem', color: 'var(--text-3)', marginTop: 3 }}>{p.sub}</div>
+                  {p.key !== 'monthly' && (
+                    <div style={{ fontSize: '0.6rem', color: p.accent, fontWeight: 700, marginTop: 3 }}>
+                      Save ₹{PRICING[p.key].savings}
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
 
           <button
@@ -157,10 +159,15 @@ export default function Profile() {
             style={{ width: '100%', gap: 8, boxShadow: 'var(--glow-purple)', fontWeight: 700, justifyContent: 'center' }}
           >
             <Zap size={14} />
-            {selectedPlan === 'sixMonth' ? 'Get 6-Month Plan — ₹1,195 (20% OFF)' : 'Get Monthly Plan — ₹249/mo'}
+            {selectedPlan === 'annual'
+              ? `Get Annual Plan — ₹1,999/yr (Save ₹${PRICING.annual.savings})`
+              : selectedPlan === 'sixMonth'
+              ? `Get 6-Month Plan — ₹1,195 (20% OFF)`
+              : 'Get Monthly Plan — ₹249/mo'}
           </button>
         </div>
       )}
+
 
       {/* Premium Active Subscription Status Card */}
       {sub.isPaid && (

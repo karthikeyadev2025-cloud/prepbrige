@@ -6,8 +6,7 @@ import { EXAM_CATEGORIES, ALL_STATES, ALL_LANGUAGES } from '../data/exams'
 import { CheckCircle, ArrowRight, ArrowLeft, Zap, Brain, Plus } from 'lucide-react'
 import { updateUserProfile } from '../firebase/auth'
 import { createTrialSubscription } from '../services/paymentService'
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { storage } from '../firebase/config'
+import { uploadToSupabase } from '../services/supabaseService'
 
 const STEPS = ['Language','State','Exams','Profile','Schedule']
 
@@ -73,14 +72,12 @@ export default function Onboarding() {
     setUploading(true)
     let finalPhotoUrl = user?.photoURL || ''
 
-    // Upload to Firebase Storage (with Base64 fallback if storage blocks/fails)
+    // Upload to Supabase Storage (with Base64 fallback if storage blocks/fails)
     if (photoFile && user?.uid) {
       try {
-        const photoRef = ref(storage, `profile_photos/${user.uid}`)
-        await uploadBytes(photoRef, photoFile)
-        finalPhotoUrl = await getDownloadURL(photoRef)
+        finalPhotoUrl = await uploadToSupabase(photoFile, `demo_${user.uid}`)
       } catch (e) {
-        console.warn('Firebase Storage failed, trying Base64 conversion:', e)
+        console.warn('Supabase Storage failed, trying Base64 conversion:', e)
         try {
           const reader = new FileReader()
           finalPhotoUrl = await new Promise((resolve, reject) => {

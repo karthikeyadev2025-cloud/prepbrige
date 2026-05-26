@@ -234,7 +234,7 @@ function HeroTypewriter() {
         )}
       </div>
 
-      {/* Line 3: "Starts Here." + ₹599 — NO shorthand background conflicts */}
+      {/* Line 3: "Starts Here." + price — shimmer animation */}
       <div style={{
         fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.1,
         letterSpacing: '-0.03em', display: 'flex', alignItems: 'baseline',
@@ -248,8 +248,8 @@ function HeroTypewriter() {
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
-          animation: 'shimmer599 2.5s linear infinite',
-        }}>₹599.</span>
+          animation: 'shimmerPrice 2.5s linear infinite',
+        }}>Try Free.</span>
       </div>
     </div>
   )
@@ -330,7 +330,7 @@ export default function HeroVideo() {
           {[
             { value: 500000, suffix: '+', label: 'Questions', color: '#00d4ff', prefix: '' },
             { value: 200, suffix: '+', label: 'Exams Covered', color: '#7c3aed', prefix: '' },
-            { value: 599, suffix: '/yr', label: 'All Access Plan', color: '#10b981', prefix: '₹' },
+            { value: 249, suffix: '/mo', label: 'Starts At Just', color: '#10b981', prefix: '₹' },
             { value: 22, suffix: '', label: 'Indian Languages', color: '#f59e0b', prefix: '' },
           ].map(s => (
             <div key={s.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 12px', backdropFilter: 'blur(10px)' }}>
@@ -407,7 +407,7 @@ export default function HeroVideo() {
           60%  { opacity: 1; transform: translateY(-2px) scale(1.02); }
           100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-        @keyframes shimmer599 {
+        @keyframes shimmerPrice {
           0% { background-position: -200% center; }
           100% { background-position: 200% center; }
         }

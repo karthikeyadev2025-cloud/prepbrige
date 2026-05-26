@@ -8,23 +8,38 @@ export const PRICING = {
   monthly: {
     label: 'Monthly Plan',
     amount: 249,           // ₹249/month
-    amountPaise: 24900,    // in paise for Razorpay
+    amountPaise: 24900,
     description: 'PrepBridge All-Access — Monthly Plan',
     badge: '₹249/mo',
     planDuration: '1 month',
+    tag: null,
   },
   sixMonth: {
     label: '6-Month Plan',
-    amount: 1195,          // ₹249 × 6 × 0.8 = ₹1,195.20 → ₹1,195
-    amountPaise: 119500,   // in paise for Razorpay
+    amount: 1195,          // ₹249 × 6 × 0.8 = ₹1,195 (20% off)
+    amountPaise: 119500,
     description: 'PrepBridge All-Access — 6-Month Plan (20% OFF)',
-    badge: '₹1,195 for 6 months',
+    badge: '₹1,195 / 6 months',
     planDuration: '6 months',
-    savings: Math.round(249 * 6 * 0.20), // ₹299 saved
+    savings: Math.round(249 * 6 * 0.20),  // ₹299 saved
     discountLabel: '20% OFF',
-    perMonth: Math.round(1195 / 6),      // ≈ ₹199/mo effective
-  }
+    perMonth: Math.round(1195 / 6),        // ≈ ₹199/mo effective
+    tag: 'Popular',
+  },
+  annual: {
+    label: 'Annual Plan',
+    amount: 1999,          // ₹1,999/year (~33% off vs monthly × 12 = ₹2,988)
+    amountPaise: 199900,
+    description: 'PrepBridge All-Access — Annual Plan (Best Value)',
+    badge: '₹1,999 / year',
+    planDuration: '12 months',
+    savings: Math.round(249 * 12 - 1999), // ₹989 saved vs monthly
+    discountLabel: '33% OFF',
+    perMonth: Math.round(1999 / 12),       // ≈ ₹167/mo effective
+    tag: 'Best Value',
+  },
 }
+
 
 // ─── Trial Constants ──────────────────────────────────────────────────────────
 export const TRIAL_DAYS = 2 // 2-day free trial for all new users
@@ -115,7 +130,8 @@ export async function initiatePremiumCheckout(user, profile, updateProfile, onCo
 
       const now = new Date()
       const expiresAt = new Date(now)
-      if (planType === 'sixMonth') expiresAt.setMonth(expiresAt.getMonth() + 6)
+      if (planType === 'annual') expiresAt.setFullYear(expiresAt.getFullYear() + 1)
+      else if (planType === 'sixMonth') expiresAt.setMonth(expiresAt.getMonth() + 6)
       else expiresAt.setMonth(expiresAt.getMonth() + 1)
 
       const premiumSubscription = {

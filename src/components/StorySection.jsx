@@ -19,7 +19,7 @@ const STORY = [
     img: '/story2.png',
     chapter: 'Chapter 2',
     headline: 'One Phone. One App. Everything Changed.',
-    sub: 'His cousin showed him PrepBridge. ₹599 for the whole year.',
+    sub: 'His cousin showed him PrepBridge. 2-day free trial. Then only ₹249/month.',
     body: 'AI tutor in Hindi. Full UPSC syllabus. Mock tests. Previous year papers. Live current affairs every morning. Daily study plan built just for him — all on a ₹6,000 phone.',
     quote: '"Pehli baar laga ki main bhi crack kar sakta hoon."',
     emotion: '🤩',
@@ -129,7 +129,7 @@ export default function StorySection() {
             From <span style={{ background: 'linear-gradient(90deg,#f59e0b,#7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Struggle</span> to{' '}
             <span style={{ background: 'linear-gradient(90deg,#7c3aed,#10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>IAS Officer</span>
           </h2>
-          <p style={{ color: 'rgba(148,163,184,0.7)', marginTop: 8, fontSize: '0.95rem' }}>A ₹599 investment that changed a family's destiny</p>
+          <p style={{ color: 'rgba(148,163,184,0.7)', marginTop: 8, fontSize: '0.95rem' }}>A 2-day free trial that changed a family's destiny — then just ₹249/month</p>
         </div>
 
         {/* Story card */}
