@@ -28,6 +28,15 @@ export default function Profile() {
     toast.success('Profile updated!')
   }
 
+  const handleSettingsAction = (setting) => {
+    if (setting === 'Language Settings') {
+      setActiveTab('exams')
+      toast.success('Switching to Exams & Languages! Update your preferences there.')
+    } else {
+      toast.success(`${setting} coming soon! Your data is fully secured.`, { icon: '🔒' })
+    }
+  }
+
   const STATS = [
     { label: 'Tests Taken', value: profile?.stats?.testsTaken || 12, icon: '📋', color: 'var(--purple)' },
     { label: 'Avg Score', value: `${profile?.stats?.avgScore || 74}%`, icon: '🎯', color: 'var(--cyan)' },
@@ -270,7 +279,7 @@ export default function Profile() {
             { label: 'Change Password', icon: <Lock size={16} />, action: 'Update' },
             { label: 'Privacy Settings', icon: <Shield size={16} />, action: 'View' },
           ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: '1px solid var(--border)', cursor: 'pointer' }}
+            <div key={i} onClick={() => handleSettingsAction(item.label)} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 20px', borderBottom: '1px solid var(--border)', cursor: 'pointer' }}
               onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-3)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >

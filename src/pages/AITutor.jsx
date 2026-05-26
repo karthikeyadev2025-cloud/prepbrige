@@ -4,7 +4,7 @@ import { Send, BrainCircuit, Sparkles, RefreshCw, Mic, Lightbulb, BookOpen, Zap,
 import { toast } from 'react-hot-toast'
 import { askGemini, generateQuestions } from '../services/gemini'
 import { ALL_LANGUAGES } from '../data/exams'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { getSubscriptionStatus } from '../services/paymentService'
 
 const SUGGESTED_QUESTIONS = [
@@ -39,6 +39,7 @@ export default function AITutor() {
   const [imagePreview, setImagePreview] = useState(null)
   const [imageType, setImageType] = useState('image/jpeg')
   const messagesEnd = useRef(null)
+  const location = useLocation()
 
   useEffect(() => { messagesEnd.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
 
@@ -131,6 +132,14 @@ export default function AITutor() {
     }
     setLoading(false)
   }
+
+  useEffect(() => {
+    if (location.state?.initialQuery) {
+      sendMessage(location.state.initialQuery)
+      // Clear location state after executing to prevent duplicate triggers on page reload
+      window.history.replaceState({}, document.title)
+    }
+  }, [location])
 
   const handleGenerateQuiz = async () => {
     setGenerating(true)

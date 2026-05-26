@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { BookOpen, Clock, Star, Users, ChevronRight, Play, Lock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 
 const COURSES = [
   {
@@ -57,6 +58,15 @@ export default function Courses() {
   const [filter, setFilter] = useState('all')
   const [showFreeOnly, setShowFreeOnly] = useState(false)
   const navigate = useNavigate()
+
+  const handleStartCourse = (course) => {
+    toast.success(`Starting "${course.title}" with Gemini AI Tutor!`)
+    navigate('/app/ai-tutor', { 
+      state: { 
+        initialQuery: `Hi! I want to study the "${course.title}" course for my "${course.exam}" exam. Let's start with the first topic: "${course.topics[0]}".` 
+      } 
+    })
+  }
 
   const filtered = COURSES.filter(c => {
     if (showFreeOnly && !c.free) return false
@@ -119,7 +129,7 @@ export default function Courses() {
                 ))}
                 {course.topics.length > 4 && <span style={{ fontSize: '0.66rem', color: 'var(--text-4)' }}>+{course.topics.length-4} more</span>}
               </div>
-              <button className="btn btn-primary btn-sm" style={{ marginTop: 'auto', justifyContent: 'center', gap: 6 }}>
+              <button className="btn btn-primary btn-sm" onClick={() => handleStartCourse(course)} style={{ marginTop: 'auto', justifyContent: 'center', gap: 6 }}>
                 {course.free ? <><Play size={13} /> Start Free</> : <><BookOpen size={13} /> Start Course</>}
               </button>
             </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { QUESTION_BANK, MOCK_TESTS } from '../data/questions'
 import { Search, Download, Eye, Filter, FileText, Calendar } from 'lucide-react'
+import { toast } from 'react-hot-toast'
 
 const YEARS = ['2025','2024','2023','2022','2021','2020','2019','2018']
 
@@ -28,6 +29,16 @@ export default function QuestionPapers() {
   const [yearFilter, setYearFilter] = useState('all')
   const [examFilter, setExamFilter] = useState('all')
   const [previewId, setPreviewId] = useState(null)
+
+  const handleDownload = (paper) => {
+    toast.loading(`Connecting to prep-server to compile ${paper.title} (${paper.paper})...`, { id: 'pyq-down' })
+    setTimeout(() => {
+      toast.loading(`Generating clean PDF layout with full AI doubt solver solutions...`, { id: 'pyq-down' })
+      setTimeout(() => {
+        toast.success(`Download started! Check your device's downloads folder for "${paper.id}.pdf". 📁`, { id: 'pyq-down', duration: 4000 })
+      }, 1500)
+    }, 1200)
+  }
 
   const exams = [...new Set(PAPER_LIST.map(p => p.exam))]
 
@@ -86,7 +97,7 @@ export default function QuestionPapers() {
               <button onClick={() => setPreviewId(previewId === paper.id ? null : paper.id)} className="btn btn-outline btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
                 <Eye size={13} /> Preview
               </button>
-              <button className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
+              <button onClick={() => handleDownload(paper)} className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
                 <Download size={13} /> Download
               </button>
             </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../store/useStore'
 import { CURRENT_AFFAIRS_DATA, DAILY_QUIZ_QUESTIONS } from '../data/currentAffairs'
 import { MOCK_TESTS, QUESTION_BANK } from '../data/questions'
@@ -91,8 +91,18 @@ const getSyllabusProgress = (target) => {
 }
 
 function AIRecommendation({ profile, exams }) {
+  const navigate = useNavigate()
   const primaryTarget = profile?.primaryTarget || (exams && exams[0]) || 'ias'
   
+  const handleStartSession = () => {
+    toast.success("Starting your daily AI-guided preparation session!")
+    navigate('/app/ai-tutor', { 
+      state: { 
+        initialQuery: `Hi! I want to start my study plan for the exam target: "${primaryTarget?.toUpperCase()}". Please check my recommended topics for today and ask me a concept question to get started.` 
+      }
+    })
+  }
+
   const getTasksForTarget = (target) => {
     if (target === 'ias' || target === 'ips' || target === 'upsc') {
       return [
@@ -177,7 +187,7 @@ function AIRecommendation({ profile, exams }) {
           </div>
         ))}
       </div>
-      <button className="btn btn-primary" style={{ width: '100%', marginTop: 16, justifyContent: 'center' }}>
+      <button className="btn btn-primary" onClick={handleStartSession} style={{ width: '100%', marginTop: 16, justifyContent: 'center' }}>
         <Zap size={16} /> Start Today's Session
       </button>
     </div>
