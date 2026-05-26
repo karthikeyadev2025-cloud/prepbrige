@@ -19,7 +19,8 @@ export default function Onboarding() {
     language: 'en', languageName: 'English',
     state: '', exams: [], name: '',
     education: '', targetYear: '2026',
-    studyHours: '3-4 hours', examDate: ''
+    studyHours: '3-4 hours', examDate: '',
+    primaryTarget: '', lakshyaSlogan: ''
   })
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState('')
@@ -27,10 +28,29 @@ export default function Onboarding() {
   const { updateProfile, setOnboardingComplete, user } = useUserStore()
   const navigate = useNavigate()
 
+  const handlePrimaryTargetChange = (targetId) => {
+    let defaultSlogan = "I will dedicate myself to cracking my target exam and achieving my dream career."
+    if (targetId === 'ias' || targetId === 'ips' || targetId === 'upsc') {
+      defaultSlogan = "I will crack UPSC CSE and serve the nation with absolute integrity as a Civil Servant."
+    } else if (targetId === 'ssc_cgl') {
+      defaultSlogan = "I will secure a top rank in SSC CGL and join the Central Government to serve with pride."
+    } else if (targetId.includes('po') || targetId.includes('clerk') || targetId.includes('sbi') || targetId.includes('ibps')) {
+      defaultSlogan = "I will clear my Bank PO exam and build a highly successful career in public service banking."
+    } else if (targetId.includes('ntpc') || targetId.includes('rrb')) {
+      defaultSlogan = "I will clear RRB NTPC CBT exams and serve the nation in the Indian Railways."
+    } else if (targetId.includes('neet')) {
+      defaultSlogan = "I will crack NEET with top marks and earn my seat in medical excellence to serve humanity."
+    } else if (targetId.includes('jee')) {
+      defaultSlogan = "I will clear JEE and secure my seat in a premier engineering institute to innovate for the future."
+    }
+    setData(d => ({ ...d, primaryTarget: targetId, lakshyaSlogan: defaultSlogan }))
+  }
+
   const next = () => {
     if (step === 0 && !data.language) { toast.error('Please select a language'); return }
     if (step === 1 && !data.state) { toast.error('Please select your state'); return }
     if (step === 2 && data.exams.length === 0) { toast.error('Select at least one exam'); return }
+    if (step === 2 && data.exams.length > 0 && !data.primaryTarget) { toast.error('Please select your Primary Target Exam (Lakshya)'); return }
     if (step === 3 && !data.name.trim()) { toast.error('Please enter your name'); return }
     if (step === STEPS.length - 1) { handleComplete(); return }
     setStep(s => s + 1)
@@ -192,6 +212,31 @@ export default function Onboarding() {
                   </div>
                 </div>
               ))}
+
+              {data.exams.length > 0 && (
+                <div style={{ marginTop: 20, borderTop: '1px solid var(--border)', paddingTop: 16 }}>
+                  <label className="form-label" style={{ display: 'block', marginBottom: 8, fontWeight: 700 }}>
+                    🎯 Choose your Primary Target Exam (Lakshya):
+                  </label>
+                  <select 
+                    className="form-input" 
+                    value={data.primaryTarget} 
+                    onChange={e => handlePrimaryTargetChange(e.target.value)}
+                    style={{ background: 'var(--bg-2)', color: 'white', width: '100%', padding: '12px', border: '1px solid var(--border)', borderRadius: 'var(--r-md)' }}
+                    required
+                  >
+                    <option value="">-- Select your ultimate goal --</option>
+                    {data.exams.map(examId => {
+                      let name = examId
+                      for (const cat of EXAM_CATEGORIES) {
+                        const match = cat.exams.find(e => e.id === examId)
+                        if (match) { name = match.name; break }
+                      }
+                      return <option key={examId} value={examId}>{name}</option>
+                    })}
+                  </select>
+                </div>
+              )}
             </div>
           )}
 
@@ -265,6 +310,17 @@ export default function Onboarding() {
                   </div>
                 </div>
               )}
+              <div className="form-group">
+                <label className="form-label">🔥 Your Motivational Lakshya Slogan</label>
+                <textarea 
+                  className="form-input" 
+                  rows={2} 
+                  placeholder="Describe your ultimate vision..." 
+                  value={data.lakshyaSlogan} 
+                  onChange={e => setData(d => ({ ...d, lakshyaSlogan: e.target.value }))}
+                  style={{ fontFamily: 'inherit', resize: 'none', background: 'var(--bg-2)', color: 'white', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', width: '100%', padding: '10px', fontSize: '0.85rem', lineHeight: '1.45' }}
+                />
+              </div>
               <div className="form-group">
                 <label className="form-label">Exam date (if known)</label>
                 <input className="form-input" type="date" value={data.examDate} onChange={e => setData(d => ({ ...d, examDate: e.target.value }))} />

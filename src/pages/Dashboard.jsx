@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../store/useStore'
 import { CURRENT_AFFAIRS_DATA, DAILY_QUIZ_QUESTIONS } from '../data/currentAffairs'
-import { MOCK_TESTS } from '../data/questions'
+import { MOCK_TESTS, QUESTION_BANK } from '../data/questions'
 import { format } from 'date-fns'
+import { toast } from 'react-hot-toast'
 import {
   Flame, Target, Star, TrendingUp, BookOpen, ClipboardList,
   Newspaper, BrainCircuit, Bell, ChevronRight, CheckCircle,
@@ -23,14 +24,122 @@ function StatCard({ icon, label, value, trend, color, bg }) {
   )
 }
 
-function AIRecommendation({ profile, exams }) {
-  const tasks = [
-    { type: 'study', subject: 'Polity', topic: 'Fundamental Rights', duration: '45 min', priority: 'high', reason: 'Weak area detected from last mock test' },
-    { type: 'quiz', subject: 'Current Affairs', topic: 'May 2026 Digest', duration: '20 min', priority: 'high', reason: 'Daily CA is crucial for all your exams' },
-    { type: 'mock', subject: 'SSC CGL', topic: 'Reasoning Full Set', duration: '30 min', priority: 'medium', reason: 'Improve reasoning speed before exam' },
-    { type: 'revise', subject: 'History', topic: 'Freedom Struggle', duration: '30 min', priority: 'medium', reason: 'Revision due (last studied 5 days ago)' },
-    { type: 'study', subject: 'Maths', topic: 'Percentage & Profit/Loss', duration: '40 min', priority: 'low', reason: 'New chapter in your study plan' },
+// ─── Countdown and Syllabus Helpers ──────────────────────────────────────────
+const getDaysRemaining = (examDate, target) => {
+  let targetDate = examDate ? new Date(examDate) : null
+  if (!targetDate) {
+    if (target === 'ias' || target === 'ips' || target === 'upsc') targetDate = new Date('2026-06-01')
+    else if (target === 'ssc_cgl') targetDate = new Date('2026-09-01')
+    else if (target?.includes('po') || target?.includes('clerk') || target === 'banking') targetDate = new Date('2026-10-01')
+    else if (target === 'neet_ug') targetDate = new Date('2026-05-04')
+    else if (target === 'jee_main') targetDate = new Date('2027-01-15')
+    else targetDate = new Date('2026-12-31')
+  }
+  const diffTime = targetDate.getTime() - Date.now()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays > 0 ? diffDays : 0
+}
+
+const getSyllabusProgress = (target) => {
+  if (target === 'ias' || target === 'ips' || target === 'upsc') {
+    return [
+      { name: 'Indian Polity & Constitution', pct: 72, color: 'var(--cyan)' },
+      { name: 'History of India & National Movement', pct: 63, color: 'var(--pink)' },
+      { name: 'Indian Economy & Development', pct: 55, color: 'var(--amber)' },
+      { name: 'Geography (India & World)', pct: 68, color: 'var(--purple)' },
+      { name: 'Environment & Ecology', pct: 78, color: 'var(--emerald)' },
+      { name: 'Science & Technology', pct: 58, color: 'var(--blue)' },
+    ]
+  } else if (target === 'ssc_cgl' || target?.startsWith('ssc')) {
+    return [
+      { name: 'Quantitative Aptitude', pct: 55, color: 'var(--amber)' },
+      { name: 'General Intelligence & Reasoning', pct: 68, color: 'var(--purple)' },
+      { name: 'English Comprehension', pct: 81, color: 'var(--emerald)' },
+      { name: 'General Awareness', pct: 72, color: 'var(--cyan)' },
+    ]
+  } else if (target?.includes('po') || target?.includes('clerk') || target?.includes('sbi') || target?.includes('ibps') || target === 'banking') {
+    return [
+      { name: 'Quantitative Aptitude', pct: 55, color: 'var(--amber)' },
+      { name: 'Reasoning Ability', pct: 68, color: 'var(--purple)' },
+      { name: 'English Language', pct: 81, color: 'var(--emerald)' },
+      { name: 'Banking & Financial Awareness', pct: 72, color: 'var(--cyan)' },
+      { name: 'Computer Aptitude', pct: 63, color: 'var(--pink)' },
+    ]
+  } else if (target === 'neet_ug') {
+    return [
+      { name: 'Biology (Botany & Zoology)', pct: 81, color: 'var(--emerald)' },
+      { name: 'Chemistry (Organic, Inorganic, Physical)', pct: 68, color: 'var(--cyan)' },
+      { name: 'Physics', pct: 55, color: 'var(--amber)' },
+    ]
+  } else if (target === 'jee_main' || target === 'jee_adv') {
+    return [
+      { name: 'Mathematics', pct: 55, color: 'var(--pink)' },
+      { name: 'Physics', pct: 68, color: 'var(--amber)' },
+      { name: 'Chemistry', pct: 81, color: 'var(--cyan)' },
+    ]
+  }
+  return [
+    { name: 'General Knowledge', pct: 72, color: 'var(--cyan)' },
+    { name: 'Reasoning', pct: 68, color: 'var(--purple)' },
+    { name: 'English', pct: 81, color: 'var(--emerald)' },
+    { name: 'Quantitative Aptitude', pct: 55, color: 'var(--amber)' },
+    { name: 'Current Affairs', pct: 78, color: 'var(--blue)' },
+    { name: 'History', pct: 63, color: 'var(--pink)' },
   ]
+}
+
+function AIRecommendation({ profile, exams }) {
+  const primaryTarget = profile?.primaryTarget || (exams && exams[0]) || 'ias'
+  
+  const getTasksForTarget = (target) => {
+    if (target === 'ias' || target === 'ips' || target === 'upsc') {
+      return [
+        { type: 'study', subject: 'Indian Polity', topic: 'Fundamental Rights', duration: '45 min', priority: 'high', reason: 'High weightage area for UPSC Prelims' },
+        { type: 'quiz', subject: 'Current Affairs', topic: 'PIB & Hindu Daily Digest', duration: '20 min', priority: 'high', reason: 'Daily Current Affairs is crucial for UPSC' },
+        { type: 'mock', subject: 'UPSC GS', topic: 'Polity Full Test', duration: '30 min', priority: 'medium', reason: 'Practice exam-level MCQs to test recall' },
+        { type: 'revise', subject: 'Modern History', topic: 'Freedom Struggle (1857-1947)', duration: '30 min', priority: 'medium', reason: 'Revision required (not studied in 4 days)' },
+        { type: 'study', subject: 'Indian Economy', topic: 'National Income Accounting', duration: '40 min', priority: 'low', reason: 'New chapter in your standard study plan' },
+      ]
+    } else if (target === 'ssc_cgl' || target?.startsWith('ssc')) {
+      return [
+        { type: 'study', subject: 'Quantitative Aptitude', topic: 'Percentage & Profit/Loss', duration: '45 min', priority: 'high', reason: 'Commonly asked CGL Tier 1/2 topic' },
+        { type: 'quiz', subject: 'General Awareness', topic: 'Static GK History', duration: '15 min', priority: 'high', reason: 'Revise static GK to improve scoring speed' },
+        { type: 'mock', subject: 'Reasoning', topic: 'Analogy & Classification', duration: '30 min', priority: 'medium', reason: 'Improve speed & accuracy in reasoning block' },
+        { type: 'revise', subject: 'English', topic: 'Active/Passive & Direct/Indirect', duration: '30 min', priority: 'medium', reason: 'High weightage grammar chapter revision' },
+        { type: 'study', subject: 'Quantitative Aptitude', topic: 'Geometry & Triangles', duration: '50 min', priority: 'low', reason: 'Target advanced maths section progress' },
+      ]
+    } else if (target?.includes('po') || target?.includes('clerk') || target?.includes('sbi') || target?.includes('ibps') || target === 'banking') {
+      return [
+        { type: 'study', subject: 'Quantitative Aptitude', topic: 'Data Interpretation (DI)', duration: '45 min', priority: 'high', reason: 'DI holds 50%+ weight in Bank PO mains' },
+        { type: 'quiz', subject: 'Banking Awareness', topic: 'Monetary Policy & Inflation', duration: '20 min', priority: 'high', reason: 'Core banking syllabus concept review' },
+        { type: 'mock', subject: 'Reasoning Ability', topic: 'Syllogism & Puzzles', duration: '40 min', priority: 'medium', reason: 'Puzzle solving speed booster session' },
+        { type: 'revise', subject: 'English Language', topic: 'Reading Comprehension', duration: '30 min', priority: 'medium', reason: 'Daily comprehension practice' },
+        { type: 'study', subject: 'Computer Aptitude', topic: 'Network Security Basics', duration: '25 min', priority: 'low', reason: 'Scoring sectional syllabus portion' },
+      ]
+    } else if (target === 'neet_ug') {
+      return [
+        { type: 'study', subject: 'Biology', topic: 'Genetics & Evolution', duration: '50 min', priority: 'high', reason: 'Extremely high weightage chapter in NEET' },
+        { type: 'quiz', subject: 'Chemistry', topic: 'Periodic Table Trends', duration: '20 min', priority: 'high', reason: 'Inorganic chemistry core fundamentals review' },
+        { type: 'mock', subject: 'Physics', topic: 'Mechanics & Kinematics', duration: '45 min', priority: 'medium', reason: 'Concept check MCQ practice set' },
+        { type: 'revise', subject: 'Biology', topic: 'Human Physiology', duration: '30 min', priority: 'medium', reason: 'Systematic recall of anatomical diagrams' },
+      ]
+    } else if (target === 'jee_main' || target === 'jee_adv') {
+      return [
+        { type: 'study', subject: 'Mathematics', topic: 'Calculus & Integration', duration: '60 min', priority: 'high', reason: 'Crucial for scoring top JEE rank' },
+        { type: 'quiz', subject: 'Physics', topic: 'Electromagnetism', duration: '25 min', priority: 'high', reason: 'Formula review & conceptual MCQ set' },
+        { type: 'mock', subject: 'Chemistry', topic: 'Organic Reaction Mechanisms', duration: '40 min', priority: 'medium', reason: 'JEE-level multi-step reactions challenge' },
+        { type: 'revise', subject: 'Mathematics', topic: 'Coordinate Geometry', duration: '30 min', priority: 'medium', reason: 'Solve previous years coordinate questions' },
+      ]
+    }
+    return [
+      { type: 'study', subject: 'General Knowledge', topic: 'Indian Polity & Governance', duration: '45 min', priority: 'high', reason: 'Weak area detected from last mock test' },
+      { type: 'quiz', subject: 'Current Affairs', topic: 'Daily News Highlights', duration: '20 min', priority: 'high', reason: 'Daily Current Affairs is crucial for exams' },
+      { type: 'mock', subject: 'General Aptitude', topic: 'Logical Reasoning Set', duration: '30 min', priority: 'medium', reason: 'Practice puzzle sets to build test speed' },
+      { type: 'revise', subject: 'History', topic: 'Ancient India & Harappan Civilization', duration: '30 min', priority: 'medium', reason: 'Syllabus chapter revision schedule' },
+    ]
+  }
+
+  const tasks = getTasksForTarget(primaryTarget)
   const priorityColor = { high: 'var(--red)', medium: 'var(--amber)', low: 'var(--emerald)' }
   const typeIcon = { study: '📖', quiz: '⚡', mock: '📝', revise: '🔄' }
 
@@ -137,20 +246,122 @@ function QuickCurrentAffairs() {
   )
 }
 
+function LakshyaVisionBanner({ profile, primaryTarget }) {
+  const examNames = { 
+    upsc: 'UPSC Civil Services', 
+    ias: 'IAS (Civil Services)', 
+    ips: 'IPS (Police Services)', 
+    ssc_cgl: 'SSC CGL (Central Govt)', 
+    ibps_po: 'IBPS PO (Bank Officer)', 
+    rrb_ntpc: 'RRB NTPC (Railways)', 
+    neet_ug: 'NEET UG (Medical)', 
+    jee_main: 'JEE Mains (Engineering)' 
+  }
+  
+  const targetLabel = examNames[primaryTarget] || primaryTarget?.toUpperCase() || 'Government Exam'
+  const slogan = profile?.lakshyaSlogan || `I will dedicate myself to cracking ${targetLabel} and achieving my dream career.`
+  const daysLeft = getDaysRemaining(profile?.examDate, primaryTarget)
+
+  return (
+    <div className="card" style={{
+      background: 'linear-gradient(135deg, rgba(124,58,237,0.14) 0%, rgba(0,212,255,0.07) 100%)',
+      border: '1px solid rgba(124,58,237,0.25)',
+      borderRadius: 'var(--r-xl)',
+      padding: '24px 28px',
+      position: 'relative',
+      overflow: 'hidden',
+      marginBottom: 24,
+      boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+    }}>
+      {/* Glow shapes */}
+      <div style={{ position: 'absolute', right: '-10%', top: '-20%', width: 220, height: 220, background: 'radial-gradient(circle, rgba(0,212,255,0.18) 0%, transparent 70%)', filter: 'blur(30px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', left: '-5%', bottom: '-30%', width: 180, height: 180, background: 'radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%)', filter: 'blur(30px)', pointerEvents: 'none' }} />
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
+        <div style={{ flex: 1, minWidth: 260 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(124,58,237,0.15)', border: '1px solid rgba(124,58,237,0.3)', borderRadius: 'var(--r-full)', padding: '5px 12px', fontSize: '0.72rem', fontWeight: 700, color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>
+            🎯 MERA LAKSHYA — {targetLabel}
+          </div>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0 0 8px 0', lineHeight: 1.4, color: 'white' }}>
+            Target Year: {profile?.targetYear || '2026'}
+          </h3>
+          <p style={{ fontSize: '0.92rem', fontStyle: 'italic', margin: 0, color: 'rgba(255,255,255,0.85)', lineHeight: 1.55 }}>
+            "{slogan}"
+          </p>
+        </div>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, background: 'rgba(5, 6, 10, 0.4)', border: '1px solid rgba(255,255,255,0.06)', padding: '16px 20px', borderRadius: 20, backdropFilter: 'blur(8px)', flexShrink: 0 }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '2.2rem', fontWeight: 900, color: 'var(--cyan)', lineHeight: 1, textShadow: '0 0 10px rgba(0,212,255,0.3)' }}>{daysLeft}</div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-4)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 4 }}>Days Remaining</div>
+          </div>
+          <div style={{ width: 1, height: 40, background: 'rgba(255,255,255,0.1)' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#fff' }}>Focused Mode</span>
+            <span style={{ fontSize: '0.65rem', color: 'var(--emerald)', display: 'flex', alignItems: 'center', gap: 4 }}>
+              <span style={{ width: 6, height: 6, background: 'var(--emerald)', borderRadius: '50%', display: 'inline-block' }} /> Live Prep Active
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function Dashboard() {
   const { profile } = useUserStore()
-  const { streak, totalPoints } = useAppStore()
+  const { streak, totalPoints, incrementStreak, addPoints } = useAppStore()
   const [greeting, setGreeting] = useState('')
   const [dailyQuiz, setDailyQuiz] = useState(null)
   const [quizAnswer, setQuizAnswer] = useState(null)
 
+  const handleQuizAnswer = (optionIdx) => {
+    setQuizAnswer(optionIdx)
+    if (optionIdx === dailyQuiz.correct) {
+      toast.success('Correct answer! +10 Points added to your preparation bank. Daily Lakshya streak extended! 🎯')
+      addPoints(10)
+    } else {
+      toast.error('Incorrect. Review the concept explanation below to strengthen your understanding!')
+    }
+    incrementStreak()
+  }
+
   useEffect(() => {
     const h = new Date().getHours()
     setGreeting(h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening')
-    setDailyQuiz(DAILY_QUIZ_QUESTIONS[Math.floor(Math.random() * DAILY_QUIZ_QUESTIONS.length)])
-  }, [])
+
+    const primaryTarget = profile?.primaryTarget || (profile?.exams && profile.exams[0]) || 'ias'
+    let bank = []
+    if (primaryTarget === 'ias' || primaryTarget === 'ips' || primaryTarget === 'upsc') {
+      if (QUESTION_BANK.upsc) {
+        Object.values(QUESTION_BANK.upsc).forEach(subjList => {
+          bank = bank.concat(subjList)
+        })
+      }
+    } else if (primaryTarget === 'ssc_cgl' || primaryTarget?.startsWith('ssc')) {
+      if (QUESTION_BANK.ssc_cgl) {
+        Object.values(QUESTION_BANK.ssc_cgl).forEach(subjList => {
+          bank = bank.concat(subjList)
+        })
+      }
+    } else if (primaryTarget?.includes('po') || primaryTarget?.includes('clerk') || primaryTarget?.includes('sbi') || primaryTarget?.includes('ibps') || primaryTarget === 'banking') {
+      if (QUESTION_BANK.ibps_po) {
+        Object.values(QUESTION_BANK.ibps_po).forEach(subjList => {
+          bank = bank.concat(subjList)
+        })
+      }
+    }
+
+    if (bank.length > 0) {
+      const dayIdx = new Date().getDate() % bank.length
+      setDailyQuiz(bank[dayIdx])
+    } else {
+      setDailyQuiz(DAILY_QUIZ_QUESTIONS[new Date().getDate() % DAILY_QUIZ_QUESTIONS.length])
+    }
+  }, [profile])
 
   const examNames = { upsc: 'UPSC', ias: 'IAS', ssc_cgl: 'SSC CGL', ibps_po: 'IBPS PO', rrb_ntpc: 'RRB NTPC', neet_ug: 'NEET', jee_main: 'JEE Mains' }
+  const primaryTarget = profile?.primaryTarget || (profile?.exams && profile.exams[0]) || 'ias'
 
   return (
     <div className="page animate-fade-in">
@@ -168,6 +379,9 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Mera Lakshya Vision Banner */}
+      <LakshyaVisionBanner profile={profile} primaryTarget={primaryTarget} />
 
       {/* Stats */}
       <div className="grid-4" style={{ marginBottom: 28 }}>
@@ -189,22 +403,51 @@ export default function Dashboard() {
               <Link to="/app/mock-tests" style={{ fontSize: '0.82rem', color: 'var(--cyan)' }}>View all</Link>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {MOCK_TESTS.slice(0, 3).map(test => (
-                <Link key={test.id} to={`/app/test/${test.id}`} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', textDecoration: 'none', transition: 'var(--t)' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cyan)'; e.currentTarget.style.background = 'var(--cyan-10)' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
-                >
-                  <div style={{ width: 44, height: 44, borderRadius: 'var(--r-md)', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <ClipboardList size={20} color="white" />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-1)', marginBottom: 2 }}>{test.title}</div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{test.totalQuestions}Q • {test.duration}min • {test.attempts.toLocaleString()} attempts</div>
-                  </div>
-                  <span className={`badge ${test.difficulty === 'hard' ? 'badge-red' : test.difficulty === 'medium' ? 'badge-amber' : 'badge-emerald'}`}>{test.difficulty}</span>
-                  <ArrowRight size={16} color="var(--text-3)" />
-                </Link>
-              ))}
+              {MOCK_TESTS.filter(t => {
+                if (primaryTarget === 'ias' || primaryTarget === 'ips' || primaryTarget === 'upsc') {
+                  return t.exam === 'upsc'
+                }
+                return t.exam === primaryTarget
+              }).slice(0, 3).length > 0 ? (
+                MOCK_TESTS.filter(t => {
+                  if (primaryTarget === 'ias' || primaryTarget === 'ips' || primaryTarget === 'upsc') {
+                    return t.exam === 'upsc'
+                  }
+                  return t.exam === primaryTarget
+                }).slice(0, 3).map(test => (
+                  <Link key={test.id} to={`/app/test/${test.id}`} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', textDecoration: 'none', transition: 'var(--t)' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cyan)'; e.currentTarget.style.background = 'var(--cyan-10)' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+                  >
+                    <div style={{ width: 44, height: 44, borderRadius: 'var(--r-md)', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <ClipboardList size={20} color="white" />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-1)', marginBottom: 2 }}>{test.title}</div>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{test.totalQuestions}Q • {test.duration}min • {test.attempts.toLocaleString()} attempts</div>
+                    </div>
+                    <span className={`badge ${test.difficulty === 'hard' ? 'badge-red' : test.difficulty === 'medium' ? 'badge-amber' : 'badge-emerald'}`}>{test.difficulty}</span>
+                    <ArrowRight size={16} color="var(--text-3)" />
+                  </Link>
+                ))
+              ) : (
+                MOCK_TESTS.slice(0, 3).map(test => (
+                  <Link key={test.id} to={`/app/test/${test.id}`} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', textDecoration: 'none', transition: 'var(--t)' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cyan)'; e.currentTarget.style.background = 'var(--cyan-10)' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+                  >
+                    <div style={{ width: 44, height: 44, borderRadius: 'var(--r-md)', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <ClipboardList size={20} color="white" />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-1)', marginBottom: 2 }}>{test.title}</div>
+                      <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{test.totalQuestions}Q • {test.duration}min • {test.attempts.toLocaleString()} attempts</div>
+                    </div>
+                    <span className={`badge ${test.difficulty === 'hard' ? 'badge-red' : test.difficulty === 'medium' ? 'badge-amber' : 'badge-emerald'}`}>{test.difficulty}</span>
+                    <ArrowRight size={16} color="var(--text-3)" />
+                  </Link>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -225,7 +468,7 @@ export default function Dashboard() {
               <p style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-1)', marginBottom: 14, lineHeight: 1.55 }}>{dailyQuiz.text}</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {dailyQuiz.options.map((opt, i) => (
-                  <button key={i} onClick={() => setQuizAnswer(i)} className="option-btn"
+                  <button key={i} onClick={() => handleQuizAnswer(i)} className="option-btn"
                     style={{ fontSize: '0.85rem', background: quizAnswer === i ? (i === dailyQuiz.correct ? 'var(--emerald-10)' : 'var(--red-10)') : quizAnswer !== null && i === dailyQuiz.correct ? 'var(--emerald-10)' : undefined, borderColor: quizAnswer === i ? (i === dailyQuiz.correct ? 'var(--emerald)' : 'var(--red)') : quizAnswer !== null && i === dailyQuiz.correct ? 'var(--emerald)' : undefined }}
                     disabled={quizAnswer !== null}
                   >
@@ -264,17 +507,10 @@ export default function Dashboard() {
       {/* Progress overview */}
       <div className="card card-p" style={{ marginBottom: 28 }}>
         <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <TrendingUp size={18} color="var(--cyan)" /> Subject-wise Progress
+          <TrendingUp size={18} color="var(--cyan)" /> Subject-wise Progress (Lakshya Syllabus)
         </h4>
         <div className="grid-3">
-          {[
-            { name: 'General Knowledge', pct: 72, color: 'var(--cyan)' },
-            { name: 'Reasoning', pct: 68, color: 'var(--purple)' },
-            { name: 'English', pct: 81, color: 'var(--emerald)' },
-            { name: 'Quantitative Aptitude', pct: 55, color: 'var(--amber)' },
-            { name: 'Current Affairs', pct: 78, color: 'var(--blue)' },
-            { name: 'History', pct: 63, color: 'var(--pink)' },
-          ].map(s => (
+          {getSyllabusProgress(primaryTarget).map(s => (
             <div key={s.name}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: '0.85rem' }}>
                 <span style={{ fontWeight: 500 }}>{s.name}</span>
