@@ -8,9 +8,10 @@ import {
   signInWithRedirect, getRedirectResult
 } from 'firebase/auth'
 import {
-  doc, setDoc, getDoc, updateDoc, serverTimestamp
-} from 'firebase/firestore'
-import { auth, googleProvider, db } from './config'
+  getSupabaseProfile,
+  upsertSupabaseProfile
+} from '../services/supabaseService'
+import { auth, googleProvider } from './config'
 import { useUserStore } from '../store/useStore'
 
 // ─── Sign in with Google (Resilient Dual-Mode Auth) ────────────────
@@ -86,49 +87,48 @@ export async function resetPassword(email) {
   await sendPasswordResetEmail(auth, email)
 }
 
-// ─── Firestore User Document ────────────────────────────────────
+// ─── Supabase User Document ─────────────────────────────────────
 export async function createUserDoc(user, extra = {}) {
-  const ref = doc(db, 'users', user.uid)
-  await setDoc(ref, {
+  const payload = {
     uid: user.uid,
     email: user.email || null,
     phone: user.phoneNumber || null,
     displayName: user.displayName || extra.name || null,
     photoURL: user.photoURL || null,
     isAdmin: user.email === 'admin@prepbridge.in',
-    subscription: { plan: 'free', startDate: serverTimestamp() },
+    subscription: { plan: 'free' },
     onboardingComplete: false,
     language: 'en',
     exams: [],
     state: null,
     points: 0,
     streak: 0,
-    createdAt: serverTimestamp(),
-    lastActive: serverTimestamp(),
+    createdAt: new Date().toISOString(),
+    lastActive: new Date().toISOString(),
     ...extra
-  }, { merge: true })
+  }
+  
+  await upsertSupabaseProfile(user.uid, payload)
 }
 
 export async function ensureUserDoc(user) {
-  const ref = doc(db, 'users', user.uid)
-  const snap = await getDoc(ref)
-  if (!snap.exists()) {
+  let profile = await getSupabaseProfile(user.uid)
+  if (!profile) {
     await createUserDoc(user)
+    profile = await getSupabaseProfile(user.uid)
   } else {
-    await updateDoc(ref, { lastActive: serverTimestamp() })
+    await upsertSupabaseProfile(user.uid, { ...profile, lastActive: new Date().toISOString() })
   }
-  return snap.data() || {}
+  return profile || {}
 }
 
 export async function getUserProfile(uid) {
-  const ref = doc(db, 'users', uid)
-  const snap = await getDoc(ref)
-  return snap.exists() ? snap.data() : null
+  return await getSupabaseProfile(uid)
 }
 
 export async function updateUserProfile(uid, data) {
-  const ref = doc(db, 'users', uid)
-  await setDoc(ref, { ...data, updatedAt: serverTimestamp() }, { merge: true })
+  const existing = await getSupabaseProfile(uid) || {}
+  await upsertSupabaseProfile(uid, { ...existing, ...data })
 }
 
 // ─── Auth State Observer & Redirect Result Capture ───────────────

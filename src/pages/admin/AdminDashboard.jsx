@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Users, ClipboardList, BookOpen, Bell, TrendingUp, DollarSign, Activity, Star, Award, Zap } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Link } from 'react-router-dom'
-import { collection, getDocs } from 'firebase/firestore'
-import { db } from '../../firebase/config'
+import { getAllSupabaseProfiles } from '../../services/supabaseService'
 
 const COLORS = ['#00d4ff', '#7c3aed', '#10b981', '#f59e0b', '#ef4444', '#3b82f6']
 
@@ -31,22 +30,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     async function fetchPlatformStats() {
       try {
-        const querySnapshot = await getDocs(collection(db, 'users'))
-        const usersList = []
-        
-        querySnapshot.forEach(docSnap => {
-          const u = docSnap.data()
-          usersList.push({
-            id: docSnap.id,
-            name: u.displayName || u.name || 'Anonymous User',
-            state: u.state || 'N/A',
-            exam: u.primaryTarget ? u.primaryTarget.toUpperCase() : 'GENERAL',
-            joined: u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'N/A',
-            plan: u.subscription?.plan === 'paid' ? `Paid (₹${u.subscription?.amount || 249}/mo)` : 'Free',
-            streak: u.streak || 0,
-            status: u.status || 'active'
-          })
-        })
+        const usersList = await getAllSupabaseProfiles()
 
         if (usersList.length === 0) {
           // Fallback to beautiful mock statistics if database is empty
@@ -55,7 +39,7 @@ export default function AdminDashboard() {
             paidUsers: 3421,
             activeToday: 3241,
             maxStreak: 52,
-            totalRevenue: 2049179,   // ≈ some paid at 249/mo, some at 6-mo plan
+            totalRevenue: 2049179,
             pieData: [
               { name: 'UPSC', value: 28 }, { name: 'SSC CGL', value: 22 }, { name: 'Banking', value: 19 },
               { name: 'Railways', value: 14 }, { name: 'State PSC', value: 10 }, { name: 'Others', value: 7 }
@@ -72,17 +56,17 @@ export default function AdminDashboard() {
           return
         }
 
-        // Calculate real stats from Firestore users list
+        // Calculate real stats from Supabase users list
         const total = usersList.length
-        const paidCount = usersList.filter(u => u.plan.includes('Paid')).length
+        const paidCount = usersList.filter(u => u.plan === 'paid').length
         const activeCount = usersList.filter(u => u.status === 'active').length
-        const maxStr = Math.max(...usersList.map(u => u.streak))
+        const maxStr = Math.max(...usersList.map(u => u.streak || 0))
         const rev = paidCount * 249 // average monthly revenue per paid user at ₹249/mo base
 
         // Lock ratio metrics
         const categories = {}
         usersList.forEach(u => {
-          const category = u.exam || 'GENERAL'
+          const category = u.primaryTarget ? u.primaryTarget.toUpperCase() : 'GENERAL'
           categories[category] = (categories[category] || 0) + 1
         })
         const pie = Object.keys(categories).map(key => ({
@@ -91,7 +75,14 @@ export default function AdminDashboard() {
         })).sort((a,b) => b.value - a.value).slice(0, 6)
 
         // Recent users list
-        const recent = usersList.slice(-5).reverse()
+        const recent = usersList.slice(-5).reverse().map(u => ({
+          name: u.name,
+          state: u.state,
+          exam: u.primaryTarget ? u.primaryTarget.toUpperCase() : 'GENERAL',
+          joined: u.joined ? new Date(u.joined).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'N/A',
+          plan: u.plan === 'paid' ? 'Paid (₹249/mo)' : 'Free',
+          streak: u.streak || 0
+        }))
 
         setStats({
           totalUsers: total,
@@ -103,7 +94,7 @@ export default function AdminDashboard() {
           recentUsers: recent
         })
       } catch (e) {
-        console.error('Error fetching admin dashboard stats:', e)
+        console.error('Error fetching admin dashboard stats from Supabase:', e)
       } finally {
         setLoading(false)
       }

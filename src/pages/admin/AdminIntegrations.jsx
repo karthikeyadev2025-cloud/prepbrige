@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Settings, CreditCard, Shield, Mail, Key, Phone, CloudLightning, Save, HelpCircle, CheckCircle, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'react-hot-toast'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
-import { db } from '../../firebase/config'
+import { getSupabaseSettings, saveSupabaseSettings } from '../../services/supabaseService'
 
 const DEFAULT_SETTINGS = {
   // Razorpay
@@ -45,7 +44,7 @@ export default function AdminIntegrations() {
   const [loading, setLoading] = useState(false)
   const [showSecret, setShowSecret] = useState(false)
 
-  // Load settings from Firestore on mount (with localStorage fallback)
+  // Load settings from Supabase on mount (with localStorage fallback)
   useEffect(() => {
     async function loadSettings() {
       setLoading(true)
@@ -55,15 +54,14 @@ export default function AdminIntegrations() {
           setSettings(JSON.parse(local))
         }
 
-        // Attempt to fetch live from Firestore settings collection
-        const docRef = doc(db, 'settings', 'integrations')
-        const docSnap = await getDoc(docRef)
-        if (docSnap.exists()) {
-          setSettings(docSnap.data())
-          localStorage.setItem('prepbridge_admin_settings', JSON.stringify(docSnap.data()))
+        // Fetch live from Supabase Settings PostgreSQL table
+        const liveSettings = await getSupabaseSettings()
+        if (liveSettings) {
+          setSettings(liveSettings)
+          localStorage.setItem('prepbridge_admin_settings', JSON.stringify(liveSettings))
         }
       } catch (e) {
-        console.warn('Failed to load from Firestore, using local cached settings:', e)
+        console.warn('Failed to load from Supabase database, using local cached settings:', e)
       } finally {
         setLoading(false)
       }
@@ -81,9 +79,8 @@ export default function AdminIntegrations() {
       // 1. Save to local storage for quick sync
       localStorage.setItem('prepbridge_admin_settings', JSON.stringify(settings))
 
-      // 2. Save to live Firestore database so all nodes sync instantly
-      const docRef = doc(db, 'settings', 'integrations')
-      await setDoc(docRef, settings, { merge: true })
+      // 2. Save to live Supabase database so all nodes sync instantly
+      await saveSupabaseSettings(settings)
 
       toast.success('Integrations & settings successfully synchronized live!')
     } catch (e) {

@@ -183,7 +183,24 @@ export default function AITutor() {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h3 style={{ margin: 0 }}>K² Doubt Solver</h3>
+              <h3 style={{ margin: 0, display: 'flex', alignItems: 'center' }}>
+                <span style={{ 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  width: 24, 
+                  height: 24, 
+                  background: 'linear-gradient(135deg, var(--cyan) 0%, var(--purple) 100%)', 
+                  color: 'white', 
+                  fontWeight: 900, 
+                  borderRadius: 6, 
+                  fontSize: '0.8rem', 
+                  marginRight: 8,
+                  boxShadow: '0 0 12px rgba(124, 58, 237, 0.5)',
+                  border: '1px solid rgba(255,255,255,0.15)'
+                }}>K²</span>
+                Doubt Solver
+              </h3>
               <span style={{ fontSize: '0.7rem', background: 'var(--grad)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800, border: '1px solid var(--border-purple)', borderRadius: 'var(--r-full)', padding: '2px 8px', WebkitTextFillColor: 'unset', background: 'transparent', color: 'var(--purple)' }}>MULTIMODAL</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--text-3)' }}>

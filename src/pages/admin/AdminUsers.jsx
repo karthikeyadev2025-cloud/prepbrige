@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Users, Search, Shield, Ban, Eye, Download, Filter, TrendingUp } from 'lucide-react'
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore'
-import { db } from '../../firebase/config'
+import { getAllSupabaseProfiles, upsertSupabaseProfile } from '../../services/supabaseService'
 import { toast } from 'react-hot-toast'
 
 const MOCK_USERS = [
@@ -25,35 +24,12 @@ export default function AdminUsers() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [selectedUser, setSelectedUser] = useState(null)
 
-  // 1. Fetch live users from Firestore
+  // 1. Fetch live users from Supabase Database profiles table
   useEffect(() => {
     async function fetchUsers() {
       setLoading(true)
       try {
-        const querySnapshot = await getDocs(collection(db, 'users'))
-        const list = []
-        querySnapshot.forEach(docSnap => {
-          const u = docSnap.data()
-          list.push({
-            id: docSnap.id,
-            name: u.displayName || u.name || 'Anonymous User',
-            email: u.email || 'no-email@prepbridge.in',
-            phone: u.phone || u.phoneNumber || '+91 0000000000',
-            state: u.state || 'N/A',
-            exams: u.exams || [],
-            joined: u.createdAt ? (typeof u.createdAt.toDate === 'function' ? u.createdAt.toDate().toISOString() : u.createdAt) : new Date().toISOString(),
-            plan: u.subscription?.plan || 'free',
-            status: u.status || 'active',
-            streak: u.streak || 0,
-            tests: u.tests || 0,
-            photoURL: u.photoURL || null,
-            primaryTarget: u.primaryTarget || null,
-            lakshyaSlogan: u.lakshyaSlogan || null,
-            selectedLanguage: u.selectedLanguage || u.languageName || 'English',
-            education: u.education || 'N/A',
-            studyHours: u.studyHours || 'N/A'
-          })
-        })
+        const list = await getAllSupabaseProfiles()
         setUsers(list.length > 0 ? list : MOCK_USERS.map(m => ({
           ...m,
           photoURL: null,
@@ -64,8 +40,8 @@ export default function AdminUsers() {
           studyHours: '3-4 hours'
         })))
       } catch (e) {
-        console.error('Error fetching users from Firestore:', e)
-        setUsers(MOCK_USERS) // Fallback to mocks
+        console.error('Error fetching users from Supabase:', e)
+        setUsers(MOCK_USERS)
       } finally {
         setLoading(false)
       }
@@ -73,33 +49,38 @@ export default function AdminUsers() {
     fetchUsers()
   }, [])
 
-  // 2. Action: Toggle User Suspension in Firestore
+  // 2. Action: Toggle User Suspension in Supabase
   const handleToggleStatus = async (userId, currentStatus) => {
     const nextStatus = currentStatus === 'active' ? 'suspended' : 'active'
     try {
-      const ref = doc(db, 'users', userId)
-      await updateDoc(ref, { status: nextStatus })
+      const userObj = users.find(u => u.id === userId)
+      if (userObj) {
+        await upsertSupabaseProfile(userId, { ...userObj, status: nextStatus })
+      }
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: nextStatus } : u))
       toast.success(`User status updated to ${nextStatus}!`)
     } catch (e) {
-      console.warn('Failed to update live user status, applying mock local fallback:', e)
+      console.warn('Failed to update live user status on Supabase, applying mock local fallback:', e)
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: nextStatus } : u))
       toast.success(`Mock local user status updated to ${nextStatus}!`)
     }
   }
 
-  // 3. Action: Toggle User Subscription Plan in Firestore
+  // 3. Action: Toggle User Subscription Plan in Supabase
   const handleTogglePlan = async (userId, currentPlan) => {
     const nextPlan = currentPlan === 'paid' ? 'free' : 'paid'
     try {
-      const ref = doc(db, 'users', userId)
-      await updateDoc(ref, { 
-        subscription: { plan: nextPlan, startDate: new Date().toISOString() } 
-      })
+      const userObj = users.find(u => u.id === userId)
+      if (userObj) {
+        await upsertSupabaseProfile(userId, { 
+          ...userObj, 
+          subscription: { plan: nextPlan, startDate: new Date().toISOString() } 
+        })
+      }
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: nextPlan } : u))
       toast.success(`User plan updated to ${nextPlan === 'paid' ? 'Paid (₹599)' : 'Free'}!`)
     } catch (e) {
-      console.warn('Failed to update live user, applying mock local fallback:', e)
+      console.warn('Failed to update live user plan on Supabase, applying mock local fallback:', e)
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: nextPlan } : u))
       toast.success(`Mock local user plan updated to ${nextPlan === 'paid' ? 'Paid (₹599)' : 'Free'}!`)
     }
