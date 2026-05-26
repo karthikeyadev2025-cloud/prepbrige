@@ -189,12 +189,22 @@ function HeroTypewriter() {
 
       {/* Line 2: Typewriter word — changes each cycle */}
       <div style={{ fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.15, letterSpacing: '-0.03em', marginBottom: 4, minHeight: '1.15em', position: 'relative', display: 'inline-block' }}>
+
+        {/* Glow halo BEHIND the text — separate element so it never breaks gradient clip */}
+        <div style={{
+          position: 'absolute', inset: '-8px -16px',
+          background: `radial-gradient(ellipse at center, ${glow} 0%, transparent 70%)`,
+          borderRadius: 16, filter: 'blur(18px)',
+          opacity: 0.65, transition: 'background 0.4s ease',
+          pointerEvents: 'none', zIndex: 0,
+        }} />
+
         <span style={{
+          position: 'relative', zIndex: 1,
           background: gradient,
           WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
-          filter: `drop-shadow(0 0 18px ${glow})`,
-          transition: 'filter 0.4s ease',
+          transition: 'background 0.4s ease',
           animation: phase === 'typing' && displayed.length === JOB_WORDS[wordIdx].word.length ? 'wordPop 0.4s ease' : 'none',
         }}>
           {displayed}
@@ -202,6 +212,7 @@ function HeroTypewriter() {
 
         {/* Blinking cursor */}
         <span style={{
+          position: 'relative', zIndex: 1,
           display: 'inline-block', width: 3, height: '0.85em',
           background: gradient.includes('7c3aed') ? '#a855f7' : gradient.includes('0080ff') ? '#00d4ff' : gradient.includes('059669') ? '#10b981' : gradient.includes('dc2626') ? '#f97316' : '#a855f7',
           borderRadius: 2, marginLeft: 4, verticalAlign: 'middle',
@@ -217,6 +228,7 @@ function HeroTypewriter() {
             background: gradient,
             boxShadow: `0 0 10px ${glow}`,
             animation: 'underlineGrow 0.35s ease forwards',
+            zIndex: 1,
           }} />
         )}
       </div>
@@ -224,14 +236,24 @@ function HeroTypewriter() {
       {/* Line 3: "Starts Here." + shimmer ₹599 */}
       <div style={{ fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.03em', display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 14, flexWrap: 'wrap', animation: 'heroSlideIn 0.8s ease 0.15s both' }}>
         <span style={{ color: 'rgba(255,255,255,0.85)' }}>Starts Here.</span>
-        <span style={{
-          background: 'linear-gradient(90deg, #10b981 0%, #00d4ff 30%, #ffffff 50%, #00d4ff 70%, #10b981 100%)',
-          backgroundSize: '200% auto',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          animation: 'shimmer599 2.5s linear infinite, glowPulse599 2.5s ease-in-out infinite',
-          fontStyle: 'normal',
-        }}>₹599.</span>
+        {/* ₹599 — shimmer gradient only, glow via wrapper shadow NOT text-shadow */}
+        <span style={{ position: 'relative', display: 'inline-block' }}>
+          <span style={{
+            position: 'absolute', inset: '-6px -10px',
+            background: 'radial-gradient(ellipse at center, rgba(16,185,129,0.45) 0%, transparent 70%)',
+            borderRadius: 12, filter: 'blur(12px)',
+            animation: 'shimmerGlow 2.5s ease-in-out infinite',
+            pointerEvents: 'none',
+          }} />
+          <span style={{
+            position: 'relative',
+            background: 'linear-gradient(90deg, #10b981 0%, #00d4ff 30%, #ffffff 50%, #00d4ff 70%, #10b981 100%)',
+            backgroundSize: '200% auto',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            animation: 'shimmer599 2.5s linear infinite',
+          }}>₹599.</span>
+        </span>
       </div>
     </div>
   )
@@ -392,9 +414,9 @@ export default function HeroVideo() {
           0% { background-position: -200% center; }
           100% { background-position: 200% center; }
         }
-        @keyframes glowPulse599 {
-          0%,100% { text-shadow: 0 0 20px rgba(16,185,129,0.5); }
-          50% { text-shadow: 0 0 40px rgba(16,185,129,0.9), 0 0 80px rgba(0,212,255,0.4); }
+        @keyframes shimmerGlow {
+          0%,100% { opacity: 0.4; transform: scale(1); }
+          50% { opacity: 0.85; transform: scale(1.15); }
         }
         @keyframes underlineGrow {
           from { width: 0%; }

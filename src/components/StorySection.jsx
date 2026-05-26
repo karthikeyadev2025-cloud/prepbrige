@@ -5,7 +5,6 @@ const STORY = [
     id: 1,
     img: '/story1.png',
     chapter: 'Chapter 1',
-    chapterColor: '#f59e0b',
     headline: 'The Struggle Was Real',
     sub: 'Raju, from a small village in Bihar. ₹800/month income. Big IAS dream.',
     body: 'No coaching money. No internet. Just old textbooks and a kerosene lamp. Every night he studied till 2 AM — not knowing where to start, what to study, how to prepare.',
@@ -19,7 +18,6 @@ const STORY = [
     id: 2,
     img: '/story2.png',
     chapter: 'Chapter 2',
-    chapterColor: '#7c3aed',
     headline: 'One Phone. One App. Everything Changed.',
     sub: 'His cousin showed him PrepBridge. ₹599 for the whole year.',
     body: 'AI tutor in Hindi. Full UPSC syllabus. Mock tests. Previous year papers. Live current affairs every morning. Daily study plan built just for him — all on a ₹6,000 phone.',
@@ -33,7 +31,6 @@ const STORY = [
     id: 3,
     img: '/story3.png',
     chapter: 'Chapter 3',
-    chapterColor: '#10b981',
     headline: 'IAS. AIR 23. Village to Nation.',
     sub: 'One year later. UPSC 2024 result.',
     body: 'Raju Kumar. IAS Officer. All India Rank 23. His mother cried. His village celebrated. From a kerosene lamp to serving the nation — PrepBridge was the bridge between his dream and reality.',
@@ -45,82 +42,92 @@ const STORY = [
   },
 ]
 
-function FloatingParticle({ emoji, delay, duration, x, amplitude }) {
-  return (
-    <div style={{
-      position: 'absolute', left: `${x}%`, bottom: '-10%',
-      fontSize: '1.4rem', animation: `particleRise ${duration}s ease-in ${delay}s infinite`,
-      opacity: 0, pointerEvents: 'none', zIndex: 1,
-    }}>{emoji}</div>
-  )
-}
+// ── Preload all images the moment JS loads — before component even mounts ──
+STORY.forEach(s => { const i = new window.Image(); i.src = s.img })
 
 export default function StorySection() {
-  const [active, setActive] = useState(0)
-  const [animating, setAnimating] = useState(false)
+  const [active, setActive]     = useState(0)
+  const [prev, setPrev]         = useState(null)       // for crossfade
+  const [transitioning, setTransitioning] = useState(false)
   const [autoPlay, setAutoPlay] = useState(true)
-  const [imgLoaded, setImgLoaded] = useState(false)
-  const [ref, setRef] = useState(null)
-  const [visible, setVisible] = useState(false)
-  const timerRef = useRef(null)
+  const [visible, setVisible]   = useState(false)
+  const sectionRef = useRef(null)
+  const timerRef   = useRef(null)
+  const activeRef  = useRef(0)                         // always up-to-date in timer
 
-  // Intersection observer
+  // ── Intersection observer for scroll-reveal ──
   useEffect(() => {
-    if (!ref) return
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible(true) }, { threshold: 0.2 })
-    obs.observe(ref)
+    const el = sectionRef.current; if (!el) return
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setVisible(true); obs.disconnect() }
+    }, { threshold: 0.15 })
+    obs.observe(el)
     return () => obs.disconnect()
-  }, [ref])
+  }, [])
 
-  // Auto-advance
+  // ── Smooth slide transition ──
+  const goTo = (nextIdx) => {
+    if (transitioning || nextIdx === activeRef.current) return
+    setPrev(activeRef.current)
+    setTransitioning(true)
+    activeRef.current = nextIdx
+    // Short delay so "prev" fades out then new slides in
+    setTimeout(() => {
+      setActive(nextIdx)
+      setTimeout(() => { setPrev(null); setTransitioning(false) }, 500)
+    }, 60)
+  }
+
+  // ── Auto-play ──
   useEffect(() => {
     if (!autoPlay || !visible) return
-    timerRef.current = setInterval(() => goTo((prev) => (prev + 1) % STORY.length), 5000)
+    clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => {
+      const next = (activeRef.current + 1) % STORY.length
+      goTo(next)
+    }, 5000)
     return () => clearInterval(timerRef.current)
   }, [autoPlay, visible])
 
-  const goTo = (idxOrFn) => {
-    const next = typeof idxOrFn === 'function' ? idxOrFn(active) : idxOrFn
-    if (animating) return
-    setAnimating(true)
-    setImgLoaded(false)
-    setTimeout(() => { setActive(next); setAnimating(false) }, 350)
-  }
-
   const story = STORY[active]
+  const prevStory = prev !== null ? STORY[prev] : null
 
   const particles = story.particles.map((e, i) => ({
-    emoji: e, delay: i * 1.2, duration: 4 + i * 0.8,
-    x: 10 + i * 18, amplitude: 30 + i * 10,
+    emoji: e, delay: i * 1.1, duration: 3.5 + i * 0.7, x: 8 + i * 18,
   }))
 
   return (
     <section
-      ref={setRef}
+      ref={sectionRef}
       style={{
         padding: '100px 24px', position: 'relative', overflow: 'hidden',
-        background: story.bg, transition: 'background 0.8s ease',
-        opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(60px)',
-        transitionProperty: 'opacity, transform, background',
-        transitionDuration: '0.8s, 0.8s, 0.8s',
+        background: story.bg, transition: 'background 0.7s ease',
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(50px)',
+        transition: 'opacity 0.7s ease, transform 0.7s ease, background 0.7s ease',
       }}
     >
-      {/* Animated background noise */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: `radial-gradient(ellipse at 30% 50%, ${story.accent}18 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, rgba(0,212,255,0.08) 0%, transparent 60%)`, transition: 'all 0.8s ease', pointerEvents: 'none' }} />
+      {/* Bg glow */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: `radial-gradient(ellipse at 30% 50%, ${story.accent}16 0%, transparent 60%)`, transition: 'all 0.7s ease', pointerEvents: 'none' }} />
 
-      {/* Floating emoji particles */}
-      {particles.map((p, i) => <FloatingParticle key={`${active}-${i}`} {...p} />)}
+      {/* Floating emoji particles — keyed to active so they re-trigger on change */}
+      {particles.map((p, i) => (
+        <div key={`${active}-${i}`} style={{ position: 'absolute', left: `${p.x}%`, bottom: '-10%', fontSize: '1.4rem', animation: `particleRise ${p.duration}s ease-in ${p.delay}s infinite`, opacity: 0, pointerEvents: 'none', zIndex: 1 }}>
+          {p.emoji}
+        </div>
+      ))}
 
       <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 2 }}>
 
-        {/* Section label */}
+        {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 52 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: `${story.accent}18`, border: `1px solid ${story.accent}44`, borderRadius: 999, padding: '8px 22px', marginBottom: 16, transition: 'all 0.5s ease' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: story.accent, animation: 'liveDot 1.5s ease-in-out infinite', display: 'inline-block' }} />
-            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: story.accent, letterSpacing: '0.08em', textTransform: 'uppercase' }}>An Inspiring True Story</span>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: story.accent, boxShadow: `0 0 8px ${story.accent}`, display: 'inline-block', animation: 'liveDot 1.5s ease-in-out infinite' }} />
+            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: story.accent, letterSpacing: '0.08em', textTransform: 'uppercase', transition: 'color 0.5s' }}>An Inspiring True Story</span>
           </div>
           <h2 style={{ margin: 0, fontSize: 'clamp(1.6rem,3.5vw,2.4rem)' }}>
-            From <span style={{ background: 'linear-gradient(90deg,#f59e0b,#7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Struggle</span> to <span style={{ background: 'linear-gradient(90deg,#7c3aed,#10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>IAS Officer</span>
+            From <span style={{ background: 'linear-gradient(90deg,#f59e0b,#7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Struggle</span> to{' '}
+            <span style={{ background: 'linear-gradient(90deg,#7c3aed,#10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>IAS Officer</span>
           </h2>
           <p style={{ color: 'rgba(148,163,184,0.7)', marginTop: 8, fontSize: '0.95rem' }}>A ₹599 investment that changed a family's destiny</p>
         </div>
@@ -128,77 +135,76 @@ export default function StorySection() {
         {/* Story card */}
         <div style={{
           display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0,
-          background: 'rgba(255,255,255,0.02)',
-          border: `1px solid ${story.accent}33`,
-          borderRadius: 28, overflow: 'hidden',
-          boxShadow: `0 0 60px ${story.accent}20, 0 0 120px rgba(0,0,0,0.6)`,
-          transition: 'border-color 0.6s ease, box-shadow 0.6s ease',
-          minHeight: 480,
+          border: `1px solid ${story.accent}33`, borderRadius: 28, overflow: 'hidden',
+          boxShadow: `0 0 60px ${story.accent}22, 0 0 100px rgba(0,0,0,0.6)`,
+          transition: 'border-color 0.6s, box-shadow 0.6s',
+          minHeight: 480, background: 'rgba(255,255,255,0.02)',
         }}>
 
-          {/* LEFT — Illustration */}
-          <div style={{
-            position: 'relative', overflow: 'hidden',
-            background: `linear-gradient(135deg, ${story.accent}15, rgba(0,0,0,0.4))`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: 0, minHeight: 400,
-          }}>
-            {/* Image */}
-            <img
-              src={story.img}
-              alt={story.headline}
-              onLoad={() => setImgLoaded(true)}
-              style={{
-                width: '100%', height: '100%', objectFit: 'cover',
-                opacity: animating ? 0 : (imgLoaded ? 1 : 0),
-                transform: animating ? 'scale(1.05)' : 'scale(1)',
-                transition: 'opacity 0.5s ease, transform 0.5s ease',
-                position: 'absolute', inset: 0,
-              }}
-            />
-            {/* Overlay gradient */}
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, transparent 60%, rgba(8,9,15,0.95))', zIndex: 1 }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(8,9,15,0.7) 0%, transparent 40%)', zIndex: 1 }} />
+          {/* ── LEFT: All 3 images always in DOM, CSS crossfade ── */}
+          <div style={{ position: 'relative', overflow: 'hidden', minHeight: 400, background: '#080909' }}>
+
+            {STORY.map((s, i) => (
+              <img
+                key={s.id}
+                src={s.img}
+                alt={s.headline}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                style={{
+                  position: 'absolute', inset: 0,
+                  width: '100%', height: '100%', objectFit: 'cover',
+                  opacity: i === active ? 1 : 0,
+                  transform: i === active ? 'scale(1)' : (i === prev ? 'scale(1.04)' : 'scale(1.02)'),
+                  transition: 'opacity 0.55s ease, transform 0.55s ease',
+                  zIndex: i === active ? 2 : i === prev ? 1 : 0,
+                  willChange: 'opacity, transform',
+                }}
+              />
+            ))}
+
+            {/* Overlays */}
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, transparent 55%, rgba(8,9,15,0.97))', zIndex: 3 }} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(8,9,15,0.75) 0%, transparent 45%)', zIndex: 3 }} />
 
             {/* Chapter badge */}
-            <div style={{ position: 'absolute', top: 20, left: 20, zIndex: 3, background: `${story.accent}`, borderRadius: 10, padding: '6px 14px', fontSize: '0.75rem', fontWeight: 900, color: '#000', letterSpacing: '0.06em', animation: 'badgePop 0.4s ease' }}>
+            <div key={`badge-${active}`} style={{ position: 'absolute', top: 20, left: 20, zIndex: 4, background: story.accent, borderRadius: 10, padding: '6px 14px', fontSize: '0.75rem', fontWeight: 900, color: '#000', letterSpacing: '0.06em', animation: 'badgePop 0.35s cubic-bezier(0.34,1.56,0.64,1)' }}>
               {story.chapter}
             </div>
 
-            {/* Big emotion */}
-            <div style={{ position: 'absolute', bottom: 20, left: 20, zIndex: 3, fontSize: '3rem', animation: 'emojiPop 0.5s ease, floatEmoji 3s ease-in-out infinite 0.5s' }}>
+            {/* Emotion emoji */}
+            <div key={`emoji-${active}`} style={{ position: 'absolute', bottom: 20, left: 20, zIndex: 4, fontSize: '3rem', animation: 'emojiPop 0.4s cubic-bezier(0.34,1.56,0.64,1), floatEmoji 3s ease-in-out infinite 0.4s' }}>
               {story.emotion}
             </div>
           </div>
 
-          {/* RIGHT — Text content */}
-          <div style={{
-            padding: '40px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'center',
-            opacity: animating ? 0 : 1, transform: animating ? 'translateX(20px)' : 'translateX(0)',
-            transition: 'opacity 0.4s ease, transform 0.4s ease',
-          }}>
-            <div style={{ fontSize: '0.72rem', fontWeight: 800, color: story.accent, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12, transition: 'color 0.5s' }}>
+          {/* ── RIGHT: Text content ── */}
+          <div
+            key={`text-${active}`}
+            style={{
+              padding: '40px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'center',
+              animation: 'textSlideIn 0.45s cubic-bezier(0.22,1,0.36,1)',
+            }}
+          >
+            <div style={{ fontSize: '0.72rem', fontWeight: 800, color: story.accent, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>
               ● {story.chapter.toUpperCase()}
             </div>
-            <h3 style={{ fontSize: 'clamp(1.2rem,2.5vw,1.6rem)', fontWeight: 900, marginBottom: 8, lineHeight: 1.2, color: 'white' }}>
+            <h3 style={{ fontSize: 'clamp(1.2rem,2.5vw,1.6rem)', fontWeight: 900, marginBottom: 8, lineHeight: 1.2, color: 'white', margin: '0 0 8px' }}>
               {story.headline}
             </h3>
-            <div style={{ fontSize: '0.88rem', color: story.accent, fontWeight: 700, marginBottom: 16, transition: 'color 0.5s' }}>
+            <div style={{ fontSize: '0.88rem', color: story.accent, fontWeight: 700, marginBottom: 16 }}>
               {story.sub}
             </div>
             <p style={{ fontSize: '0.92rem', lineHeight: 1.75, color: 'rgba(203,213,225,0.85)', marginBottom: 24 }}>
               {story.body}
             </p>
-            {/* Quote */}
-            <div style={{ background: `${story.accent}10`, border: `1px solid ${story.accent}30`, borderLeft: `3px solid ${story.accent}`, borderRadius: '0 12px 12px 0', padding: '14px 18px', transition: 'all 0.5s' }}>
-              <p style={{ margin: 0, fontSize: '0.88rem', fontStyle: 'italic', color: 'rgba(203,213,225,0.9)', lineHeight: 1.6 }}>
-                {story.quote}
-              </p>
+            <div style={{ background: `${story.accent}10`, border: `1px solid ${story.accent}30`, borderLeft: `3px solid ${story.accent}`, borderRadius: '0 12px 12px 0', padding: '14px 18px' }}>
+              <p style={{ margin: 0, fontSize: '0.88rem', fontStyle: 'italic', color: 'rgba(203,213,225,0.9)', lineHeight: 1.6 }}>{story.quote}</p>
             </div>
 
             {/* Navigation */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 32 }}>
-              {/* Dots */}
               <div style={{ display: 'flex', gap: 8, flex: 1 }}>
                 {STORY.map((s, i) => (
                   <button key={i} onClick={() => { setAutoPlay(false); goTo(i) }}
@@ -206,7 +212,6 @@ export default function StorySection() {
                   />
                 ))}
               </div>
-              {/* Arrows */}
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => { setAutoPlay(false); goTo((active - 1 + STORY.length) % STORY.length) }}
                   style={{ width: 38, height: 38, borderRadius: '50%', border: `1px solid ${story.accent}44`, background: 'rgba(255,255,255,0.04)', cursor: 'pointer', color: 'white', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
@@ -219,7 +224,7 @@ export default function StorySection() {
               </div>
             </div>
 
-            {/* Auto-play toggle */}
+            {/* Auto-play + progress */}
             <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
               <button onClick={() => setAutoPlay(a => !a)} style={{ fontSize: '0.72rem', color: 'rgba(148,163,184,0.5)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, padding: 0, fontFamily: 'inherit' }}>
                 <span style={{ width: 24, height: 12, borderRadius: 6, background: autoPlay ? story.accent : 'rgba(255,255,255,0.1)', display: 'inline-block', position: 'relative', transition: 'background 0.3s' }}>
@@ -227,17 +232,16 @@ export default function StorySection() {
                 </span>
                 Auto-play {autoPlay ? 'ON' : 'OFF'}
               </button>
-              {/* Progress bar */}
               {autoPlay && (
                 <div style={{ flex: 1, height: 2, background: 'rgba(255,255,255,0.08)', borderRadius: 1, overflow: 'hidden' }}>
-                  <div key={`${active}-progress`} style={{ height: '100%', background: story.accent, animation: 'progressFill 5s linear forwards', borderRadius: 1 }} />
+                  <div key={`progress-${active}`} style={{ height: '100%', background: story.accent, animation: 'progressFill 5s linear forwards', borderRadius: 1 }} />
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Bottom CTA */}
+        {/* CTA */}
         <div style={{ textAlign: 'center', marginTop: 52 }}>
           <p style={{ color: 'rgba(148,163,184,0.6)', fontSize: '0.9rem', marginBottom: 20 }}>
             Raju's story is not unique. <strong style={{ color: 'white' }}>2,45,832 students</strong> are writing their own success story on PrepBridge right now.
@@ -252,14 +256,14 @@ export default function StorySection() {
         </div>
       </div>
 
-      {/* Keyframes */}
       <style>{`
-        @keyframes liveDot      { 0%,100%{box-shadow:0 0 0 0 currentColor} 50%{box-shadow:0 0 0 5px transparent} }
-        @keyframes badgePop     { from{opacity:0;transform:scale(0.6) translateY(-10px)} to{opacity:1;transform:scale(1) translateY(0)} }
-        @keyframes emojiPop     { from{opacity:0;transform:scale(0) rotate(-20deg)} to{opacity:1;transform:scale(1) rotate(0)} }
-        @keyframes floatEmoji   { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-12px) rotate(5deg)} }
-        @keyframes particleRise { 0%{opacity:0;transform:translateY(0) rotate(0deg)} 20%{opacity:0.8} 100%{opacity:0;transform:translateY(-80vh) rotate(360deg)} }
+        @keyframes liveDot      { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        @keyframes badgePop     { from{opacity:0;transform:scale(0.5) translateY(-8px)} to{opacity:1;transform:scale(1) translateY(0)} }
+        @keyframes emojiPop     { from{opacity:0;transform:scale(0) rotate(-25deg)} to{opacity:1;transform:scale(1) rotate(0)} }
+        @keyframes floatEmoji   { 0%,100%{transform:translateY(0) rotate(-4deg)} 50%{transform:translateY(-14px) rotate(4deg)} }
+        @keyframes particleRise { 0%{opacity:0;transform:translateY(0) rotate(0deg)} 15%{opacity:0.9} 100%{opacity:0;transform:translateY(-75vh) rotate(360deg)} }
         @keyframes progressFill { from{width:0%} to{width:100%} }
+        @keyframes textSlideIn  { from{opacity:0;transform:translateX(28px)} to{opacity:1;transform:translateX(0)} }
       `}</style>
     </section>
   )
