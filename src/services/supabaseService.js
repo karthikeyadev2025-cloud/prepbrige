@@ -92,3 +92,90 @@ function cleanAnonKeyExists(key) {
   const trimmed = key.trim()
   return trimmed.length > 20 && !trimmed.includes('•••')
 }
+
+/**
+ * Synchronizes user profile details directly to Supabase Database (PostgreSQL profiles table)
+ * via PostgREST lightweight native API.
+ * 
+ * @param {string} uid - The user's UID
+ * @param {object} profileData - The complete profile data to synchronize
+ */
+export async function syncProfileToSupabase(uid, profileData) {
+  let supabaseUrl = 'https://stmnmxkosnxbckvqojxw.supabase.co'
+  let supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bW5teGtvc254YmNrdnFvanh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODgwOTcsImV4cCI6MjA5NTM2NDA5N30.37fJYUOxQs6gvgZYzSkOOWMvaY1qKsZheIKicsr_G5w'
+
+  try {
+    const docRef = doc(db, 'settings', 'integrations')
+    const docSnap = await getDoc(docRef)
+    if (docSnap.exists()) {
+      const data = docSnap.data()
+      if (data.supabaseUrl) supabaseUrl = data.supabaseUrl
+      if (data.supabaseAnonKey) supabaseAnonKey = data.supabaseAnonKey
+    } else {
+      const local = localStorage.getItem('prepbridge_admin_settings')
+      if (local) {
+        const data = JSON.parse(local)
+        if (data.supabaseUrl) supabaseUrl = data.supabaseUrl
+        if (data.supabaseAnonKey) supabaseAnonKey = data.supabaseAnonKey
+      }
+    }
+  } catch (e) {
+    const local = localStorage.getItem('prepbridge_admin_settings')
+    if (local) {
+      try {
+        const data = JSON.parse(local)
+        if (data.supabaseUrl) supabaseUrl = data.supabaseUrl
+        if (data.supabaseAnonKey) supabaseAnonKey = data.supabaseAnonKey
+      } catch (err) {}
+    }
+  }
+
+  const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
+  
+  if (!cleanUrl || !cleanAnonKeyExists(supabaseAnonKey)) {
+    console.warn('[Supabase DB] Credentials not fully configured. Skipping sync.')
+    return
+  }
+
+  const dbUrl = `${cleanUrl}/rest/v1/profiles`
+  console.log(`[Supabase DB] Synchronizing profile for: ${uid}...`)
+
+  const payload = {
+    id: uid,
+    email: profileData.email || null,
+    phone: profileData.phone || null,
+    display_name: profileData.name || 'Anonymous User',
+    state: profileData.state || 'N/A',
+    exams: profileData.exams || [],
+    primary_target: profileData.primaryTarget || null,
+    lakshya_slogan: profileData.lakshyaSlogan || null,
+    selected_language: profileData.selectedLanguage || 'English',
+    education: profileData.education || 'N/A',
+    study_hours: profileData.studyHours || 'N/A',
+    points: profileData.points || 0,
+    streak: profileData.streak || 0,
+    updated_at: new Date().toISOString()
+  }
+
+  try {
+    const response = await fetch(dbUrl, {
+      method: 'POST',
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates' // PostgREST upsert flag
+      },
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) {
+      const errText = await response.text()
+      console.warn(`[Supabase DB] Sync failed (HTTP ${response.status}): ${errText}`)
+    } else {
+      console.log('[Supabase DB] Success: Profile synced.')
+    }
+  } catch (err) {
+    console.error('[Supabase DB] Sync request error:', err)
+  }
+}

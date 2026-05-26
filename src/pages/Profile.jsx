@@ -37,6 +37,16 @@ export default function Profile() {
         console.error('Failed to sync updated demo profile:', e)
       }
     }
+
+    // Also sync updated details to Supabase Database (PostgreSQL)!
+    if (user?.uid) {
+      import('../services/supabaseService')
+        .then(({ syncProfileToSupabase }) => {
+          const currentProfile = useUserStore.getState().profile
+          syncProfileToSupabase(user.uid, { ...currentProfile, name })
+        })
+        .catch(err => console.error('[Profile] Failed to sync updated profile to Supabase:', err))
+    }
     
     setEditing(false)
     toast.success('Profile updated!')

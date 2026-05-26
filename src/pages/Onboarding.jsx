@@ -134,6 +134,13 @@ export default function Onboarding() {
         .catch((e) => {
           console.error('[Onboarding] Live Firestore sync failed (ignoring for onboarding success):', e)
         })
+
+      // Sync to Supabase Database (PostgreSQL) in parallel for dual-cloud backup
+      import('../services/supabaseService')
+        .then(({ syncProfileToSupabase }) => {
+          syncProfileToSupabase(user.uid, profileUpdates)
+        })
+        .catch(err => console.error('[Onboarding] Failed to import Supabase sync service:', err))
     }
 
     setUploading(false)
