@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast'
 import { EXAM_CATEGORIES, ALL_STATES, ALL_LANGUAGES } from '../data/exams'
 import { CheckCircle, ArrowRight, ArrowLeft, Zap, Brain, Plus } from 'lucide-react'
 import { updateUserProfile } from '../firebase/auth'
+import { createTrialSubscription } from '../services/paymentService'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { storage } from '../firebase/config'
 
@@ -100,7 +101,7 @@ export default function Onboarding() {
       onboardingComplete: true,
       createdAt: new Date().toISOString(),
       points: 0, streak: 0, rank: null,
-      subscription: { plan: 'free', startDate: new Date().toISOString() }
+      subscription: createTrialSubscription() // Auto-activate 2-day free trial on signup
     }
 
     // 1. Update local Zustand state
@@ -117,7 +118,7 @@ export default function Onboarding() {
     }
 
     setUploading(false)
-    toast.success('Profile setup complete! 🎉')
+    toast.success('Profile setup complete! Your 2-day free trial has started 🎉 Explore everything!', { duration: 5000 })
     navigate('/app/dashboard')
   }
 

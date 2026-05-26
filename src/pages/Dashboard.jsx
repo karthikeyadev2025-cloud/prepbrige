@@ -9,8 +9,9 @@ import { toast } from 'react-hot-toast'
 import {
   Flame, Target, Star, TrendingUp, BookOpen, ClipboardList,
   Newspaper, BrainCircuit, Bell, ChevronRight, CheckCircle,
-  Clock, Zap, Trophy, Calendar, AlertCircle, ArrowRight, Play
+  Clock, Zap, Trophy, Calendar, AlertCircle, ArrowRight, Play, Timer
 } from 'lucide-react'
+import { getSubscriptionStatus } from '../services/paymentService'
 
 function StatCard({ icon, label, value, trend, color, bg }) {
   return (
@@ -392,36 +393,87 @@ export default function Dashboard() {
         <StatCard icon={<Target size={20} color="var(--emerald)" />} label="Accuracy" value="73.4%" trend={5} bg="var(--emerald-10)" />
       </div>
 
-      {/* Premium Upgrade Banner for Free Tier Users */}
-      {profile?.subscription?.plan !== 'paid' && (
-        <div className="card card-p animate-fade-in" style={{
-          marginBottom: 28,
-          background: 'linear-gradient(135deg, rgba(124,58,237,0.18), rgba(0,212,255,0.12))',
-          border: '1px solid rgba(124,58,237,0.3)',
-          boxShadow: '0 8px 32px rgba(124,58,237,0.1)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 16,
-          padding: '20px 24px'
-        }}>
-          <div style={{ flex: 1, minWidth: 280 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <Star size={20} color="var(--amber)" style={{ fill: 'var(--amber)' }} style={{ flexShrink: 0 }} />
-              <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'white' }}>Unlock All-Access Premium Prep 💎</h4>
+      {/* Smart Trial / Upgrade Banner */}
+      {(() => {
+        const sub = getSubscriptionStatus(profile?.subscription)
+        if (sub.isPaid) return null // Premium user — no banner needed
+
+        if (sub.isTrial && sub.isActive) {
+          // Trial is running — show countdown with urgency coloring
+          const urgent = sub.hoursLeft < 12
+          const warning = sub.hoursLeft < 24
+          const accentColor = urgent ? 'var(--red)' : warning ? 'var(--amber)' : 'var(--emerald)'
+          const bgColor = urgent
+            ? 'linear-gradient(135deg, rgba(239,68,68,0.14), rgba(239,68,68,0.06))'
+            : warning
+            ? 'linear-gradient(135deg, rgba(245,158,11,0.14), rgba(245,158,11,0.06))'
+            : 'linear-gradient(135deg, rgba(16,185,129,0.14), rgba(0,212,255,0.08))'
+          const borderColor = urgent ? 'rgba(239,68,68,0.35)' : warning ? 'rgba(245,158,11,0.35)' : 'rgba(16,185,129,0.35)'
+
+          return (
+            <div className="card card-p animate-fade-in" style={{
+              marginBottom: 28,
+              background: bgColor,
+              border: `1px solid ${borderColor}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              flexWrap: 'wrap', gap: 16, padding: '18px 24px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 260 }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: `rgba(${urgent ? '239,68,68' : warning ? '245,158,11' : '16,185,129'},0.15)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Timer size={20} color={accentColor} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'white', marginBottom: 2 }}>
+                    {urgent ? '⚠️ Trial expires in ' : '🌟 Free Trial Active — '}
+                    <span style={{ color: accentColor }}>
+                      {sub.hoursLeft < 1 ? 'less than 1 hour' : sub.hoursLeft < 24 ? `${sub.hoursLeft}h left` : `${sub.daysLeft} day${sub.daysLeft !== 1 ? 's' : ''} left`}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-3)' }}>
+                    You have full premium access during your 2-day trial. Upgrade now to keep it going!
+                  </div>
+                </div>
+              </div>
+              <Link to="/app/profile" className="btn" style={{
+                gap: 8, fontWeight: 700, flexShrink: 0,
+                background: accentColor, color: 'white',
+                boxShadow: `0 0 20px ${accentColor}55`
+              }}>
+                <Zap size={14} /> Upgrade — from ₹249/mo
+              </Link>
             </div>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5 }}>
-              Upgrade to Premium starting at just <strong>₹249/mo</strong>. Unlock unlimited visual doubt solving, full coverage of All India test series, and direct expert study plan revisions.
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          )
+        }
+
+        // Trial expired or free plan — standard upgrade CTA
+        return (
+          <div className="card card-p animate-fade-in" style={{
+            marginBottom: 28,
+            background: 'linear-gradient(135deg, rgba(124,58,237,0.18), rgba(0,212,255,0.12))',
+            border: '1px solid rgba(124,58,237,0.3)',
+            boxShadow: '0 8px 32px rgba(124,58,237,0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            flexWrap: 'wrap', gap: 16, padding: '20px 24px'
+          }}>
+            <div style={{ flex: 1, minWidth: 280 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <Star size={20} color="var(--amber)" style={{ fill: 'var(--amber)', flexShrink: 0 }} />
+                <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'white' }}>
+                  {sub.isTrial && sub.isExpired ? '🔒 Your Free Trial has Ended' : 'Unlock All-Access Premium Prep 📎'}
+                </h4>
+              </div>
+              <p style={{ fontSize: '0.85rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5 }}>
+                {sub.isTrial && sub.isExpired
+                  ? 'Your 2-day free trial is over. Subscribe now to keep all premium features from just ₹249/month.'
+                  : 'Starting at just ₹249/mo · Save 20% with our 6-month plan · Unlimited AI doubt solving, mock tests & more.'}
+              </p>
+            </div>
             <Link to="/app/profile" className="btn btn-primary" style={{ gap: 8, boxShadow: 'var(--glow-purple)', fontWeight: 700 }}>
-              <Zap size={14} /> Upgrade Now (from ₹249/mo)
+              <Zap size={14} /> {sub.isTrial && sub.isExpired ? 'Subscribe Now' : 'Upgrade Now (from ₹249/mo)'}
             </Link>
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* Main grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, marginBottom: 28 }}>

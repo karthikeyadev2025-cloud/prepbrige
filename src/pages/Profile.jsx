@@ -5,7 +5,7 @@ import { signOutUser } from '../firebase/auth'
 import { useNavigate } from 'react-router-dom'
 import { ALL_LANGUAGES, EXAM_CATEGORIES } from '../data/exams'
 import { toast } from 'react-hot-toast'
-import { initiatePremiumCheckout, PRICING } from '../services/paymentService'
+import { initiatePremiumCheckout, PRICING, getSubscriptionStatus } from '../services/paymentService'
 
 export default function Profile() {
   const { profile, user, logout, updateProfile } = useUserStore()
@@ -13,7 +13,8 @@ export default function Profile() {
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(profile?.name || '')
   const [activeTab, setActiveTab] = useState('profile')
-  const [selectedPlan, setSelectedPlan] = useState('sixMonth') // default highlight 6-mo deal
+  const [selectedPlan, setSelectedPlan] = useState('sixMonth')
+  const sub = getSubscriptionStatus(profile?.subscription)
 
   const handleLogout = async () => {
     await signOutUser()
@@ -88,8 +89,8 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Premium Upgrade Banner for Free Users */}
-      {profile?.subscription?.plan !== 'paid' && (
+      {/* Upgrade Banner — show for non-paid users (trial active, trial expired, or free) */}
+      {!sub.isPaid && (
         <div className="card card-p animate-fade-in" style={{
           marginBottom: 20,
           background: 'linear-gradient(135deg, rgba(124,58,237,0.12), rgba(0,212,255,0.07))',
@@ -98,10 +99,24 @@ export default function Profile() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
             <Star size={18} color="var(--amber)" style={{ fill: 'var(--amber)' }} />
-            <h4 style={{ margin: 0, fontSize: '1.05rem', color: 'white' }}>Unlock All-Access Premium 🚀</h4>
+            {sub.isTrial && sub.isActive ? (
+              <h4 style={{ margin: 0, fontSize: '1.05rem', color: 'white' }}>
+                🌟 Trial Active — <span style={{ color: sub.hoursLeft < 12 ? 'var(--red)' : sub.hoursLeft < 24 ? 'var(--amber)' : 'var(--emerald)' }}>
+                  {sub.hoursLeft < 1 ? 'expires soon!' : sub.hoursLeft < 24 ? `${sub.hoursLeft}h remaining` : `${sub.daysLeft} day${sub.daysLeft !== 1 ? 's' : ''} remaining`}
+                </span>
+              </h4>
+            ) : sub.isTrial && sub.isExpired ? (
+              <h4 style={{ margin: 0, fontSize: '1.05rem', color: 'white' }}>🔒 Trial Ended — Subscribe to Continue</h4>
+            ) : (
+              <h4 style={{ margin: 0, fontSize: '1.05rem', color: 'white' }}>Unlock All-Access Premium 🚀</h4>
+            )}
           </div>
           <p style={{ fontSize: '0.82rem', color: 'var(--text-3)', margin: '0 0 18px', lineHeight: 1.5 }}>
-            Unlimited AI doubt solving, all-India mock tests, live current affairs, 5L+ questions &amp; more.
+            {sub.isTrial && sub.isActive
+              ? 'You have full premium access right now! Upgrade before it expires to never miss a thing.'
+              : sub.isTrial && sub.isExpired
+              ? 'Your 2-day free trial is over. Choose a plan below to keep all premium features.'
+              : 'Unlimited AI doubt solving, all-India mock tests, live current affairs, 5L+ questions & more.'}
           </p>
 
           {/* Plan selector */}
@@ -148,7 +163,7 @@ export default function Profile() {
       )}
 
       {/* Premium Active Subscription Status Card */}
-      {profile?.subscription?.plan === 'paid' && (
+      {sub.isPaid && (
         <div className="card card-p animate-fade-in" style={{
           marginBottom: 20,
           background: 'linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.03))',

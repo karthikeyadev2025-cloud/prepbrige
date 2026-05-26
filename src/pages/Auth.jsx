@@ -242,7 +242,7 @@ export default function Auth() {
         <div style={{ textAlign: 'center', maxWidth: 360, position: 'relative', zIndex: 1 }}>
           <div style={{ fontSize: '4rem', marginBottom: 24 }}>🎯</div>
           <h3 style={{ marginBottom: 12 }}>One Login.<br />All India Exams.</h3>
-          <p style={{ marginBottom: 32 }}>From IAS to bank clerk — single account, from ₹249/month, all features included. Get 6 months at 20% off!</p>
+          <p style={{ marginBottom: 32 }}>Start free for 2 days — no credit card needed. Then from ₹249/month, or save 20% with the 6-month plan.</p>
           <div style={{ background: 'linear-gradient(135deg,rgba(0,212,255,0.08),rgba(124,58,237,0.08))', border: '1px solid var(--border-cyan)', borderRadius: 'var(--r-lg)', padding: '20px 24px', textAlign: 'left', marginBottom: 20 }}>
             <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--cyan)', marginBottom: 12 }}>🔥 What you get:</div>
             {['AI Tutor powered by Google Gemini', '5 Lakh+ questions & PYQs', 'All 200+ central & state exams', 'Daily current affairs auto-loaded', 'Mock tests with All India rank', 'All 22 Indian languages', 'Push notifications for exam alerts', 'Works offline on any device'].map(f => (

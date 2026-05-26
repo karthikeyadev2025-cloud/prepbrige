@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast'
 import { askGemini, generateQuestions } from '../services/gemini'
 import { ALL_LANGUAGES } from '../data/exams'
 import { Link } from 'react-router-dom'
+import { getSubscriptionStatus } from '../services/paymentService'
 
 const SUGGESTED_QUESTIONS = [
   'Explain Fundamental Rights in simple words',
@@ -72,7 +73,8 @@ export default function AITutor() {
   }
 
   const sendMessage = async (text = input) => {
-    const isPremium = profile?.subscription?.plan === 'paid'
+    const sub = getSubscriptionStatus(profile?.subscription)
+    const isPremium = sub.isPaid || (sub.isTrial && sub.isActive) // trial users get full access
     const dailyCount = getDailyQueryCount()
     
     if (!isPremium && dailyCount >= 5) {

@@ -336,14 +336,16 @@ export default function Landing() {
         <div style={{ position: 'relative', zIndex: 1 }}>
           <RevealDiv>
             <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 700, color: '#10b981', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Simple Pricing</div>
-            <h2 style={{ marginBottom: 8 }}>One plan. <span style={{ background: 'linear-gradient(90deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>All exams. Forever.</span></h2>
-            <p style={{ marginBottom: 48, color: 'var(--text-3)' }}>No subject locks. No hidden fees. No exam limits.</p>
+            <h2 style={{ marginBottom: 8 }}>One plan. <span style={{ background: 'linear-gradient(90deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>All exams. Try free.</span></h2>
+            <p style={{ marginBottom: 48, color: 'var(--text-3)' }}>2-day free trial for all new students. No credit card required. No hidden fees.</p>
           </RevealDiv>
           <RevealDiv delay={0.2} direction="scale">
             {/* Animated border pricing card */}
             <div style={{ display: 'inline-block', padding: 2, borderRadius: 30, background: 'linear-gradient(135deg,#7c3aed,#00d4ff,#10b981,#7c3aed)', backgroundSize: '300% 300%', animation: 'borderSpin 4s linear infinite', boxShadow: '0 0 80px rgba(124,58,237,0.3)' }}>
               <div style={{ maxWidth: 440, background: '#0d0a1a', borderRadius: 28, padding: 44, textAlign: 'center' }}>
                 <div style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-4)', marginBottom: 14 }}>All Access Plan</div>
+                <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 'var(--r-full)', padding: '4px 14px', fontSize: '0.78rem', fontWeight: 800, color: '#10b981', marginBottom: 10 }}
+                >✨ 2-Day Free Trial for New Students</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4, marginBottom: 6 }}>
                   <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-3)' }}>₹</span>
                   <span style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>249</span>
@@ -360,9 +362,9 @@ export default function Landing() {
                   </div>
                 ))}
                 <MagneticBtn to="/auth?signup=1" style={{ display: 'flex', justifyContent: 'center', marginTop: 28, padding: '16px 28px', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', borderRadius: 'var(--r-full)', fontWeight: 800, fontSize: '1rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 30px rgba(124,58,237,0.5)', width: '100%' }}>
-                  Get All Access — from ₹249/mo <ArrowRight size={18} />
+                  Start Free Trial — then from ₹249/mo <ArrowRight size={18} />
                 </MagneticBtn>
-                <div style={{ marginTop: 14, fontSize: '0.78rem', color: 'var(--text-4)' }}>7-day free trial · Cancel anytime · 6-month plan saves ₹299</div>
+                <div style={{ marginTop: 14, fontSize: '0.78rem', color: 'var(--text-4)' }}>2-day free trial · No card needed · 6-month plan saves ₹299</div>
               </div>
             </div>
           </RevealDiv>

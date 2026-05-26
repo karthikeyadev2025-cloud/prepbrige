@@ -3,7 +3,7 @@
 import { updateUserProfile } from '../firebase/auth'
 import { toast } from 'react-hot-toast'
 
-// Pricing constants — single source of truth
+// ─── Pricing Constants (Single Source of Truth) ──────────────────────────────
 export const PRICING = {
   monthly: {
     label: 'Monthly Plan',
@@ -26,14 +26,62 @@ export const PRICING = {
   }
 }
 
-// Helper to dynamically load the Razorpay script
+// ─── Trial Constants ──────────────────────────────────────────────────────────
+export const TRIAL_DAYS = 2 // 2-day free trial for all new users
+
+// Build a fresh trial subscription object (call at onboarding completion)
+export function createTrialSubscription() {
+  const now = new Date()
+  const trialEnd = new Date(now)
+  trialEnd.setDate(trialEnd.getDate() + TRIAL_DAYS)
+  return {
+    plan: 'trial',
+    startDate: now.toISOString(),
+    trialEndsAt: trialEnd.toISOString(),
+  }
+}
+
+// Returns rich trial status for any component to consume
+// Returns: { isTrial, isActive, isExpired, isPaid, hoursLeft, daysLeft, trialEndsAt }
+export function getSubscriptionStatus(subscription) {
+  if (!subscription) return { isTrial: false, isActive: false, isExpired: false, isPaid: false, hoursLeft: 0, daysLeft: 0 }
+
+  const plan = subscription.plan
+
+  if (plan === 'paid') {
+    return { isTrial: false, isActive: true, isExpired: false, isPaid: true, hoursLeft: 0, daysLeft: 0 }
+  }
+
+  if (plan === 'trial') {
+    const now = Date.now()
+    const trialEnd = new Date(subscription.trialEndsAt).getTime()
+    const msLeft = trialEnd - now
+    const hoursLeft = Math.max(0, Math.floor(msLeft / (1000 * 60 * 60)))
+    const daysLeft = Math.max(0, Math.floor(msLeft / (1000 * 60 * 60 * 24)))
+    const isActive = msLeft > 0
+
+    return {
+      isTrial: true,
+      isActive,
+      isExpired: !isActive,
+      isPaid: false,
+      hoursLeft,
+      daysLeft,
+      trialEndsAt: subscription.trialEndsAt,
+      msLeft,
+    }
+  }
+
+  // plan === 'free' or anything else
+  return { isTrial: false, isActive: false, isExpired: false, isPaid: false, hoursLeft: 0, daysLeft: 0 }
+}
+
+// ─── Razorpay Helpers ─────────────────────────────────────────────────────────
+
+// Dynamically load the Razorpay checkout.js script
 export function loadRazorpayScript() {
   return new Promise((resolve) => {
-    // Avoid appending script duplicate times
-    if (window.Razorpay) {
-      resolve(true)
-      return
-    }
+    if (window.Razorpay) { resolve(true); return }
     const script = document.createElement('script')
     script.src = 'https://checkout.razorpay.com/v1/checkout.js'
     script.async = true
@@ -43,20 +91,19 @@ export function loadRazorpayScript() {
   })
 }
 
-// Helper to initiate the premium checkout popup
+// Open Razorpay checkout
 // planType: 'monthly' | 'sixMonth'
 export async function initiatePremiumCheckout(user, profile, updateProfile, onComplete, planType = 'monthly') {
   const plan = PRICING[planType] || PRICING.monthly
 
   const isLoaded = await loadRazorpayScript()
   if (!isLoaded) {
-    toast.error('Failed to load Razorpay payment gateway. Please check your internet connection.')
+    toast.error('Failed to load Razorpay. Please check your internet connection.')
     return
   }
 
   const options = {
-    // Replace with your live Razorpay key in production
-    key: 'rzp_test_prepbridgeKey123',
+    key: 'rzp_test_prepbridgeKey123', // Replace with live key in production
     amount: plan.amountPaise,
     currency: 'INR',
     name: 'PrepBridge Premium',
@@ -64,56 +111,42 @@ export async function initiatePremiumCheckout(user, profile, updateProfile, onCo
     image: '/icons/icon-192.png',
     handler: async function (response) {
       const paymentId = response.razorpay_payment_id
-      toast.success(`Payment Successful! Welcome to Premium! 🎉 ${plan.label} activated.`, { duration: 5000 })
+      toast.success(`Payment Successful! ${plan.label} activated 🎉`, { duration: 5000 })
 
       const now = new Date()
       const expiresAt = new Date(now)
-      if (planType === 'sixMonth') {
-        expiresAt.setMonth(expiresAt.getMonth() + 6)
-      } else {
-        expiresAt.setMonth(expiresAt.getMonth() + 1)
-      }
+      if (planType === 'sixMonth') expiresAt.setMonth(expiresAt.getMonth() + 6)
+      else expiresAt.setMonth(expiresAt.getMonth() + 1)
 
       const premiumSubscription = {
         plan: 'paid',
-        planType: planType,
+        planType,
         planLabel: plan.label,
         amount: plan.amount,
         startDate: now.toISOString(),
         expiresAt: expiresAt.toISOString(),
-        paymentId: paymentId
+        paymentId,
       }
 
-      // 1. Update Firestore Database
+      // 1. Sync to Firestore
       if (user?.uid) {
         try {
           await updateUserProfile(user.uid, {
             subscription: premiumSubscription,
-            points: (profile?.points || 0) + 100 // Reward 100 points for upgrading!
+            points: (profile?.points || 0) + 100,
           })
-        } catch (e) {
-          console.error('Firestore subscription sync failed:', e)
-        }
+        } catch (e) { console.error('Firestore subscription sync failed:', e) }
       }
 
       // 2. Update Zustand store locally
-      updateProfile({
-        subscription: premiumSubscription,
-        points: (profile?.points || 0) + 100
-      })
+      updateProfile({ subscription: premiumSubscription, points: (profile?.points || 0) + 100 })
 
       if (onComplete) onComplete()
     },
-    prefill: {
-      name: profile?.name || '',
-      email: user?.email || '',
-      contact: user?.phone || ''
-    },
-    theme: {
-      color: '#7c3aed' // Matching premium purple accent
-    }
+    prefill: { name: profile?.name || '', email: user?.email || '', contact: user?.phone || '' },
+    theme: { color: '#7c3aed' },
   }
 
-  const razorpayInstance = new window.Razorpay(options)
-  razorpayInstance.open()
+  const rzp = new window.Razorpay(options)
+  rzp.open()
 }
