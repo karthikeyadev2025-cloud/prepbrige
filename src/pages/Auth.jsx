@@ -29,12 +29,17 @@ export default function Auth() {
     const unsub = initAuthObserver()
     return () => unsub?.()
   }, [])
-
   useEffect(() => {
-    if (user && onboardingComplete) navigate('/app/dashboard')
-    else if (user) navigate('/onboarding')
+    if (user) {
+      if (user.email === 'admin@prepbridge.in') {
+        navigate('/admin')
+      } else if (onboardingComplete) {
+        navigate('/app/dashboard')
+      } else {
+        navigate('/onboarding')
+      }
+    }
   }, [user, onboardingComplete])
-
   // Setup invisible recaptcha
   useEffect(() => {
     setupRecaptcha('recaptcha-container')

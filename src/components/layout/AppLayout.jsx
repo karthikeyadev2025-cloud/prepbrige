@@ -149,7 +149,6 @@ export default function AppLayout({ isAdmin = false }) {
             )
           })}
         </nav>
-
         <div className="sidebar-bottom">
           {isAdmin ? (
             <NavLink to="/app/dashboard" className="nav-item">
@@ -157,25 +156,33 @@ export default function AppLayout({ isAdmin = false }) {
               {!collapsed && <span className="nav-item-label">Exit Admin</span>}
             </NavLink>
           ) : (
-            <NavLink to="/app/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-              <div className="user-avatar" style={{ width: 28, height: 28, fontSize: '0.75rem' }}>
-                {profile?.name?.[0]?.toUpperCase() || 'U'}
-              </div>
-              {!collapsed && (
-                <div className="user-info">
-                  <div className="user-name">{profile?.name || 'User'}</div>
-                  <div className="user-plan">
-                    {(() => {
-                      const s = getSubscriptionStatus(profile?.subscription)
-                      if (s.isPaid) return '✅ Premium'
-                      if (s.isTrial && s.isActive) return `🌟 Trial · ${s.daysLeft}d left`
-                      if (s.isTrial && s.isExpired) return '🔒 Trial Ended'
-                      return '🚀 Try Free'
-                    })()}
-                  </div>
-                </div>
+            <>
+              {user?.isAdmin && (
+                <NavLink to="/admin" className="nav-item" style={{ color: 'var(--amber)', marginBottom: 4 }}>
+                  <span className="nav-item-icon"><Shield size={18} color="var(--amber)" /></span>
+                  {!collapsed && <span className="nav-item-label" style={{ fontWeight: 700 }}>Enter Admin Panel</span>}
+                </NavLink>
               )}
-            </NavLink>
+              <NavLink to="/app/profile" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                <div className="user-avatar" style={{ width: 28, height: 28, fontSize: '0.75rem' }}>
+                  {profile?.name?.[0]?.toUpperCase() || 'U'}
+                </div>
+                {!collapsed && (
+                  <div className="user-info">
+                    <div className="user-name">{profile?.name || 'User'}</div>
+                    <div className="user-plan">
+                      {(() => {
+                        const s = getSubscriptionStatus(profile?.subscription)
+                        if (s.isPaid) return '✅ Premium'
+                        if (s.isTrial && s.isActive) return `🌟 Trial · ${s.daysLeft}d left`
+                        if (s.isTrial && s.isExpired) return '🔒 Trial Ended'
+                        return '🚀 Try Free'
+                      })()}
+                    </div>
+                  </div>
+                )}
+              </NavLink>
+            </>
           )}
           <button onClick={handleLogout} className="nav-item" style={{ width: '100%', border: 'none', background: 'none', marginTop: 4, color: 'var(--red)' }}>
             <span className="nav-item-icon"><LogOut size={18} /></span>
@@ -184,7 +191,6 @@ export default function AppLayout({ isAdmin = false }) {
         </div>
       </aside>
 
-      {/* Mobile overlay */}
       {mobileOpen && <div onClick={() => setMobileOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 150 }} />}
 
       {/* Topbar */}
