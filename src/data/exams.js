@@ -46,10 +46,14 @@ export const EXAM_CATEGORIES = [
   {
     id: 'teaching', label: 'Teaching', icon: '📖', color: '#d97706',
     exams: [
-      { id: 'ctet', name: 'CTET', fullName: 'Central Teacher Eligibility Test', vacancies: null, nextDate: '2026-07-01', level: 'central' },
+      { id: 'ctet', name: 'CTET', fullName: 'Central Teacher Eligibility Test', vacancies: 35000, nextDate: '2026-07-01', level: 'central' },
       { id: 'kvs', name: 'KVS TGT/PGT', fullName: 'Kendriya Vidyalaya Sangathan', vacancies: 6414, nextDate: '2026-08-01', level: 'central' },
       { id: 'nvs', name: 'NVS TGT/PGT', fullName: 'Navodaya Vidyalaya Samiti', vacancies: 1377, nextDate: '2026-10-01', level: 'central' },
       { id: 'dsssb', name: 'DSSSB TGT/PGT', fullName: 'Delhi Sub Ord Services Selection Board', vacancies: 7236, nextDate: '2026-06-01', level: 'state' },
+      { id: 'ap_dsc_sgt', name: 'AP DSC SGT', fullName: 'Andhra Pradesh DSC Secondary Grade Teacher', vacancies: 3820, nextDate: '2026-09-10', level: 'state', state: 'Andhra Pradesh' },
+      { id: 'ap_dsc_sa', name: 'AP DSC SA', fullName: 'Andhra Pradesh DSC School Assistant', vacancies: 2200, nextDate: '2026-09-12', level: 'state', state: 'Andhra Pradesh' },
+      { id: 'ts_dsc_sgt', name: 'TS DSC SGT', fullName: 'Telangana DSC Secondary Grade Teacher', vacancies: 4100, nextDate: '2026-08-25', level: 'state', state: 'Telangana' },
+      { id: 'ts_dsc_sa', name: 'TS DSC SA', fullName: 'Telangana DSC School Assistant', vacancies: 2800, nextDate: '2026-08-27', level: 'state', state: 'Telangana' },
     ]
   },
   {
@@ -57,12 +61,16 @@ export const EXAM_CATEGORIES = [
     exams: [
       { id: 'afcat', name: 'AFCAT', fullName: 'Air Force Common Admission Test', vacancies: 304, nextDate: '2026-08-01', level: 'central' },
       { id: 'coast_guard', name: 'Coast Guard', fullName: 'Indian Coast Guard', vacancies: 350, nextDate: '2026-06-01', level: 'central' },
-      { id: 'territorial_army', name: 'Territorial Army', fullName: 'Territorial Army Officer', vacancies: null, nextDate: '2026-07-01', level: 'central' },
+      { id: 'territorial_army', name: 'Territorial Army', fullName: 'Territorial Army Officer', vacancies: 180, nextDate: '2026-07-01', level: 'central' },
     ]
   },
   {
     id: 'state_psc', label: 'State PSC', icon: '🗺️', color: '#0891b2',
     exams: [
+      { id: 'appsc', name: 'APPSC', fullName: 'Andhra Pradesh Public Service Commission', vacancies: 950, nextDate: '2026-10-15', level: 'state', state: 'Andhra Pradesh' },
+      { id: 'tgpsc', name: 'TGPSC', fullName: 'Telangana Public Service Commission', vacancies: 1200, nextDate: '2026-09-20', level: 'state', state: 'Telangana' },
+      { id: 'keralapsc', name: 'Kerala PSC', fullName: 'Kerala Public Service Commission', vacancies: 850, nextDate: '2026-11-05', level: 'state', state: 'Kerala' },
+      { id: 'hppsc', name: 'HPPSC', fullName: 'Himachal Pradesh Public Service Commission', vacancies: 180, nextDate: '2026-10-08', level: 'state', state: 'Himachal Pradesh' },
       { id: 'bpsc', name: 'BPSC', fullName: 'Bihar Public Service Commission', vacancies: 1929, nextDate: '2026-07-01', level: 'state', state: 'Bihar' },
       { id: 'uppsc', name: 'UPPSC', fullName: 'UP Public Service Commission', vacancies: 220, nextDate: '2026-06-01', level: 'state', state: 'Uttar Pradesh' },
       { id: 'mppsc', name: 'MPPSC', fullName: 'MP Public Service Commission', vacancies: 202, nextDate: '2026-05-01', level: 'state', state: 'Madhya Pradesh' },
@@ -90,23 +98,25 @@ export const EXAM_CATEGORIES = [
   {
     id: 'medical', label: 'Medical', icon: '⚕️', color: '#dc2626',
     exams: [
-      { id: 'neet_ug', name: 'NEET UG', fullName: 'National Eligibility cum Entrance Test UG', vacancies: null, nextDate: '2026-05-04', level: 'central' },
-      { id: 'neet_pg', name: 'NEET PG', fullName: 'NEET Postgraduate', vacancies: null, nextDate: '2026-06-15', level: 'central' },
-      { id: 'aiims_pgi', name: 'AIIMS PG', fullName: 'All India Institute of Medical Sciences PG', vacancies: null, nextDate: '2026-05-01', level: 'central' },
+      { id: 'neet_ug', name: 'NEET UG', fullName: 'National Eligibility cum Entrance Test UG (MBBS Seats)', vacancies: 108940, nextDate: '2026-05-04', level: 'central' },
+      { id: 'neet_pg', name: 'NEET PG', fullName: 'NEET Postgraduate (MD/MS Seats)', vacancies: 45000, nextDate: '2026-06-15', level: 'central' },
+      { id: 'aiims_pgi', name: 'AIIMS PG', fullName: 'All India Institute of Medical Sciences PG', vacancies: 1200, nextDate: '2026-05-01', level: 'central' },
     ]
   },
   {
     id: 'engineering', label: 'Engineering', icon: '⚙️', color: '#0080ff',
     exams: [
-      { id: 'gate', name: 'GATE', fullName: 'Graduate Aptitude Test in Engineering', vacancies: null, nextDate: '2027-02-01', level: 'central' },
-      { id: 'jee_main', name: 'JEE Mains', fullName: 'Joint Entrance Exam Mains', vacancies: null, nextDate: '2027-01-01', level: 'central' },
-      { id: 'jee_adv', name: 'JEE Advanced', fullName: 'Joint Entrance Exam Advanced', vacancies: null, nextDate: '2026-05-18', level: 'central' },
+      { id: 'gate', name: 'GATE', fullName: 'Graduate Aptitude Test in Engineering (M.Tech/PSUs)', vacancies: 55000, nextDate: '2027-02-01', level: 'central' },
+      { id: 'jee_main', name: 'JEE Mains', fullName: 'Joint Entrance Exam Mains (NIT/IIIT Seats)', vacancies: 57152, nextDate: '2027-01-01', level: 'central' },
+      { id: 'jee_adv', name: 'JEE Advanced', fullName: 'Joint Entrance Exam Advanced (IIT Seats)', vacancies: 17385, nextDate: '2026-05-18', level: 'central' },
       { id: 'ese', name: 'ESE/IES', fullName: 'Engineering Services Exam', vacancies: 247, nextDate: '2026-06-08', level: 'central' },
     ]
   },
   {
     id: 'police', label: 'State Police', icon: '👮', color: '#1d4ed8',
     exams: [
+      { id: 'ap_police', name: 'AP Police SI/Constable', fullName: 'Andhra Pradesh Police SI & Constable', vacancies: 6500, nextDate: '2026-07-15', level: 'state', state: 'Andhra Pradesh' },
+      { id: 'ts_police', name: 'TS Police SI/Constable', fullName: 'Telangana Police SI & Constable', vacancies: 8000, nextDate: '2026-08-10', level: 'state', state: 'Telangana' },
       { id: 'up_police', name: 'UP Police SI', fullName: 'UP Police Sub Inspector', vacancies: 3638, nextDate: '2026-06-01', level: 'state', state: 'Uttar Pradesh' },
       { id: 'rajasthan_police', name: 'Rajasthan Police', fullName: 'Rajasthan Police Constable', vacancies: 3578, nextDate: '2026-07-01', level: 'state', state: 'Rajasthan' },
       { id: 'mp_police', name: 'MP Police Constable', fullName: 'MP Police', vacancies: 7090, nextDate: '2026-08-01', level: 'state', state: 'Madhya Pradesh' },
@@ -130,22 +140,22 @@ export const ALL_LANGUAGES = [
   { code: 'hi', name: 'Hindi', native: 'हिंदी', flag: '🇮🇳' },
   { code: 'bn', name: 'Bengali', native: 'বাংলা', flag: '🪷' },
   { code: 'te', name: 'Telugu', native: 'తెలుగు', flag: '🌺' },
-  { code: 'mr', name: 'Marathi', native: 'मराठी', flag: '🌸' },
+  { code: 'mr', name: 'Marathi', native: 'మరాठी', flag: '🌸' },
   { code: 'ta', name: 'Tamil', native: 'தமிழ்', flag: '🌼' },
   { code: 'ur', name: 'Urdu', native: 'اردو', flag: '☽' },
   { code: 'gu', name: 'Gujarati', native: 'ગુજરાતી', flag: '🦁' },
   { code: 'kn', name: 'Kannada', native: 'ಕನ್ನಡ', flag: '🐘' },
-  { code: 'ml', name: 'Malayalam', native: 'മലയാളം', flag: '🌴' },
-  { code: 'or', name: 'Odia', native: 'ଓଡ଼ିଆ', flag: '🎭' },
-  { code: 'pa', name: 'Punjabi', native: 'ਪੰਜਾਬੀ', flag: '🌾' },
+  { code: 'ml', name: 'Malayalam', native: 'മലയാളం', flag: '🌴' },
+  { code: 'or', name: 'Odia', native: 'ଓଡ଼ిଆ', flag: '🎭' },
+  { code: 'pa', name: 'Punjabi', native: 'पंजाब', flag: '🌾' },
   { code: 'as', name: 'Assamese', native: 'অসমীয়া', flag: '🦏' },
   { code: 'mai', name: 'Maithili', native: 'मैथिली', flag: '🪷' },
   { code: 'kok', name: 'Konkani', native: 'कोंकणी', flag: '🌊' },
   { code: 'ne', name: 'Nepali', native: 'नेपाली', flag: '⛰️' },
-  { code: 'sd', name: 'Sindhi', native: 'سنڌي', flag: '🏜️' },
+  { code: 'sd', name: 'Sindhi', native: 'سنڌい', flag: '🏜️' },
   { code: 'ks', name: 'Kashmiri', native: 'कॉशुर', flag: '❄️' },
   { code: 'doi', name: 'Dogri', native: 'डोगरी', flag: '🏔️' },
-  { code: 'mni', name: 'Manipuri', native: 'মৈতৈলোন্', flag: '💐' },
+  { code: 'mni', name: 'Manipuri', native: 'మౌతైలాన్', flag: '💐' },
   { code: 'bo', name: 'Bodo', native: 'बड़ो', flag: '🌿' },
   { code: 'sat', name: 'Santali', native: 'ᱥᱟᱱᱛᱟᱲᱤ', flag: '🌲' },
   { code: 'sa', name: 'Sanskrit', native: 'संस्कृतम्', flag: '📿' },
@@ -171,5 +181,25 @@ export const SUBJECTS = {
     { id: 'science_tech', name: 'Science & Technology', icon: '🔬' },
     { id: 'ethics', name: 'Ethics & Integrity', icon: '🕊️' },
     { id: 'essay', name: 'Essay Writing', icon: '✍️' },
+  ],
+  state_psc: [
+    { id: 'ap_history', name: 'AP History & Culture', icon: '🏛️' },
+    { id: 'ts_history', name: 'Telangana History & Movement', icon: '✊' },
+    { id: 'ap_geography', name: 'AP Geography', icon: '🗺️' },
+    { id: 'ts_geography', name: 'Telangana Geography', icon: '🏔️' },
+    { id: 'bifurcation', name: 'AP Reorganisation Act 2014', icon: '📜' },
+    { id: 'local_economy', name: 'State Welfare Schemes', icon: '💰' }
+  ],
+  police: [
+    { id: 'crpc_ipc', name: 'Basic Laws & Women Safety', icon: '⚖️' },
+    { id: 'aptitude', name: 'Arithmetic & Numerical Ability', icon: '🔢' },
+    { id: 'reasoning', name: 'Reasoning & Mental Ability', icon: '🧠' },
+    { id: 'general_gk', name: 'GK & General Sciences', icon: '🌍' }
+  ],
+  teaching: [
+    { id: 'child_psychology', name: 'Educational Psychology', icon: '👶' },
+    { id: 'pedagogy', name: 'Methods & Pedagogy', icon: '📖' },
+    { id: 'school_content', name: 'School Content (Class 1-10)', icon: '🏫' },
+    { id: 'nep_policy', name: 'NEP 2020 & Policies', icon: '📝' }
   ]
 }

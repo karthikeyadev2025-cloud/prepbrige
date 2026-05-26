@@ -130,3 +130,73 @@ export const DAILY_QUIZ_QUESTIONS = [
     subject: 'Environment', difficulty: 'medium'
   },
 ]
+
+export const NEWSPAPER_TOPICS = [
+  {
+    id: 'n1',
+    date: '2026-05-26',
+    title: 'The Hindu: Scaling the Space Frontier (India\'s Space Leadership)',
+    summary: 'An editorial on India\'s rapid advancements in space science, highlighting the NISAR joint mission and Chandrayaan-4 sample return launch preparations. It details how ISRO is leading cost-effective space exploration globally.',
+    source: 'The Hindu',
+    paper: 'Editorial',
+    examRelevance: 'UPSC GS-III (Science & Technology), State PSC Group-I',
+    isPrideMoment: true,
+    prideDetails: '🇮🇳 India stands proud as ISRO successfully pioneers low-cost lunar return missions, proving self-reliance and global technological leadership!'
+  },
+  {
+    id: 'n2',
+    date: '2026-05-26',
+    title: 'Indian Express: The Digital Rupee Frontier (Fintech Dominance)',
+    summary: 'Analysis of RBI\'s CBDC (Central Bank Digital Currency) e-Rupee crossing 1 million transactions daily. Explains the structural transition from physical currency to digital sovereignty and financial security improvements.',
+    source: 'Indian Express',
+    paper: 'Op-Ed',
+    examRelevance: 'UPSC GS-III (Indian Economy), Bank PO Mains (Financial Awareness)',
+    isPrideMoment: true,
+    prideDetails: '🇮🇳 UPI and e-Rupee are revolutionizing worldwide digital transactions. Over 30 countries are now adopting India\'s indigenous digital payment stack!'
+  },
+  {
+    id: 'n3',
+    date: '2026-05-25',
+    title: 'The Hindu: Reforming the Federal Balance (Inter-State Devolution)',
+    summary: 'A detailed look at the 16th Finance Commission consultations with southern states regarding devolution of resources, fiscal autonomy, and local governance funding structures.',
+    source: 'The Hindu',
+    paper: 'Lead Article',
+    examRelevance: 'UPSC GS-II (Polity & Federalism), APPSC/TGPSC Polity Paper',
+    isPrideMoment: false
+  },
+  {
+    id: 'n4',
+    date: '2026-05-25',
+    title: 'Indian Express: The Green Superpower (Renewable Milestones)',
+    summary: 'Focuses on India surpassing Japan as the world\'s 3rd largest renewable energy producer with 200+ GW installed capacity, driven by solar parks in Rajasthan and Gujarat.',
+    source: 'Indian Express',
+    paper: 'Editorial',
+    examRelevance: 'UPSC GS-III (Environment & Climate change), SSC CGL General Awareness',
+    isPrideMoment: true,
+    prideDetails: '🇮🇳 India is pacing ahead of global commitments, establishing the International Solar Alliance and leading the planet towards carbon neutrality!'
+  }
+]
+
+export const MOCK_INTERVIEW_PREP = [
+  {
+    id: 'i1',
+    topic: 'Why do you want to join the Civil Services?',
+    category: 'Personality & Motivation',
+    guidance: 'Avoid generic answers like "I want to do social service". Instead, highlight: 1. The unmatched scale of developmental impact a civil servant can bring. 2. Diverse career exposure across policy, administration, and ground-level crisis management. 3. Being a first-generation representative to inspire semi-urban/rural youths.',
+    sampleAnswer: 'Sir, the civil services offer an unparalleled platform where my personal career growth aligns directly with the nation-building process. The diverse challenges, ranging from municipal management to public policy execution, allow me to utilize my skills at a scale where positive administrative action can transform thousands of rural lives instantly.'
+  },
+  {
+    id: 'i2',
+    topic: 'How would you handle a law-and-order crisis as an administrator?',
+    category: 'Situational & Scenario',
+    guidance: 'Structure your answer in 3 phases: 1. **Immediate Reaction**: Ensure personal safety, verify control room inputs, deploy emergency force (Section 144/SHE Teams/Constabulary), and isolate conflict areas. 2. **Mediation**: Call on local leaders, community elders, and pacify rumors via local media broadcasts. 3. **Long-Term**: Setup grievance cells, carry out impartial investigations, and restore trust.',
+    sampleAnswer: 'My immediate priority would be to contain the conflict and secure public safety using tactical police deployment, while simultaneously engaging respected community leaders to halt rumors. Impartial administrative decisions and clear local communication are key to de-escalating ground tension.'
+  },
+  {
+    id: 'i3',
+    topic: 'Addressing Regional Development & Capital Bifurcation Issues (AP/TS)',
+    category: 'State-Specific Prompts',
+    guidance: 'For AP/Telangana candidates, remain completely neutral, balanced, and constructive. When asked about bifurcation issues: 1. Emphasize that bifurcation was a democratic process under the Reorganisation Act 2014. 2. Highlight the mutual potential: Hyderabad as a technology powerhouse, and AP as a maritime gateway with a 974 km coastline. 3. Focus on joint water management (Godavari-Krishna) and industrial corridors.',
+    sampleAnswer: 'Bifurcation has created two high-potential economic hubs in South India. While Telangana leverages Hyderabad\'s global IT and biotech excellence, Andhra Pradesh has a robust coastal layout suited for blue economy growth and international shipping corridors. Collaborative administrative coordination on inter-state matters is the way forward for both Telugu states.'
+  }
+]

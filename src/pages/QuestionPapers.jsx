@@ -13,6 +13,9 @@ const PAPER_LIST = [
   { id:'ssc_cgl_2023', title:'SSC CGL Tier-I 2023', exam:'SSC CGL', year:'2023', paper:'All Shifts', questions:100, pages:20, downloads:210340 },
   { id:'ibps_po_2024', title:'IBPS PO Prelims 2024', exam:'IBPS PO', year:'2024', paper:'Prelims', questions:100, pages:18, downloads:89430 },
   { id:'sbi_po_2024', title:'SBI PO Prelims 2024', exam:'SBI PO', year:'2024', paper:'Prelims', questions:100, pages:18, downloads:76230 },
+  { id:'ibps_clerk_2024', title:'IBPS Clerk Phase-I 2024', exam:'IBPS Clerk', year:'2024', paper:'Prelims', questions:100, pages:16, downloads:65400 },
+  { id:'sbi_clerk_2024', title:'SBI Clerk Phase-I 2024', exam:'SBI Clerk', year:'2024', paper:'Prelims', questions:100, pages:16, downloads:71200 },
+  { id:'rrb_po_2024', title:'IBPS RRB Officer Scale-I 2024', exam:'RRB PO', year:'2024', paper:'Prelims', questions:80, pages:14, downloads:54300 },
   { id:'rrb_ntpc_2024', title:'RRB NTPC CBT-1 2024', exam:'RRB NTPC', year:'2024', paper:'CBT-1', questions:100, pages:20, downloads:203450 },
   { id:'neet_2024', title:'NEET UG 2024', exam:'NEET UG', year:'2024', paper:'Full Paper', questions:200, pages:40, downloads:312000 },
   { id:'jee_2024_jan', title:'JEE Mains Jan 2024', exam:'JEE Mains', year:'2024', paper:'Session 1', questions:90, pages:22, downloads:189000 },
@@ -51,9 +54,26 @@ export default function QuestionPapers() {
     
     setTimeout(() => {
       try {
-        // Extract some sample questions for this exam
-        const examKey = paper.exam.toLowerCase().replace(' ', '_');
-        const examData = QUESTION_BANK[examKey] || QUESTION_BANK.upsc;
+        // Extract some sample questions for this exam using smart routing fallback
+        const examKey = paper.exam.toLowerCase().replace(' ', '_').replace('-', '_');
+        let examData = QUESTION_BANK[examKey];
+        if (!examData) {
+          if (examKey.includes('sbi') || examKey.includes('ibps') || examKey.includes('bank') || examKey.includes('rrb')) {
+            examData = QUESTION_BANK.ibps_po;
+          } else if (examKey.includes('ap_') || examKey.includes('appsc')) {
+            examData = QUESTION_BANK.appsc;
+          } else if (examKey.includes('ts_') || examKey.includes('tgpsc')) {
+            examData = QUESTION_BANK.tgpsc;
+          } else if (examKey.includes('police')) {
+            examData = examKey.includes('ap') ? QUESTION_BANK.ap_police : QUESTION_BANK.ts_police;
+          } else if (examKey.includes('dsc') || examKey.includes('teach')) {
+            examData = examKey.includes('ap') ? QUESTION_BANK.ap_dsc_sgt : QUESTION_BANK.ts_dsc_sgt;
+          }
+        }
+        if (!examData) {
+          examData = QUESTION_BANK.upsc;
+        }
+        
         let questionsList = [];
         Object.keys(examData).forEach(sub => {
           if (Array.isArray(examData[sub])) {
@@ -253,7 +273,35 @@ export default function QuestionPapers() {
             {previewId === paper.id && (
               <div style={{ borderTop: '1px solid var(--border)', paddingTop: 12, fontSize: '0.8rem', color: 'var(--text-2)' }}>
                 <div style={{ fontWeight: 600, marginBottom: 8 }}>Sample Questions:</div>
-                {(QUESTION_BANK.upsc?.history || QUESTION_BANK.upsc?.polity || []).slice(0,2).map((q,i) => (
+                {(() => {
+                  const examKey = paper.exam.toLowerCase().replace(' ', '_').replace('-', '_');
+                  let examData = QUESTION_BANK[examKey];
+                  if (!examData) {
+                    if (examKey.includes('sbi') || examKey.includes('ibps') || examKey.includes('bank') || examKey.includes('rrb')) {
+                      examData = QUESTION_BANK.ibps_po;
+                    } else if (examKey.includes('ap_') || examKey.includes('appsc')) {
+                      examData = QUESTION_BANK.appsc;
+                    } else if (examKey.includes('ts_') || examKey.includes('tgpsc')) {
+                      examData = QUESTION_BANK.tgpsc;
+                    } else if (examKey.includes('police')) {
+                      examData = examKey.includes('ap') ? QUESTION_BANK.ap_police : QUESTION_BANK.ts_police;
+                    } else if (examKey.includes('dsc') || examKey.includes('teach')) {
+                      examData = examKey.includes('ap') ? QUESTION_BANK.ap_dsc_sgt : QUESTION_BANK.ts_dsc_sgt;
+                    }
+                  }
+                  if (!examData) {
+                    examData = QUESTION_BANK.upsc;
+                  }
+                  
+                  let list = [];
+                  Object.values(examData).forEach(subjList => {
+                    if (Array.isArray(subjList)) {
+                      list = list.concat(subjList);
+                    }
+                  });
+                  if (list.length === 0) list = QUESTION_BANK.upsc.history;
+                  return list.slice(0, 2);
+                })().map((q,i) => (
                   <div key={i} style={{ marginBottom: 8, padding: '8px 10px', background: 'var(--bg-3)', borderRadius: 'var(--r-sm)' }}>
                     <div style={{ fontWeight: 500, marginBottom: 4 }}>Q{i+1}. {q.text}</div>
                     {q.options.map((o,j) => (

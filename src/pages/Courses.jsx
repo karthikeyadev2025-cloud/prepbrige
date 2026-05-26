@@ -3,12 +3,36 @@ import { BookOpen, Clock, Star, Users, ChevronRight, Play, Lock } from 'lucide-r
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 
-const COURSES = [
+export const COURSES = [
   {
     id: 'upsc_complete', title: 'UPSC CSE Complete Course', exam: 'UPSC', icon: '🏛️',
     color: '#7c3aed', lessons: 320, hours: 480, students: 45000, rating: 4.9,
     topics: ['History & Culture','Geography','Indian Polity','Economy','Environment','Science & Tech','Current Affairs'],
     free: false, instructor: 'PrepBridge Expert Team'
+  },
+  {
+    id: 'appsc_group2', title: 'APPSC Group-2 Complete Course', exam: 'APPSC', icon: '🗺️',
+    color: '#0891b2', lessons: 240, hours: 300, students: 32000, rating: 4.8,
+    topics: ['AP History','AP Economy','Indian Constitution','Science & Tech','Mental Ability'],
+    free: false, instructor: 'PrepBridge Telugu Expert Team'
+  },
+  {
+    id: 'tgpsc_group1', title: 'TGPSC Group-1 Complete Course', exam: 'TGPSC', icon: '🗺️',
+    color: '#7c3aed', lessons: 280, hours: 350, students: 28000, rating: 4.9,
+    topics: ['Telangana History','Telangana Movement','Indian Polity','Economy','Geography','Science & Tech'],
+    free: false, instructor: 'PrepBridge Telangana Expert Team'
+  },
+  {
+    id: 'police_comprehensive', title: 'AP & TS Police SI/Constable Comprehensive', exam: 'AP/TS Police', icon: '👮',
+    color: '#1d4ed8', lessons: 200, hours: 250, students: 54000, rating: 4.8,
+    topics: ['General Studies','Aptitude & Arithmetic','Reasoning','Basic Penal Codes','SHE Teams & Women Safety'],
+    free: true, instructor: 'PrepBridge Police Prep Team'
+  },
+  {
+    id: 'dsc_teaching', title: 'AP & TS DSC SGT/SA Teaching Course', exam: 'AP/TS DSC', icon: '📖',
+    color: '#d97706', lessons: 250, hours: 320, students: 41000, rating: 4.8,
+    topics: ['Educational Psychology','Pedagogy Methodology','Language I & II','Mathematics & Science','Social Studies'],
+    free: false, instructor: 'PrepBridge Pedagogy Team'
   },
   {
     id: 'ssc_cgl_complete', title: 'SSC CGL Tier 1+2 Complete', exam: 'SSC CGL', icon: '📋',
@@ -87,7 +111,7 @@ export default function Courses() {
 
       {/* Filters */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24, alignItems: 'center' }}>
-        {[['all','All Courses'],['upsc','UPSC'],['ssc','SSC'],['banking','Banking'],['rrb','Railways'],['neet','NEET']].map(([v,l]) => (
+        {[['all','All Courses'],['upsc','UPSC'],['ssc','SSC'],['banking','Banking'],['appsc','APPSC'],['tgpsc','TGPSC'],['police','Police'],['dsc','Teaching DSC']].map(([v,l]) => (
           <button key={v} onClick={() => setFilter(v)} className={`btn btn-sm ${filter===v ? 'btn-primary' : 'btn-outline'}`}>{l}</button>
         ))}
         <button onClick={() => setShowFreeOnly(s => !s)} className={`btn btn-sm ${showFreeOnly ? 'btn-primary' : 'btn-outline'}`} style={{ marginLeft: 'auto' }}>

@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../store/useStore'
-import { CURRENT_AFFAIRS_DATA, DAILY_QUIZ_QUESTIONS } from '../data/currentAffairs'
+import { CURRENT_AFFAIRS_DATA, DAILY_QUIZ_QUESTIONS, NEWSPAPER_TOPICS } from '../data/currentAffairs'
 import { MOCK_TESTS, QUESTION_BANK } from '../data/questions'
+import { COURSES } from './Courses'
 import { getAutoUpdatedCurrentAffairs } from '../services/currentAffairsService'
 import { format } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import {
   Flame, Target, Star, TrendingUp, BookOpen, ClipboardList,
   Newspaper, BrainCircuit, Bell, ChevronRight, CheckCircle,
-  Clock, Zap, Trophy, Calendar, AlertCircle, ArrowRight, Play, Timer, RefreshCw
+  Clock, Zap, Trophy, Calendar, AlertCircle, ArrowRight, Play, Timer, RefreshCw, X, Brain
 } from 'lucide-react'
 import { getSubscriptionStatus } from '../services/paymentService'
 
@@ -90,7 +91,119 @@ const getSyllabusProgress = (target) => {
   ]
 }
 
-function AIRecommendation({ profile, exams }) {
+const STUDY_POINTS_DB = {
+  "Indian Polity — Fundamental Rights": {
+    topic: "Indian Polity — Fundamental Rights (Articles 12-35)",
+    points: [
+      "Fundamental Rights are justiciable in nature, meaning individuals can move the Supreme Court under Article 32 directly for their enforcement.",
+      "Equality before Law (Article 14) and Equal Protection of Laws are core pillars of constitutional justice.",
+      "Right to Freedom (Article 19) guarantees 6 democratic freedoms including speech, assembly, and profession.",
+      "Right to Life and Personal Liberty (Article 21) includes the Right to Privacy, declared in the Puttaswamy case (2017).",
+      "Right to Education (Article 21A) was added by the 86th Amendment Act in 2002."
+    ],
+    tip: "Articles 20 & 21 cannot be suspended even during a National Emergency (Article 359). This is a highly frequent UPSC trap!",
+    mnemonic: "FRruits Are Sweet, We Need Rights (FR = Freedom, E = Equality, E = Exploitation, R = Religion, C = Culture, E = Education, C = Constitution).",
+    pyq: "Which Article in Part III of the Constitution can never be suspended during a National Emergency? (UPSC 2020) — Answer: Articles 20 & 21."
+  },
+  "Current Affairs — PIB & Hindu Daily Digest": {
+    topic: "Current Affairs — Space Technology & Banking Policies",
+    points: [
+      "NASA-ISRO Synthetic Aperture Radar (NISAR) is a dual-frequency L and S-band radar satellite to map Earth ecosystems.",
+      "RBI Monetary Policy Committee (MPC) raised the repo rate by 25 basis points to 6.75% to curb persistent core inflation.",
+      "UPI monthly transaction values hit an all-time record of ₹20 lakh crore in April 2026, signaling extremely high digital adoption.",
+      "Cabinet approved PM Awas Yojana Urban 2.0 to construct 1 crore affordable houses for the urban poor."
+    ],
+    tip: "Repo Rate is the rate at which RBI lends money to commercial banks. Increasing it makes loans costlier, lowering demand and cooling inflation.",
+    mnemonic: "NISAR stands for NASA-ISRO Synthetic Aperture Radar. Remember it is a joint project!",
+    pyq: "NISAR is a joint satellite venture between which space agencies? (SSC CGL 2025) — Answer: NASA & ISRO."
+  },
+  "AP History — Satavahana Dynastic Rule": {
+    topic: "APPSC Group-2 — Satavahana Dynasty & Rulers",
+    points: [
+      "The Satavahanas were the first major rulers of Andhra region with Dharanikota (Amaravati) and Pratishthan (Paithan) as capitals.",
+      "Gautamiputra Satakarni was the greatest ruler, declared as 'Eka Brahmana' and 'Trisamudra Toya Peeta Vahana' in the Nasik Prasasti.",
+      "Hala wrote the famous Prakrit romantic anthology 'Gatha Saptashati'.",
+      "They issued lead, potin, copper, and bronze coins extensively to support trade."
+    ],
+    tip: "The Nasik inscription was issued by Gautami Balasri, the mother of Gautamiputra Satakarni, highlighting his great conquests.",
+    mnemonic: "S-I-K -> Satavahana, Ikshvaku, Kakatiya (dynasties of Andhra region in chronological order).",
+    pyq: "Who was the author of the Prakrit text Gatha Saptashati? (APPSC Group-II) — Answer: King Hala."
+  },
+  "AP Bifurcation — AP Reorganisation Act 2014 Section 5": {
+    topic: "AP Reorganisation Act 2014 & Bifurcation Provisions",
+    points: [
+      "The Act bifurcated Andhra Pradesh into AP and Telangana on June 2, 2014 (Appointed Day).",
+      "Section 5 declares Hyderabad as the common capital for both states for a maximum of 10 years, after which it goes to Telangana.",
+      "Section 90 designates the Polavaram Irrigation Project as a national project funded entirely by the Central Government.",
+      "The Act consists of 108 sections, 12 schedules, and 12 parts."
+    ],
+    tip: "Ensure you remember Schedule 9 (State corporations) and Schedule 10 (Educational institutions) division issues, which are frequent APPSC topics.",
+    mnemonic: "108 Sections & 12 Schedules. Just think of 108 as the ambulance/emergency number for AP's political emergency!",
+    pyq: "Which section of the AP Reorganisation Act designates Polavaram as a national project? (APPSC Group-II) — Answer: Section 90."
+  },
+  "Telangana History — Asaf Jahi Dynasty Reforms": {
+    topic: "TGPSC Group-1 — Asaf Jahi Dynasty (Hyderabad State)",
+    points: [
+      "The Asaf Jahi Dynasty was founded by Nizam-ul-Mulk, Asaf Jah I in 1724 CE after defeating Mubariz Khan at the Battle of Shakar Kheda.",
+      "Salar Jung I (Prime Minister) introduced legendary administrative and land revenue reforms (Zilabandi system).",
+      "Mir Osman Ali Khan (7th Nizam) established Nizam Sagar Dam, Hyderabad High Court, and Osmania University (1918).",
+      "Operation Polo in September 1948 annexed Hyderabad into the Indian Union."
+    ],
+    tip: "Focus on the Battle of Shakar Kheda (1724) which marked the start of Nizam rule in Deccan. This is a favorite TGPSC prelims trap!",
+    mnemonic: "Salar Jung Reforms: Remember 'Salar' -> 'Zila' (Zilabandi administrative divisions reforms).",
+    pyq: "Who founded the Osmania University in Hyderabad in 1918? (TGPSC Group-I) — Answer: Mir Osman Ali Khan (7th Nizam)."
+  },
+  "Telangana Movement — 1969 Agitation & TJAC Formation": {
+    topic: "Telangana Separation Movement & Political Timeline",
+    points: [
+      "The 1969 Telangana Agitation started in Palvancha over Mulki Rules violations (local employment protections).",
+      "The Gentlemen's Agreement (1956) was violated, fueling the continuous demands for separation.",
+      "Telangana Joint Action Committee (TJAC) was formed in December 2009 with Prof. Kodandaram as chairman.",
+      "Agitations like Sagara Haram, Million March, and Chalo Assembly forced the Lok Sabha to pass the Bill in Feb 2014."
+    ],
+    tip: "Palvancha is the birth place of 1969 movement where student leader Ravindranath went on a hunger strike.",
+    mnemonic: "TJAC was formed in 2009. KCR went on a hunger strike in Nov 2009, leading to the historic December 9 statement.",
+    pyq: "Who was the student leader who went on a fast-unto-death in Palvancha in January 1969? (TGPSC) — Answer: Ravindranath."
+  },
+  "Regional Security — Women Safety Apps & SHE Teams": {
+    topic: "AP & TS Police SI/Constable — Women Safety & Security Initiatives",
+    points: [
+      "SHE Teams were established in Hyderabad in 2014 to combat eve-teasing and ensure safety in public places.",
+      "Disha mobile app in AP provides instant SOS alerts to nearby patrolling vans during emergencies.",
+      "Disha police stations and fast-track courts were setup to resolve crimes against women within 21 days.",
+      "Hawkeye App (TS Police) acts as a digital mobile companion for emergency alerts and citizen policing."
+    ],
+    tip: "SHE Teams consist of officers in plain clothes with concealed video cameras to catch harassers red-handed.",
+    mnemonic: "Disha app = AP (Andhra Pradesh), SHE Teams = TS (Telangana). Dual regional security measures.",
+    pyq: "In which year were the SHE Teams introduced in Telangana? (TS Police SI) — Answer: 2014."
+  },
+  "Educational Psychology — Jean Piaget Cognitive Stages": {
+    topic: "DSC SGT & SA — Piaget's Cognitive Development Theory",
+    points: [
+      "Stage 1: Sensorimotor (0-2 years) — Child learns through senses. Develops Object Permanence.",
+      "Stage 2: Preoperational (2-7 years) — Egocentric thinking, lack of conservation, symbolic play.",
+      "Stage 3: Concrete Operational (7-11 years) — Develops conservation of mass/volume, logical classification.",
+      "Stage 4: Formal Operational (11+ years) — Abstract thinking, hypothetical-deductive reasoning."
+    ],
+    tip: "Conservation means understanding that the quantity of a substance remains the same even when its shape or container changes. Children acquire this in Concrete Operational stage.",
+    mnemonic: "Smart People Cook Fish (S = Sensorimotor, P = Preoperational, C = Concrete, F = Formal).",
+    pyq: "At which stage of Piaget's theory does a child acquire object permanence? (AP DSC) — Answer: Sensorimotor stage."
+  },
+  "Pedagogy & Curriculum — NEP 2020 5+3+3+4 Structure": {
+    topic: "DSC Pedagogy — NEP 2020 Curriculum Reforms",
+    points: [
+      "Foundational Stage (5 years): Age 3 to 8. Includes Anganwadi/Pre-school (3y) + Class 1-2 (2y).",
+      "Preparatory Stage (3 years): Age 8 to 11. Includes Class 3 to 5. Experiential learning.",
+      "Middle Stage (3 years): Age 11 to 14. Includes Class 6 to 8. Coding, vocational crafts.",
+      "Secondary Stage (4 years): Age 14 to 18. Includes Class 9 to 12. Multidisciplinary options."
+    ],
+    tip: "NEP 2020 aims to achieve 100% Gross Enrolment Ratio (GER) in school education by 2030.",
+    mnemonic: "5+3+3+4. Just add the numbers: 5, 3, 3, 4. Replaces the 10+2 structure.",
+    pyq: "What is the structural curriculum framework recommended by NEP 2020? (TS DSC) — Answer: 5+3+3+4."
+  }
+}
+
+function AIRecommendation({ profile, exams, setActiveStudyPoint }) {
   const navigate = useNavigate()
   const primaryTarget = profile?.primaryTarget || (exams && exams[0]) || 'ias'
   
@@ -104,7 +217,33 @@ function AIRecommendation({ profile, exams }) {
   }
 
   const getTasksForTarget = (target) => {
-    if (target === 'ias' || target === 'ips' || target === 'upsc') {
+    if (target === 'appsc') {
+      return [
+        { type: 'study', subject: 'AP History', topic: 'Satavahana Dynastic Rule', duration: '45 min', priority: 'high', reason: 'High weightage area for APPSC Group-II' },
+        { type: 'quiz', subject: 'AP Bifurcation', topic: 'AP Reorganisation Act 2014 Section 5', duration: '20 min', priority: 'high', reason: 'Core concept for AP Polity paper' },
+        { type: 'mock', subject: 'APPSC Mock', topic: 'GS Prelims Solved Sectional', duration: '35 min', priority: 'medium', reason: 'Assess regional AP syllabus accuracy' },
+        { type: 'study', subject: 'AP Geography', topic: 'Coastal Districts & River Basins', duration: '40 min', priority: 'medium', reason: 'Daily syllabus target' },
+      ]
+    } else if (target === 'tgpsc') {
+      return [
+        { type: 'study', subject: 'Telangana History', topic: 'Asaf Jahi Dynasty Reforms', duration: '45 min', priority: 'high', reason: 'High weightage area for TGPSC Group-I' },
+        { type: 'quiz', subject: 'Telangana Movement', topic: '1969 Agitation & TJAC Formation', duration: '20 min', priority: 'high', reason: 'Core topic for separate statehood history' },
+        { type: 'mock', subject: 'TGPSC Mock', topic: 'Syllabus Core Sectional', duration: '35 min', priority: 'medium', reason: 'Practice active recall on local syllabus' },
+        { type: 'study', subject: 'Telangana Geography', topic: 'Singareni Coalfields & Rivers', duration: '40 min', priority: 'medium', reason: 'Daily syllabus target' },
+      ]
+    } else if (target?.includes('police')) {
+      return [
+        { type: 'study', subject: 'Regional Security', topic: 'Women Safety Apps & SHE Teams', duration: '45 min', priority: 'high', reason: 'SI/Constable examination core topic' },
+        { type: 'quiz', subject: 'Quantitative Aptitude', topic: 'Percentage & Profit/Loss', duration: '25 min', priority: 'high', reason: 'Boost quantitative speed for prelims' },
+        { type: 'mock', subject: 'State Police Mock', topic: 'Solved GS Sectional', duration: '40 min', priority: 'medium', reason: 'Simulate real physical-exam prelims' },
+      ]
+    } else if (target?.includes('dsc')) {
+      return [
+        { type: 'study', subject: 'Educational Psychology', topic: 'Jean Piaget Cognitive Stages', duration: '45 min', priority: 'high', reason: 'High weightage theory in DSC' },
+        { type: 'quiz', subject: 'Pedagogy & Curriculum', topic: 'NEP 2020 5+3+3+4 Structure', duration: '20 min', priority: 'high', reason: 'Core teaching methodology concept' },
+        { type: 'mock', subject: 'DSC Pedagogy Mock', topic: 'Solved Child Development Test', duration: '35 min', priority: 'medium', reason: 'Test your understanding of child psychology' },
+      ]
+    } else if (target === 'ias' || target === 'ips' || target === 'upsc') {
       return [
         { type: 'study', subject: 'Indian Polity', topic: 'Fundamental Rights', duration: '45 min', priority: 'high', reason: 'High weightage area for UPSC Prelims' },
         { type: 'quiz', subject: 'Current Affairs', topic: 'PIB & Hindu Daily Digest', duration: '20 min', priority: 'high', reason: 'Daily Current Affairs is crucial for UPSC' },
@@ -167,7 +306,25 @@ function AIRecommendation({ profile, exams }) {
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {tasks.map((task, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', cursor: 'pointer', transition: 'var(--t)' }}
+          <div key={i} onClick={() => {
+            const key = `${task.subject} — ${task.topic}`;
+            if (STUDY_POINTS_DB[key]) {
+              setActiveStudyPoint(STUDY_POINTS_DB[key]);
+            } else {
+              // Create dynamic entry if not present in static list
+              setActiveStudyPoint({
+                topic: `${task.subject} — ${task.topic}`,
+                points: [
+                  `Focus on the core syllabus and key definitions of ${task.topic}.`,
+                  `Practice past year papers related to ${task.subject} on this topic.`,
+                  `Analyze concept summaries in the K² Doubt Solver for customized queries.`
+                ],
+                tip: `${task.reason}. Stay consistent!`,
+                mnemonic: `Read and revise this regularly to boost your confidence.`,
+                pyq: `What is the main concept of ${task.topic}? (Check past ${task.subject} papers).`
+              });
+            }
+          }} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 14px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', cursor: 'pointer', transition: 'var(--t)' }}
             onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--cyan)'}
             onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
           >
@@ -254,6 +411,180 @@ function QuickCurrentAffairs() {
       <Link to="/app/current-affairs" className="btn btn-outline btn-sm" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }}>
         View All Current Affairs <ChevronRight size={14} />
       </Link>
+    </div>
+  )
+}
+
+function TargetCourseMaterialsCard({ primaryTarget }) {
+  const navigate = useNavigate()
+  
+  const matchedCourse = useMemo(() => {
+    let courseId = 'gk_crash'
+    if (primaryTarget === 'appsc') courseId = 'appsc_group2'
+    else if (primaryTarget === 'tgpsc') courseId = 'tgpsc_group1'
+    else if (primaryTarget?.includes('police')) courseId = 'police_comprehensive'
+    else if (primaryTarget?.includes('dsc')) courseId = 'dsc_teaching'
+    else if (primaryTarget === 'ias' || primaryTarget === 'ips' || primaryTarget === 'upsc') courseId = 'upsc_complete'
+    else if (primaryTarget === 'ssc_cgl') courseId = 'ssc_cgl_complete'
+    else if (primaryTarget?.includes('po') || primaryTarget?.includes('clerk') || primaryTarget?.includes('sbi') || primaryTarget?.includes('ibps') || primaryTarget === 'banking') courseId = 'banking_po'
+    
+    return COURSES.find(c => c.id === courseId) || COURSES[0]
+  }, [primaryTarget])
+
+  const handleStartLessons = () => {
+    toast.success(`Opening Lessons for "${matchedCourse.title}"!`)
+    navigate('/app/courses')
+  }
+
+  const handleDownloadPapers = () => {
+    toast.success(`Accessing Solved PYQ Papers for your target: ${matchedCourse.exam}!`)
+    navigate('/app/question-papers')
+  }
+
+  const handleDoubtSolver = () => {
+    toast.success(`Connecting to K² AI doubts solver for "${matchedCourse.title}"!`)
+    navigate('/app/ai-tutor', {
+      state: {
+        initialQuery: `Hi K²! I am preparing for my "${matchedCourse.exam}" exam using the "${matchedCourse.title}" course. Can you guide me through a solved example on one of our core topics: "${matchedCourse.topics[0]}"?`
+      }
+    })
+  }
+
+  const handleRecallQuiz = () => {
+    toast.success(`Loading active recall quiz for ${matchedCourse.exam}!`)
+    navigate('/app/mock-tests')
+  }
+
+  return (
+    <div className="card card-p" style={{
+      border: `1px solid ${matchedCourse.color}35`,
+      background: `linear-gradient(135deg, ${matchedCourse.color}0b 0%, rgba(5,6,10,0.6) 100%)`,
+      position: 'relative',
+      overflow: 'hidden',
+      marginBottom: 20
+    }}>
+      <div style={{ position: 'absolute', right: -20, top: -20, fontSize: '6rem', opacity: 0.04, pointerEvents: 'none' }}>{matchedCourse.icon}</div>
+      
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+        <span style={{ fontSize: '1.2rem' }}>{matchedCourse.icon}</span>
+        <h4 style={{ margin: 0 }}>Target Course & Solved Materials</h4>
+        <span className="badge" style={{ marginLeft: 'auto', background: `${matchedCourse.color}22`, color: matchedCourse.color, border: `1px solid ${matchedCourse.color}44`, fontWeight: 700 }}>ACTIVE</span>
+      </div>
+
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', padding: 14, marginBottom: 16, flexWrap: 'wrap' }}>
+        <div style={{ width: 44, height: 44, borderRadius: 'var(--r-md)', background: `linear-gradient(135deg, ${matchedCourse.color}66, ${matchedCourse.color}22)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', flexShrink: 0 }}>
+          {matchedCourse.icon}
+        </div>
+        <div style={{ flex: 1, minWidth: 200 }}>
+          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'white', marginBottom: 2 }}>{matchedCourse.title}</div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{matchedCourse.lessons} video lessons • {matchedCourse.hours}h • {matchedCourse.rating} ★ Rated</div>
+        </div>
+      </div>
+
+      {/* Materials, Solved Papers, and Quiz grid */}
+      <div className="grid-2" style={{ gap: 10 }}>
+        <button onClick={handleStartLessons} className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-start', padding: '10px 12px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', color: 'var(--text-2)', cursor: 'pointer' }}>
+          <span>📖</span>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'white' }}>Study Lessons</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-3)' }}>Video lectures & notes</div>
+          </div>
+        </button>
+
+        <button onClick={handleDownloadPapers} className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-start', padding: '10px 12px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', color: 'var(--text-2)', cursor: 'pointer' }}>
+          <span>📄</span>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'white' }}>Solved PYQs</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-3)' }}>Download solved PDF papers</div>
+          </div>
+        </button>
+
+        <button onClick={handleRecallQuiz} className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-start', padding: '10px 12px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', color: 'var(--text-2)', cursor: 'pointer' }}>
+          <span>⚡</span>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'white' }}>Active Recall Quiz</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-3)' }}>Topic tests & mocks</div>
+          </div>
+        </button>
+
+        <button onClick={handleDoubtSolver} className="btn btn-outline btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-start', padding: '10px 12px', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--purple-30)', borderRadius: 'var(--r-md)', color: 'var(--text-2)', cursor: 'pointer' }}
+          onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--purple)'}
+          onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--purple-30)'}
+        >
+          <span>🧠</span>
+          <div style={{ textAlign: 'left' }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--purple)' }}>K² Doubt Solver</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-3)' }}>Ask concept questions</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function IndiaPrideMarqueeBanner() {
+  const prideItems = useMemo(() => NEWSPAPER_TOPICS.filter(item => item.isPrideMoment), [])
+  const [activeIndex, setActiveIndex] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveIndex(prev => (prev + 1) % prideItems.length)
+    }, 6000)
+    return () => clearInterval(timer)
+  }, [prideItems])
+
+  if (prideItems.length === 0) return null
+  const currentItem = prideItems[activeIndex]
+
+  return (
+    <div className="card" style={{
+      background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(16, 185, 129, 0.08) 100%)',
+      border: '1px solid rgba(245, 158, 11, 0.22)',
+      borderRadius: 'var(--r-xl)',
+      padding: '16px 22px',
+      position: 'relative',
+      overflow: 'hidden',
+      marginBottom: 24,
+      boxShadow: '0 8px 30px rgba(245, 158, 11, 0.05)',
+      transition: 'var(--t)'
+    }}
+      onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(245, 158, 11, 0.45)'}
+      onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(245, 158, 11, 0.22)'}
+    >
+      {/* Glow effects */}
+      <div style={{ position: 'absolute', left: '-5%', top: '-25%', width: 120, height: 120, background: 'radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)', filter: 'blur(20px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', right: '-5%', bottom: '-25%', width: 120, height: 120, background: 'radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%)', filter: 'blur(20px)', pointerEvents: 'none' }} />
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 280 }}>
+          <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(245, 158, 11, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span style={{ fontSize: '1.2rem' }}>🇮🇳</span>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+              <span style={{ fontSize: '0.68rem', fontWeight: 800, color: 'var(--amber)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Proud to be an Indian Moment</span>
+              <span className="dot-live" style={{ background: 'var(--amber)', width: 6, height: 6 }} />
+            </div>
+            <div style={{ minHeight: 40 }}>
+              <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'white', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {currentItem.title.split(': ')[1] || currentItem.title}
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', lineHeight: 1.45, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                {currentItem.prideDetails}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Link to="/app/current-affairs" className="btn btn-outline btn-sm" style={{
+          gap: 6, fontSize: '0.75rem', padding: '8px 14px', borderRadius: 'var(--r-full)', borderColor: 'rgba(245, 158, 11, 0.35)', color: 'var(--text-2)', background: 'rgba(245, 158, 11, 0.03)', textDecoration: 'none'
+        }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--amber)'; e.currentTarget.style.background = 'rgba(245, 158, 11, 0.08)' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(245, 158, 11, 0.35)'; e.currentTarget.style.background = 'rgba(245, 158, 11, 0.03)' }}
+        >
+          Explore Pride Tracker & Editorials <ChevronRight size={12} />
+        </Link>
+      </div>
     </div>
   )
 }
@@ -438,6 +769,7 @@ export default function Dashboard() {
   const [greeting, setGreeting] = useState('')
   const [dailyQuiz, setDailyQuiz] = useState(null)
   const [quizAnswer, setQuizAnswer] = useState(null)
+  const [activeStudyPoint, setActiveStudyPoint] = useState(null)
 
   const handleQuizAnswer = (optionIdx) => {
     setQuizAnswer(optionIdx)
@@ -474,6 +806,42 @@ export default function Dashboard() {
           bank = bank.concat(subjList)
         })
       }
+    } else if (primaryTarget === 'appsc') {
+      if (QUESTION_BANK.appsc) {
+        Object.values(QUESTION_BANK.appsc).forEach(subjList => {
+          bank = bank.concat(subjList)
+        })
+      }
+    } else if (primaryTarget === 'tgpsc') {
+      if (QUESTION_BANK.tgpsc) {
+        Object.values(QUESTION_BANK.tgpsc).forEach(subjList => {
+          bank = bank.concat(subjList)
+        })
+      }
+    } else if (primaryTarget === 'ap_police') {
+      if (QUESTION_BANK.ap_police) {
+        Object.values(QUESTION_BANK.ap_police).forEach(subjList => {
+          bank = bank.concat(subjList)
+        })
+      }
+    } else if (primaryTarget === 'ts_police') {
+      if (QUESTION_BANK.ts_police) {
+        Object.values(QUESTION_BANK.ts_police).forEach(subjList => {
+          bank = bank.concat(subjList)
+        })
+      }
+    } else if (primaryTarget === 'ap_dsc_sgt' || primaryTarget === 'ap_dsc_sa') {
+      if (QUESTION_BANK.ap_dsc_sgt) {
+        Object.values(QUESTION_BANK.ap_dsc_sgt).forEach(subjList => {
+          bank = bank.concat(subjList)
+        })
+      }
+    } else if (primaryTarget === 'ts_dsc_sgt' || primaryTarget === 'ts_dsc_sa') {
+      if (QUESTION_BANK.ts_dsc_sgt) {
+        Object.values(QUESTION_BANK.ts_dsc_sgt).forEach(subjList => {
+          bank = bank.concat(subjList)
+        })
+      }
     }
 
     if (bank.length > 0) {
@@ -503,6 +871,9 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* India Pride & Editorial Banner */}
+      <IndiaPrideMarqueeBanner />
 
       {/* Mera Lakshya Vision Banner */}
       <LakshyaVisionBanner profile={profile} primaryTarget={primaryTarget} />
@@ -600,7 +971,10 @@ export default function Dashboard() {
       {/* Main grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, marginBottom: 28 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <AIRecommendation profile={profile} exams={profile?.exams || []} />
+          <AIRecommendation profile={profile} exams={profile?.exams || []} setActiveStudyPoint={setActiveStudyPoint} />
+          
+          {/* Target Course & Solved Materials */}
+          <TargetCourseMaterialsCard primaryTarget={primaryTarget} />
 
           {/* Quick mock test */}
           <div className="card card-p">
@@ -736,6 +1110,128 @@ export default function Dashboard() {
           })()}
         </div>
       </div>
+
+      {/* Glassmorphic Study Plan Points Modal Drawer */}
+      {activeStudyPoint && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(5, 6, 10, 0.78)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 20,
+          animation: 'fadeIn 0.25s ease'
+        }} onClick={() => setActiveStudyPoint(null)}>
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(10, 15, 30, 0.98))',
+            border: '1px solid rgba(0, 212, 255, 0.25)',
+            borderRadius: 'var(--r-xl)',
+            maxWidth: 600,
+            width: '100%',
+            padding: '28px 30px',
+            boxShadow: '0 20px 50px rgba(0, 212, 255, 0.15)',
+            position: 'relative',
+            animation: 'scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
+          }} onClick={e => e.stopPropagation()}>
+            {/* Close Button */}
+            <button onClick={() => setActiveStudyPoint(null)} style={{
+              position: 'absolute',
+              top: 20,
+              right: 20,
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: 'none',
+              color: 'var(--text-3)',
+              borderRadius: '50%',
+              width: 32,
+              height: 32,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'var(--t)'
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.color = 'white' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.color = 'var(--text-3)' }}
+            >
+              <X size={16} />
+            </button>
+
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+              <div style={{ width: 42, height: 42, borderRadius: 'var(--r-md)', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Brain size={20} color="white" />
+              </div>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '1.15rem', color: 'white' }}>{activeStudyPoint.topic}</h4>
+                <div style={{ fontSize: '0.72rem', color: 'var(--cyan)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 2 }}>K² Study Guide Focus Areas</div>
+              </div>
+            </div>
+
+            {/* Content List */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Key Study Focus Points:</div>
+              {activeStudyPoint.points.map((pt, idx) => (
+                <div key={idx} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', fontSize: '0.88rem', color: 'var(--text-2)', lineHeight: 1.5 }}>
+                  <span style={{ color: 'var(--cyan)', fontWeight: 'bold', marginTop: 2 }}>•</span>
+                  <span>{pt}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Mnemonic & Tips */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, borderTop: '1px solid var(--border)', paddingTop: 18 }}>
+              {activeStudyPoint.tip && (
+                <div style={{
+                  padding: '12px 14px',
+                  background: 'rgba(239, 68, 68, 0.06)',
+                  borderLeft: '4px solid var(--red)',
+                  borderRadius: '0 var(--r-md) var(--r-md) 0',
+                  fontSize: '0.84rem',
+                  lineHeight: 1.5,
+                  color: 'var(--text-1)'
+                }}>
+                  <strong style={{ color: 'var(--red)' }}>📝 Exam Tip:</strong> {activeStudyPoint.tip}
+                </div>
+              )}
+
+              {activeStudyPoint.mnemonic && (
+                <div style={{
+                  padding: '12px 14px',
+                  background: 'rgba(245, 158, 11, 0.06)',
+                  borderLeft: '4px solid var(--amber)',
+                  borderRadius: '0 var(--r-md) var(--r-md) 0',
+                  fontSize: '0.84rem',
+                  lineHeight: 1.5,
+                  color: 'var(--text-1)'
+                }}>
+                  <strong style={{ color: 'var(--amber)' }}>💡 Memory Trick:</strong> {activeStudyPoint.mnemonic}
+                </div>
+              )}
+
+              {activeStudyPoint.pyq && (
+                <div style={{
+                  padding: '12px 14px',
+                  background: 'rgba(124, 58, 237, 0.06)',
+                  borderLeft: '4px solid var(--purple)',
+                  borderRadius: '0 var(--r-md) var(--r-md) 0',
+                  fontSize: '0.84rem',
+                  lineHeight: 1.5,
+                  color: 'var(--text-1)'
+                }}>
+                  <strong style={{ color: 'var(--purple)' }}>📅 Solved PYQ Challenge:</strong> {activeStudyPoint.pyq}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

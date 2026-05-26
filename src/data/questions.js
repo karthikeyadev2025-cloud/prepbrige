@@ -35,6 +35,50 @@ export const QUESTION_BANK = {
       { id:'ba1', text:'The headquarters of NABARD is located at:', options:['New Delhi','Kolkata','Mumbai','Chennai'], correct:2, explanation:'National Bank for Agriculture and Rural Development (NABARD) is headquartered in Mumbai, Maharashtra.', year:'2023', difficulty:'easy' },
       { id:'ba2', text:'SWIFT stands for:', options:['Society for Worldwide Interbank Financial Telecommunication','System for Worldwide International Finance Transfer','Standard World Interbank Fund Transfer','Society for World Integrated Finance and Technology'], correct:0, explanation:'SWIFT stands for Society for Worldwide Interbank Financial Telecommunication, enabling secure financial messaging globally.', year:'2022', difficulty:'medium' },
     ]
+  },
+  appsc: {
+    history: [
+      { id: 'ap_h1', text: 'Which dynasty was the first major ruling dynasty in Andhra region?', options: ['Satavahanas', 'Pallavas', 'Ikshvakus', 'Eastern Chalukyas'], correct: 0, explanation: 'The Satavahanas were the first major dynasty to rule the Andhra region, with Dharanikota (Amaravati) as their early cultural centre.', year: '2024', difficulty: 'medium' },
+      { id: 'ap_h2', text: 'Rudrama Devi, a prominent female ruler of South India, belonged to which dynasty?', options: ['Chalukya', 'Kakatiya', 'Chola', 'Rashtrakuta'], correct: 1, explanation: 'Rudrama Devi (1262–1289 CE) was a powerful monarch of the Kakatiya dynasty with her capital at Orugallu (Warangal).', year: '2023', difficulty: 'easy' }
+    ],
+    polity: [
+      { id: 'ap_p1', text: 'How many schedules are included in the Andhra Pradesh Reorganisation Act, 2014?', options: ['10 Schedules', '12 Schedules', '14 Schedules', '8 Schedules'], correct: 1, explanation: 'The AP Reorganisation Act, 2014 contains 108 sections, 12 schedules, and 12 parts, detailing the bifurcation of AP and Telangana.', year: '2024', difficulty: 'hard' },
+      { id: 'ap_p2', text: 'Which section of the AP Reorganisation Act, 2014 deals with the provisions for the common capital?', options: ['Section 3', 'Section 5', 'Section 8', 'Section 10'], correct: 1, explanation: 'Section 5 of the AP Reorganisation Act, 2014 stipulates that Hyderabad shall be the common capital of AP and Telangana for a period not exceeding 10 years.', year: '2022', difficulty: 'medium' }
+    ]
+  },
+  tgpsc: {
+    history: [
+      { id: 'ts_h1', text: 'The historic Telangana Armed Struggle (Telangana Sayudha Poratam) began in which year?', options: ['1942', '1946', '1948', '1952'], correct: 1, explanation: 'The Telangana Armed Struggle started in 1946 against the feudal lords (Deshmukhs) and the Nizam\'s Razakars, and continued until 1951.', year: '2024', difficulty: 'hard' },
+      { id: 'ts_h2', text: 'Who was the founder of the Asaf Jahi Dynasty of Hyderabad?', options: ['Nizam-ul-Mulk, Asaf Jah I', 'Mir Osman Ali Khan', 'Salar Jung I', 'Nasir-ud-daula'], correct: 0, explanation: 'Mir Qamar-ud-din Khan Siddiqi (Asaf Jah I) established the independent Nizam State of Hyderabad in 1724 CE.', year: '2023', difficulty: 'medium' }
+    ],
+    movement: [
+      { id: 'ts_m1', text: 'In which year was the Telangana Joint Action Committee (TJAC) formed under Prof. Kodandaram?', options: ['2004', '2009', '2010', '2012'], correct: 1, explanation: 'The Telangana Joint Action Committee (TJAC) was formed in December 2009 to spearhead the agitation for a separate state.', year: '2024', difficulty: 'medium' },
+      { id: 'ts_m2', text: 'Which committee was appointed by the Central Government in 2010 to study the situation in Andhra Pradesh regarding bifurcation?', options: ['Sarkaria Commission', 'Srikrishna Committee', 'Wanchoo Committee', 'Fazal Ali Commission'], correct: 1, explanation: 'The Srikrishna Committee (headed by Justice B.N. Srikrishna) was appointed in February 2010 to examine the situation and submit a report on bifurcation.', year: '2022', difficulty: 'easy' }
+    ]
+  },
+  ap_police: {
+    general: [
+      { id: 'ap_pol1', text: 'Which mobile application was launched by the AP Police specifically for the emergency safety of women?', options: ['Disha App', 'SheTeam App', 'Abhayam App', 'Nirbhaya App'], correct: 0, explanation: 'The AP Government launched the Disha mobile application to send SOS alerts during emergencies directly to nearby police control rooms.', year: '2024', difficulty: 'easy' },
+      { id: 'ap_pol2', text: 'What is the minimum age to qualify for the AP Police Sub-Inspector recruitment exam?', options: ['18 years', '21 years', '23 years', '25 years'], correct: 1, explanation: 'Candidates must have attained the age of 21 years to apply for the Sub Inspector posts in AP Police.', year: '2023', difficulty: 'easy' }
+    ]
+  },
+  ts_police: {
+    general: [
+      { id: 'ts_pol1', text: 'Which division of Telangana Police works round-the-clock for protecting women from harassment in public places?', options: ['Task Force', 'SHE Teams', 'Hawkeye Units', 'Disha Wing'], correct: 1, explanation: 'SHE Teams were launched in Hyderabad in 2014 to ensure women\'s safety in public places and curb eve-teasing.', year: '2024', difficulty: 'easy' },
+      { id: 'ts_pol2', text: 'The Telangana State Police Academy (TSPA) is located at which place?', options: ['Warangal', 'Himayatsagar, Hyderabad', 'Karimnagar', 'Nalgonda'], correct: 1, explanation: 'The TSPA (formerly APPA) is located at Himayatsagar on the outskirts of Hyderabad, where police officers undergo training.', year: '2023', difficulty: 'medium' }
+    ]
+  },
+  ap_dsc_sgt: {
+    pedagogy: [
+      { id: 'ap_ds1', text: 'According to Jean Piaget, during which stage does a child develop Object Permanence?', options: ['Sensorimotor Stage', 'Preoperational Stage', 'Concrete Operational Stage', 'Formal Operational Stage'], correct: 0, explanation: 'Object permanence is a child\'s understanding that objects continue to exist even when they cannot be seen or heard, which develops during the Sensorimotor stage (0-2 years).', year: '2024', difficulty: 'medium' },
+      { id: 'ap_ds2', text: 'What is the structure of the school education curriculum under the National Education Policy (NEP) 2020?', options: ['10+2 structure', '5+3+3+4 structure', '8+4+2 structure', '5+4+3+2 structure'], correct: 1, explanation: 'NEP 2020 replaces the 10+2 structure with a 5+3+3+4 curricular structure (Foundational, Preparatory, Middle, and Secondary stages).', year: '2023', difficulty: 'easy' }
+    ]
+  },
+  ts_dsc_sgt: {
+    pedagogy: [
+      { id: 'ts_ds1', text: 'Which learning theory emphasizes the role of the "Zone of Proximal Development" (ZPD) and scaffolding?', options: ['Piaget Cognitive Theory', 'Vygotsky Social Constructivism', 'Skinner Operant Conditioning', 'Bruner Discovery Learning'], correct: 1, explanation: 'Lev Vygotsky\'s Social Development Theory introduces the Zone of Proximal Development (ZPD) and the concept of Scaffolding in child learning.', year: '2024', difficulty: 'hard' },
+      { id: 'ts_ds2', text: 'A teacher uses positive reinforcement to encourage students to complete homework. Which psychologist proposed this operant conditioning concept?', options: ['B.F. Skinner', 'Ivan Pavlov', 'John B. Watson', 'Edward Thorndike'], correct: 0, explanation: 'B.F. Skinner proposed the Operant Conditioning theory, proving that behavior can be shaped by positive or negative reinforcement.', year: '2023', difficulty: 'easy' }
+    ]
   }
 }
 
@@ -79,4 +123,44 @@ export const MOCK_TESTS = [
     syllabus: ['Physics','Chemistry','Biology'],
     attempts: 312000, avgScore: 480.6, difficulty: 'hard'
   },
+  {
+    id: 'appsc_group2_2026',
+    title: 'APPSC Group-2 Prelims 2026 — General Studies',
+    exam: 'appsc', year: 2026, totalQuestions: 100, duration: 120,
+    pattern: 'MCQ', negativeMarking: -0.33, marksPerQuestion: 1,
+    syllabus: ['AP History','Polity & Reorganisation Act','Geography of AP','Local Economy'],
+    attempts: 12500, avgScore: 64.2, difficulty: 'medium'
+  },
+  {
+    id: 'tgpsc_group1_2026',
+    title: 'TGPSC Group-1 Prelims 2026 — Mock Paper',
+    exam: 'tgpsc', year: 2026, totalQuestions: 120, duration: 120,
+    pattern: 'MCQ', negativeMarking: -0.25, marksPerQuestion: 1,
+    syllabus: ['Telangana Movement','Asaf Jahi History','Geography & Local Welfare','Polity'],
+    attempts: 15400, avgScore: 71.8, difficulty: 'hard'
+  },
+  {
+    id: 'ap_police_si_2026',
+    title: 'AP Police SI Prelims 2026 — GS Mock',
+    exam: 'ap_police', year: 2026, totalQuestions: 100, duration: 90,
+    pattern: 'MCQ', negativeMarking: -0.25, marksPerQuestion: 1,
+    syllabus: ['AP Geography','Womens Safety Disha Act','Aptitude','Reasoning','GK'],
+    attempts: 9800, avgScore: 58.6, difficulty: 'medium'
+  },
+  {
+    id: 'ts_police_si_2026',
+    title: 'TS Police SI Prelims 2026 — Full Test',
+    exam: 'ts_police', year: 2026, totalQuestions: 100, duration: 90,
+    pattern: 'MCQ', negativeMarking: -0.25, marksPerQuestion: 1,
+    syllabus: ['SHE Teams Act','Telangana History','General Reasoning','Quant','GK'],
+    attempts: 11200, avgScore: 61.3, difficulty: 'medium'
+  },
+  {
+    id: 'ap_dsc_sgt_2026',
+    title: 'AP DSC SGT 2026 — Pedagogy & Methodology Mock',
+    exam: 'ap_dsc_sgt', year: 2026, totalQuestions: 80, duration: 90,
+    pattern: 'MCQ', negativeMarking: 0.0, marksPerQuestion: 1,
+    syllabus: ['Child Development','Pedagogy','NEP 2020','Andhra Education Schemes'],
+    attempts: 7400, avgScore: 62.1, difficulty: 'medium'
+  }
 ]

@@ -42,6 +42,14 @@ export default function Onboarding() {
       defaultSlogan = "I will crack NEET with top marks and earn my seat in medical excellence to serve humanity."
     } else if (targetId.includes('jee')) {
       defaultSlogan = "I will clear JEE and secure my seat in a premier engineering institute to innovate for the future."
+    } else if (targetId === 'appsc') {
+      defaultSlogan = "I will crack APPSC and serve the people of Andhra Pradesh with integrity, transparency, and administrative excellence."
+    } else if (targetId === 'tgpsc') {
+      defaultSlogan = "I will clear TGPSC and contribute actively to the progressive growth and welfare of Telangana state."
+    } else if (targetId.includes('police')) {
+      defaultSlogan = "I will clear my State Police exam and protect our community with courage, honor, and duty."
+    } else if (targetId.includes('dsc')) {
+      defaultSlogan = "I will clear the teaching DSC exams and nurture the next generation of regional students with wisdom and empathy."
     }
     setData(d => ({ ...d, primaryTarget: targetId, lakshyaSlogan: defaultSlogan }))
   }

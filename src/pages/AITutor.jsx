@@ -147,7 +147,7 @@ export default function AITutor() {
     try {
       const topic = subject === 'all' ? 'General Knowledge for competitive exams' : subject
       const exam = (profile?.exams?.[0] || 'UPSC').toUpperCase()
-      const qs = await generateQuestions(topic, exam, 'medium', 3, profile?.language || 'en')
+      const qs = await generateQuestions(topic, exam, 'medium', 3, language)
 
       if (qs.length > 0) {
         const quizText = `Here are **3 practice questions** on ${topic} for ${exam}:\n\n${qs.map((q, i) =>
