@@ -34,12 +34,22 @@ export async function signUpEmail(email, password, name) {
 
 // ─── Phone OTP Auth ─────────────────────────────────────────────
 export function setupRecaptcha(elementId) {
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, elementId, {
-      size: 'invisible',
-      callback: () => {},
-    })
+  const container = document.getElementById(elementId)
+  if (!container) return null
+
+  if (window.recaptchaVerifier) {
+    try {
+      window.recaptchaVerifier.clear()
+    } catch (e) {
+      console.warn('[Auth] Error clearing stale recaptcha:', e)
+    }
   }
+
+  window.recaptchaVerifier = new RecaptchaVerifier(auth, elementId, {
+    size: 'invisible',
+    callback: () => {},
+  })
+  
   return window.recaptchaVerifier
 }
 

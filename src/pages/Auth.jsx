@@ -210,9 +210,6 @@ export default function Auth() {
                     </button>
                   </div>
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-4)', background: 'var(--cyan-10)', border: '1px solid var(--cyan-20)', borderRadius: 'var(--r-sm)', padding: '6px 10px' }}>
-                  🔑 Admin access: <strong>admin@prepbridge.in</strong>
-                </div>
               </>
             )}
 
