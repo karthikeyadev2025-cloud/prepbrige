@@ -27,8 +27,8 @@ const DEFAULT_SETTINGS = {
   forcePhoneOtp: false,
 
   // Supabase Storage
-  supabaseUrl: 'https://prepbridge-85189.supabase.co',
-  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByZXBicmlkZ2UtODUxODkiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc3OTc3MDEyNywiZXhwIjoyMDk1MzQ2MTI3fQ.xxxx-placeholder',
+  supabaseUrl: 'https://stmnmxkosnxbckvqojxw.supabase.co',
+  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bW5teGtvc254YmNrdnFvanh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODgwOTcsImV4cCI6MjA5NTM2NDA5N30.37fJYUOxQs6gvgZYzSkOOWMvaY1qKsZheIKicsr_G5w',
   supabaseBucket: 'profile_photos',
 
   // General App Settings

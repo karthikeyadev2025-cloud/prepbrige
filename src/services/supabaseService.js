@@ -11,9 +11,8 @@ import { db } from '../firebase/config'
  * @returns {Promise<string>} - The public, accessible CDN URL of the uploaded asset
  */
 export async function uploadToSupabase(file, path) {
-  // 1. Sensible default fallbacks prefilled for the user
-  let supabaseUrl = 'https://prepbridge-85189.supabase.co'
-  let supabaseAnonKey = ''
+  let supabaseUrl = 'https://stmnmxkosnxbckvqojxw.supabase.co'
+  let supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bW5teGtvc254YmNrdnFvanh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODgwOTcsImV4cCI6MjA5NTM2NDA5N30.37fJYUOxQs6gvgZYzSkOOWMvaY1qKsZheIKicsr_G5w'
   let supabaseBucket = 'profile_photos'
 
   try {
