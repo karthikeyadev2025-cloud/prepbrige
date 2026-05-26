@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState, useCallback } from 'react'
 
 // ─── Particle Canvas ──────────────────────────────────────────────────────────
 function ParticleCanvas() {
@@ -136,6 +136,107 @@ const STORIES = [
   { name: 'Meena Gupta', rank: 'CTET Qualified', state: 'MP', year: '2024' },
 ]
 
+
+// ─── Hero Typewriter ──────────────────────────────────────────────────────────
+const JOB_WORDS = [
+  { word: 'IAS Officer',    gradient: 'linear-gradient(90deg,#7c3aed,#a855f7)', glow: 'rgba(124,58,237,0.6)' },
+  { word: 'SSC CGL Job',    gradient: 'linear-gradient(90deg,#0080ff,#00d4ff)', glow: 'rgba(0,128,255,0.6)'  },
+  { word: 'Bank PO',        gradient: 'linear-gradient(90deg,#059669,#10b981)', glow: 'rgba(16,185,129,0.6)' },
+  { word: 'Railway Job',    gradient: 'linear-gradient(90deg,#dc2626,#f97316)', glow: 'rgba(220,38,38,0.6)'  },
+  { word: 'IPS Officer',    gradient: 'linear-gradient(90deg,#7c3aed,#00d4ff)', glow: 'rgba(124,58,237,0.6)' },
+  { word: 'Police Officer', gradient: 'linear-gradient(90deg,#1d4ed8,#3b82f6)', glow: 'rgba(29,78,216,0.6)'  },
+  { word: 'Teacher (KVS)',  gradient: 'linear-gradient(90deg,#d97706,#f59e0b)', glow: 'rgba(217,119,6,0.6)'  },
+]
+
+function HeroTypewriter() {
+  const [wordIdx, setWordIdx]   = useState(0)
+  const [displayed, setDisplayed] = useState('')
+  const [phase, setPhase]       = useState('typing') // typing | pause | deleting
+  const [showUnder, setShowUnder] = useState(false)
+
+  useEffect(() => {
+    const current = JOB_WORDS[wordIdx].word
+    let timeout
+
+    if (phase === 'typing') {
+      if (displayed.length < current.length) {
+        timeout = setTimeout(() => setDisplayed(current.slice(0, displayed.length + 1)), 80)
+      } else {
+        setShowUnder(true)
+        timeout = setTimeout(() => setPhase('pause'), 1800)
+      }
+    } else if (phase === 'pause') {
+      timeout = setTimeout(() => { setShowUnder(false); setPhase('deleting') }, 300)
+    } else if (phase === 'deleting') {
+      if (displayed.length > 0) {
+        timeout = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 40)
+      } else {
+        setWordIdx(i => (i + 1) % JOB_WORDS.length)
+        setPhase('typing')
+      }
+    }
+    return () => clearTimeout(timeout)
+  }, [phase, displayed, wordIdx])
+
+  const { gradient, glow } = JOB_WORDS[wordIdx]
+
+  return (
+    <div style={{ marginBottom: 24, animation: 'heroSlideIn 0.8s ease both' }}>
+      {/* Line 1: "Your Dream" */}
+      <div style={{ fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.03em', color: 'white', marginBottom: 4 }}>
+        Your Dream
+      </div>
+
+      {/* Line 2: Typewriter word — changes each cycle */}
+      <div style={{ fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.15, letterSpacing: '-0.03em', marginBottom: 4, minHeight: '1.15em', position: 'relative', display: 'inline-block' }}>
+        <span style={{
+          background: gradient,
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          filter: `drop-shadow(0 0 18px ${glow})`,
+          transition: 'filter 0.4s ease',
+          animation: phase === 'typing' && displayed.length === JOB_WORDS[wordIdx].word.length ? 'wordPop 0.4s ease' : 'none',
+        }}>
+          {displayed}
+        </span>
+
+        {/* Blinking cursor */}
+        <span style={{
+          display: 'inline-block', width: 3, height: '0.85em',
+          background: gradient.includes('7c3aed') ? '#a855f7' : gradient.includes('0080ff') ? '#00d4ff' : gradient.includes('059669') ? '#10b981' : gradient.includes('dc2626') ? '#f97316' : '#a855f7',
+          borderRadius: 2, marginLeft: 4, verticalAlign: 'middle',
+          animation: 'cursorBlink 1s step-end infinite',
+          boxShadow: `0 0 8px ${glow}`,
+        }} />
+
+        {/* Animated underline */}
+        {showUnder && (
+          <div style={{
+            position: 'absolute', bottom: -4, left: 0,
+            height: 3, borderRadius: 2,
+            background: gradient,
+            boxShadow: `0 0 10px ${glow}`,
+            animation: 'underlineGrow 0.35s ease forwards',
+          }} />
+        )}
+      </div>
+
+      {/* Line 3: "Starts Here." + shimmer ₹599 */}
+      <div style={{ fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.03em', display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 14, flexWrap: 'wrap', animation: 'heroSlideIn 0.8s ease 0.15s both' }}>
+        <span style={{ color: 'rgba(255,255,255,0.85)' }}>Starts Here.</span>
+        <span style={{
+          background: 'linear-gradient(90deg, #10b981 0%, #00d4ff 30%, #ffffff 50%, #00d4ff 70%, #10b981 100%)',
+          backgroundSize: '200% auto',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          animation: 'shimmer599 2.5s linear infinite, glowPulse599 2.5s ease-in-out infinite',
+          fontStyle: 'normal',
+        }}>₹599.</span>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main HeroVideo Component ─────────────────────────────────────────────────
 export default function HeroVideo() {
   const [activeStory, setActiveStory] = useState(0)
@@ -181,15 +282,8 @@ export default function HeroVideo() {
           2,45,832 aspirants preparing right now · Free for everyone
         </div>
 
-        {/* Main headline — cinematic */}
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 'clamp(2.4rem, 6vw, 4.2rem)', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.03em', marginBottom: 8, animation: 'heroSlideIn 0.8s ease' }}>
-            Your Dream Govt Job
-          </div>
-          <div style={{ fontSize: 'clamp(2.4rem, 6vw, 4.2rem)', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.03em', background: 'linear-gradient(90deg, #7c3aed, #00d4ff, #10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', animation: 'heroSlideIn 0.8s ease 0.1s both' }}>
-            Starts Here. ₹599.
-          </div>
-        </div>
+        {/* Main headline — typewriter */}
+        <HeroTypewriter />
 
         <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.18rem)', color: 'rgba(148,163,184,0.9)', maxWidth: 620, margin: '0 auto 40px', lineHeight: 1.75, animation: 'heroSlideIn 0.8s ease 0.2s both' }}>
           One login for <strong style={{ color: '#fff' }}>200+ exams</strong> — UPSC, SSC, Banking, Railways, State PSC &amp; more.
@@ -284,6 +378,27 @@ export default function HeroVideo() {
         @keyframes bounce {
           0%,100% { transform:translateX(-50%) translateY(0); }
           50% { transform:translateX(-50%) translateY(-8px); }
+        }
+        @keyframes cursorBlink {
+          0%,100% { opacity:1; }
+          50% { opacity:0; }
+        }
+        @keyframes wordPop {
+          0% { opacity:0; transform: translateY(12px) scale(0.95); filter: blur(4px); }
+          60% { opacity:1; transform: translateY(-3px) scale(1.02); filter: blur(0); }
+          100% { opacity:1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        @keyframes shimmer599 {
+          0% { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
+        @keyframes glowPulse599 {
+          0%,100% { text-shadow: 0 0 20px rgba(16,185,129,0.5); }
+          50% { text-shadow: 0 0 40px rgba(16,185,129,0.9), 0 0 80px rgba(0,212,255,0.4); }
+        }
+        @keyframes underlineGrow {
+          from { width: 0%; }
+          to { width: 100%; }
         }
       `}</style>
     </section>
