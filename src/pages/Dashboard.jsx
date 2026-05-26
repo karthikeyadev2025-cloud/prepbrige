@@ -44,8 +44,18 @@ const getDaysRemaining = (examDate, target) => {
 }
 
 const getSyllabusProgress = (target) => {
+  const savedProgress = localStorage.getItem(`prepbridge_syllabus_progress_${target}`)
+  if (savedProgress) {
+    try {
+      return JSON.parse(savedProgress)
+    } catch (e) {
+      console.error('Failed to parse syllabus progress:', e)
+    }
+  }
+
+  let defaultSyllabus = []
   if (target === 'ias' || target === 'ips' || target === 'upsc') {
-    return [
+    defaultSyllabus = [
       { name: 'Indian Polity & Constitution', pct: 72, color: 'var(--cyan)' },
       { name: 'History of India & National Movement', pct: 63, color: 'var(--pink)' },
       { name: 'Indian Economy & Development', pct: 55, color: 'var(--amber)' },
@@ -53,15 +63,45 @@ const getSyllabusProgress = (target) => {
       { name: 'Environment & Ecology', pct: 78, color: 'var(--emerald)' },
       { name: 'Science & Technology', pct: 58, color: 'var(--blue)' },
     ]
+  } else if (target === 'appsc') {
+    defaultSyllabus = [
+      { name: 'AP History & Kakatiyas', pct: 64, color: 'var(--cyan)' },
+      { name: 'AP Economy & Devolution', pct: 52, color: 'var(--pink)' },
+      { name: 'Indian Constitution & Polity', pct: 70, color: 'var(--amber)' },
+      { name: 'Science, Tech & Environment', pct: 58, color: 'var(--purple)' },
+      { name: 'Mental Ability & Aptitude', pct: 72, color: 'var(--emerald)' },
+    ]
+  } else if (target === 'tgpsc') {
+    defaultSyllabus = [
+      { name: 'Telangana History & Culture', pct: 60, color: 'var(--cyan)' },
+      { name: 'Telangana Statehood Movement', pct: 58, color: 'var(--pink)' },
+      { name: 'Indian Constitution & Polity', pct: 72, color: 'var(--amber)' },
+      { name: 'State & National Economy', pct: 54, color: 'var(--purple)' },
+      { name: 'Science, Tech & Environment', pct: 66, color: 'var(--emerald)' },
+    ]
+  } else if (target?.includes('police')) {
+    defaultSyllabus = [
+      { name: 'General Studies & Regional Acts', pct: 68, color: 'var(--cyan)' },
+      { name: 'Arithmetic & Mental Ability', pct: 60, color: 'var(--pink)' },
+      { name: 'Basic Penal Codes (IPC, CrPC)', pct: 50, color: 'var(--amber)' },
+      { name: 'Women Safety & SHE Teams laws', pct: 75, color: 'var(--purple)' },
+    ]
+  } else if (target?.includes('dsc') || target?.includes('teaching')) {
+    defaultSyllabus = [
+      { name: 'Educational Psychology & Piaget', pct: 70, color: 'var(--cyan)' },
+      { name: 'Pedagogy & Curriculum Studies', pct: 64, color: 'var(--pink)' },
+      { name: 'Language Proficiency (I & II)', pct: 78, color: 'var(--amber)' },
+      { name: 'Syllabus School Content (1-10)', pct: 55, color: 'var(--purple)' },
+    ]
   } else if (target === 'ssc_cgl' || target?.startsWith('ssc')) {
-    return [
+    defaultSyllabus = [
       { name: 'Quantitative Aptitude', pct: 55, color: 'var(--amber)' },
       { name: 'General Intelligence & Reasoning', pct: 68, color: 'var(--purple)' },
       { name: 'English Comprehension', pct: 81, color: 'var(--emerald)' },
       { name: 'General Awareness', pct: 72, color: 'var(--cyan)' },
     ]
   } else if (target?.includes('po') || target?.includes('clerk') || target?.includes('sbi') || target?.includes('ibps') || target === 'banking') {
-    return [
+    defaultSyllabus = [
       { name: 'Quantitative Aptitude', pct: 55, color: 'var(--amber)' },
       { name: 'Reasoning Ability', pct: 68, color: 'var(--purple)' },
       { name: 'English Language', pct: 81, color: 'var(--emerald)' },
@@ -69,26 +109,30 @@ const getSyllabusProgress = (target) => {
       { name: 'Computer Aptitude', pct: 63, color: 'var(--pink)' },
     ]
   } else if (target === 'neet_ug') {
-    return [
+    defaultSyllabus = [
       { name: 'Biology (Botany & Zoology)', pct: 81, color: 'var(--emerald)' },
       { name: 'Chemistry (Organic, Inorganic, Physical)', pct: 68, color: 'var(--cyan)' },
       { name: 'Physics', pct: 55, color: 'var(--amber)' },
     ]
   } else if (target === 'jee_main' || target === 'jee_adv') {
-    return [
+    defaultSyllabus = [
       { name: 'Mathematics', pct: 55, color: 'var(--pink)' },
       { name: 'Physics', pct: 68, color: 'var(--amber)' },
       { name: 'Chemistry', pct: 81, color: 'var(--cyan)' },
     ]
+  } else {
+    defaultSyllabus = [
+      { name: 'General Knowledge', pct: 72, color: 'var(--cyan)' },
+      { name: 'Reasoning', pct: 68, color: 'var(--purple)' },
+      { name: 'English', pct: 81, color: 'var(--emerald)' },
+      { name: 'Quantitative Aptitude', pct: 55, color: 'var(--amber)' },
+      { name: 'Current Affairs', pct: 78, color: 'var(--blue)' },
+      { name: 'History', pct: 63, color: 'var(--pink)' },
+    ]
   }
-  return [
-    { name: 'General Knowledge', pct: 72, color: 'var(--cyan)' },
-    { name: 'Reasoning', pct: 68, color: 'var(--purple)' },
-    { name: 'English', pct: 81, color: 'var(--emerald)' },
-    { name: 'Quantitative Aptitude', pct: 55, color: 'var(--amber)' },
-    { name: 'Current Affairs', pct: 78, color: 'var(--blue)' },
-    { name: 'History', pct: 63, color: 'var(--pink)' },
-  ]
+
+  localStorage.setItem(`prepbridge_syllabus_progress_${target}`, JSON.stringify(defaultSyllabus))
+  return defaultSyllabus
 }
 
 const STUDY_POINTS_DB = {
@@ -203,7 +247,7 @@ const STUDY_POINTS_DB = {
   }
 }
 
-function AIRecommendation({ profile, exams, setActiveStudyPoint }) {
+function AIRecommendation({ profile, exams, setActiveStudyPoint, updateSyllabusProgress }) {
   const navigate = useNavigate()
   const primaryTarget = profile?.primaryTarget || (exams && exams[0]) || 'ias'
   
@@ -308,6 +352,9 @@ function AIRecommendation({ profile, exams, setActiveStudyPoint }) {
         {tasks.map((task, i) => (
           <div key={i} onClick={() => {
             const key = `${task.subject} — ${task.topic}`;
+            if (updateSyllabusProgress) {
+              updateSyllabusProgress(primaryTarget, task.subject, 3)
+            }
             if (STUDY_POINTS_DB[key]) {
               setActiveStudyPoint(STUDY_POINTS_DB[key]);
             } else {
@@ -652,6 +699,9 @@ function LakshyaVisionBanner({ profile, primaryTarget }) {
 }
 
 function PortalAutoSync() {
+  const { profile } = useUserStore()
+  const primaryTarget = profile?.primaryTarget || (profile?.exams && profile.exams[0]) || 'ias'
+
   const [syncing, setSyncing] = useState(false)
   const [syncLogs, setSyncLogs] = useState([])
   const [lastSynced, setLastSynced] = useState(() => localStorage.getItem('prepbridge_last_sync') || 'Never')
@@ -700,6 +750,15 @@ function PortalAutoSync() {
       setSyncing(false)
       
       localStorage.setItem('prepbridge_syllabus_boost', 'true')
+      
+      // Auto-update syllabus progress list by +5% boost
+      try {
+        const list = getSyllabusProgress(primaryTarget)
+        const updated = list.map(s => ({ ...s, pct: Math.min(100, s.pct + 5) }))
+        localStorage.setItem(`prepbridge_syllabus_progress_${primaryTarget}`, JSON.stringify(updated))
+      } catch (e) {
+        console.error('Failed to sync syllabus progress boost:', e)
+      }
       
       toast.success('PrepBridge Portal Synced & Optimized Successfully! 🔄✨', { duration: 4000 })
       window.dispatchEvent(new Event('prepbridge-portal-sync'))
@@ -771,11 +830,45 @@ export default function Dashboard() {
   const [quizAnswer, setQuizAnswer] = useState(null)
   const [activeStudyPoint, setActiveStudyPoint] = useState(null)
 
+  const examNames = { upsc: 'UPSC', ias: 'IAS', ssc_cgl: 'SSC CGL', ibps_po: 'IBPS PO', rrb_ntpc: 'RRB NTPC', neet_ug: 'NEET', jee_main: 'JEE Mains' }
+  const primaryTarget = profile?.primaryTarget || (profile?.exams && profile.exams[0]) || 'ias'
+
+  // Dynamic syllabus progress tracking
+  const [syllabusList, setSyllabusList] = useState(() => getSyllabusProgress(primaryTarget))
+
+  const updateSyllabusProgress = (target, subjectName, increment = 3) => {
+    try {
+      const list = getSyllabusProgress(target)
+      const updated = list.map(s => {
+        if (s.name.toLowerCase().includes(subjectName.toLowerCase()) || subjectName.toLowerCase().includes(s.name.toLowerCase())) {
+          return { ...s, pct: Math.min(100, s.pct + increment) }
+        }
+        return s
+      })
+      localStorage.setItem(`prepbridge_syllabus_progress_${target}`, JSON.stringify(updated))
+      setSyllabusList(updated)
+    } catch (e) {
+      console.error('Failed to update syllabus progress:', e)
+    }
+  }
+
+  // Listener for dynamic updates across other components (like PortalAutoSync) and target changes
+  useEffect(() => {
+    setSyllabusList(getSyllabusProgress(primaryTarget))
+    const handlePortalSync = () => {
+      setSyllabusList(getSyllabusProgress(primaryTarget))
+    }
+    window.addEventListener('prepbridge-portal-sync', handlePortalSync)
+    return () => window.removeEventListener('prepbridge-portal-sync', handlePortalSync)
+  }, [primaryTarget])
+
   const handleQuizAnswer = (optionIdx) => {
     setQuizAnswer(optionIdx)
     if (optionIdx === dailyQuiz.correct) {
       toast.success('Correct answer! +10 Points added to your preparation bank. Daily Lakshya streak extended! 🎯')
       addPoints(10)
+      // Dynamic syllabus increment!
+      updateSyllabusProgress(primaryTarget, dailyQuiz.subject || 'General', 4)
     } else {
       toast.error('Incorrect. Review the concept explanation below to strengthen your understanding!')
     }
@@ -851,9 +944,6 @@ export default function Dashboard() {
       setDailyQuiz(DAILY_QUIZ_QUESTIONS[new Date().getDate() % DAILY_QUIZ_QUESTIONS.length])
     }
   }, [profile])
-
-  const examNames = { upsc: 'UPSC', ias: 'IAS', ssc_cgl: 'SSC CGL', ibps_po: 'IBPS PO', rrb_ntpc: 'RRB NTPC', neet_ug: 'NEET', jee_main: 'JEE Mains' }
-  const primaryTarget = profile?.primaryTarget || (profile?.exams && profile.exams[0]) || 'ias'
 
   return (
     <div className="page animate-fade-in">
@@ -971,7 +1061,7 @@ export default function Dashboard() {
       {/* Main grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, marginBottom: 28 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <AIRecommendation profile={profile} exams={profile?.exams || []} setActiveStudyPoint={setActiveStudyPoint} />
+          <AIRecommendation profile={profile} exams={profile?.exams || []} setActiveStudyPoint={setActiveStudyPoint} updateSyllabusProgress={updateSyllabusProgress} />
           
           {/* Target Course & Solved Materials */}
           <TargetCourseMaterialsCard primaryTarget={primaryTarget} />
@@ -1093,7 +1183,7 @@ export default function Dashboard() {
         <div className="grid-3">
           {(() => {
             const syllabusBoost = localStorage.getItem('prepbridge_syllabus_boost') === 'true';
-            return getSyllabusProgress(primaryTarget).map(s => {
+            return (syllabusList || []).map(s => {
               const displayPct = Math.min(100, s.pct + (syllabusBoost ? 5 : 0));
               return (
                 <div key={s.name}>

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { BookOpen, Clock, Star, Users, ChevronRight, Play, Lock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
+import { useUserStore } from '../store/useStore'
 
 export const COURSES = [
   {
@@ -82,6 +83,73 @@ export default function Courses() {
   const [filter, setFilter] = useState('all')
   const [showFreeOnly, setShowFreeOnly] = useState(false)
   const navigate = useNavigate()
+  const { profile } = useUserStore()
+  const primaryTarget = profile?.primaryTarget || (profile?.exams && profile.exams[0]) || 'ias'
+
+  const getCourseProgressPct = (course) => {
+    let target = null
+    const courseId = course.id
+    const examName = course.exam.toLowerCase()
+
+    if (examName === 'upsc' || courseId === 'upsc_complete') target = 'ias'
+    else if (examName === 'appsc' || courseId === 'appsc_group2') target = 'appsc'
+    else if (examName === 'tgpsc' || courseId === 'tgpsc_group1') target = 'tgpsc'
+    else if (examName.includes('police') || courseId.includes('police')) target = 'police'
+    else if (examName.includes('dsc') || examName.includes('teaching') || courseId.includes('dsc')) target = 'teaching'
+    else if (examName.includes('ssc') || courseId.includes('ssc')) target = 'ssc_cgl'
+    else if (examName.includes('banking') || examName.includes('po') || examName.includes('clerk') || courseId.includes('banking')) target = 'banking'
+    else if (examName.includes('ntpc') || courseId.includes('ntpc')) target = 'rrb_ntpc'
+    else if (examName.includes('neet') || courseId.includes('neet')) target = 'neet_ug'
+    else if (examName.includes('jee') || courseId.includes('jee')) target = 'jee_main'
+
+    if (!target) return null
+
+    try {
+      const saved = localStorage.getItem(`prepbridge_syllabus_progress_${target}`)
+      if (saved) {
+        const list = JSON.parse(saved)
+        if (Array.isArray(list) && list.length > 0) {
+          const total = list.reduce((acc, curr) => acc + curr.pct, 0)
+          return Math.round(total / list.length)
+        }
+      }
+    } catch (e) {
+      console.error('Failed to parse syllabus progress in courses page:', e)
+    }
+
+    // Default averages if no progress is saved yet
+    const defaults = {
+      ias: 66,
+      appsc: 63,
+      tgpsc: 62,
+      police: 63,
+      teaching: 67,
+      ssc_cgl: 69,
+      banking: 68,
+      neet_ug: 68,
+      jee_main: 68
+    }
+    return defaults[target] || null
+  }
+
+  const isUserPrimaryTarget = (course) => {
+    let target = null
+    const courseId = course.id
+    const examName = course.exam.toLowerCase()
+
+    if (examName === 'upsc' || courseId === 'upsc_complete') target = 'ias'
+    else if (examName === 'appsc' || courseId === 'appsc_group2') target = 'appsc'
+    else if (examName === 'tgpsc' || courseId === 'tgpsc_group1') target = 'tgpsc'
+    else if (examName.includes('police') || courseId.includes('police')) target = 'police'
+    else if (examName.includes('dsc') || examName.includes('teaching') || courseId.includes('dsc')) target = 'teaching'
+    else if (examName.includes('ssc') || courseId.includes('ssc')) target = 'ssc_cgl'
+    else if (examName.includes('banking') || examName.includes('po') || examName.includes('clerk') || courseId.includes('banking')) target = 'banking'
+    else if (examName.includes('ntpc') || courseId.includes('ntpc')) target = 'rrb_ntpc'
+    else if (examName.includes('neet') || courseId.includes('neet')) target = 'neet_ug'
+    else if (examName.includes('jee') || courseId.includes('jee')) target = 'jee_main'
+
+    return target === primaryTarget
+  }
 
   const handleStartCourse = (course) => {
     toast.success(`Starting "${course.title}" with K² AI Tutor!`)
@@ -131,6 +199,9 @@ export default function Courses() {
               {course.free && (
                 <span style={{ position: 'absolute', top: 12, right: 12, background: 'var(--emerald)', color: 'white', fontSize: '0.65rem', fontWeight: 800, padding: '3px 10px', borderRadius: 'var(--r-full)' }}>FREE</span>
               )}
+              {isUserPrimaryTarget(course) && (
+                <span className="badge badge-purple animate-pulse" style={{ position: 'absolute', top: 12, right: course.free ? 70 : 12, background: 'var(--purple)', color: 'white', fontSize: '0.65rem', fontWeight: 800, padding: '3px 10px', borderRadius: 'var(--r-full)', border: 'none', boxShadow: '0 0 10px rgba(124, 58, 237, 0.5)' }}>🎯 TARGET</span>
+              )}
             </div>
             <div style={{ padding: '16px 20px', flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
               <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
@@ -153,6 +224,23 @@ export default function Courses() {
                 ))}
                 {course.topics.length > 4 && <span style={{ fontSize: '0.66rem', color: 'var(--text-4)' }}>+{course.topics.length-4} more</span>}
               </div>
+
+              {(() => {
+                const progress = getCourseProgressPct(course);
+                if (progress === null) return null;
+                return (
+                  <div style={{ margin: '4px 0', padding: '10px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--r-sm)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: '0.76rem' }}>
+                      <span style={{ color: 'var(--text-2)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4 }}>📚 Active Syllabus Progress</span>
+                      <span style={{ fontWeight: 700, color: course.color }}>{progress}%</span>
+                    </div>
+                    <div className="progress-bar" style={{ height: 5, background: 'rgba(255,255,255,0.1)' }}>
+                      <div className="progress-fill" style={{ width: `${progress}%`, background: course.color, height: 5 }} />
+                    </div>
+                  </div>
+                );
+              })()}
+
               <button className="btn btn-primary btn-sm" onClick={() => handleStartCourse(course)} style={{ marginTop: 'auto', justifyContent: 'center', gap: 6 }}>
                 {course.free ? <><Play size={13} /> Start Free</> : <><BookOpen size={13} /> Start Course</>}
               </button>
