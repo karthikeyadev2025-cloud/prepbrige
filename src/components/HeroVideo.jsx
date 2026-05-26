@@ -195,18 +195,11 @@ function HeroTypewriter() {
         Your Dream
       </div>
 
-      {/* Line 2: Typewriter word
-          ── RULE: NO filter:blur() anywhere inside this block or its ancestors.
-             Chrome will break -webkit-background-clip:text if ANY filter is nearby.
-             Glow is achieved via box-shadow on the outer wrapper ONLY. ── */}
+      {/* Line 2: Typewriter word — clean gradient text, NO filter, NO boxShadow box */}
       <div style={{
         fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.15,
         letterSpacing: '-0.03em', marginBottom: 4, minHeight: '1.15em',
         position: 'relative', display: 'inline-block',
-        /* Safe glow — box-shadow doesn't break gradient clip */
-        borderRadius: 12,
-        transition: 'box-shadow 0.5s ease',
-        boxShadow: `0 0 20px ${glow}`
       }}>
         {/* Gradient text — MUST have no filter on self or any sibling/child */}
         <span style={{
