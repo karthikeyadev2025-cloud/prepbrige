@@ -113,6 +113,18 @@ export default function Onboarding() {
     updateProfile(profileUpdates)
     setOnboardingComplete(true)
 
+    // Save demo profile in a separate, persistent localStorage catalog to survive logout
+    if (user?.uid?.startsWith('demo_')) {
+      try {
+        const savedProfiles = localStorage.getItem('prepbridge_demo_profiles')
+        const profiles = savedProfiles ? JSON.parse(savedProfiles) : {}
+        profiles[user.uid] = { ...profileUpdates, uid: user.uid }
+        localStorage.setItem('prepbridge_demo_profiles', JSON.stringify(profiles))
+      } catch (e) {
+        console.error('Failed to save to persistent demo profiles catalog:', e)
+      }
+    }
+
     // 2. Sync to Firebase Firestore live so administrators can access it (Non-blocking background sync)
     if (user?.uid) {
       updateUserProfile(user.uid, profileUpdates)

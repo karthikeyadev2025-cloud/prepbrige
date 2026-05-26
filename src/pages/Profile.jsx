@@ -24,6 +24,20 @@ export default function Profile() {
 
   const handleSave = () => {
     updateProfile({ name })
+    
+    // Sync updated details to offline/demo profile catalog to survive logout
+    if (user?.uid?.startsWith('demo_')) {
+      try {
+        const savedProfiles = localStorage.getItem('prepbridge_demo_profiles')
+        const profiles = savedProfiles ? JSON.parse(savedProfiles) : {}
+        const currentProfile = useUserStore.getState().profile
+        profiles[user.uid] = { ...currentProfile, name }
+        localStorage.setItem('prepbridge_demo_profiles', JSON.stringify(profiles))
+      } catch (e) {
+        console.error('Failed to sync updated demo profile:', e)
+      }
+    }
+    
     setEditing(false)
     toast.success('Profile updated!')
   }
