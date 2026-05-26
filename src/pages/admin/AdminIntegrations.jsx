@@ -25,6 +25,8 @@ const DEFAULT_SETTINGS = {
   firebaseSenderId: '1074613140786',
   firebaseAppId: '1:1074613140786:web:6092d00d86da43c8426b2b',
   forcePhoneOtp: false,
+  firebaseVapidKey: 'KgbnAHVC-8kSUu1MsUSetejeLlL9i2oBbJ80qTTnt84',
+  webPushPrivateKey: 'YOUR_WEBPUSH_PRIVATE_KEY',
 
   // Supabase Storage
   supabaseUrl: 'https://stmnmxkosnxbckvqojxw.supabase.co',
@@ -278,6 +280,39 @@ export default function AdminIntegrations() {
                 <div className="form-group">
                   <label className="form-label">App ID</label>
                   <input type="text" className="form-input" value={settings.firebaseAppId} onChange={e => updateSetting('firebaseAppId', e.target.value)} style={{ fontFamily: 'monospace', fontSize: '0.85rem' }} />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 18 }}>
+                <div className="form-group">
+                  <label className="form-label">Web Push VAPID Public Key</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    value={settings.firebaseVapidKey || ''}
+                    onChange={e => updateSetting('firebaseVapidKey', e.target.value)}
+                    placeholder="VAPID Public Key..."
+                    style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Web Push Private Key</label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showSecret ? 'text' : 'password'}
+                      className="form-input"
+                      value={settings.webPushPrivateKey || ''}
+                      onChange={e => updateSetting('webPushPrivateKey', e.target.value)}
+                      placeholder="Private Key..."
+                      style={{ paddingRight: '40px', fontFamily: 'monospace', fontSize: '0.85rem' }}
+                    />
+                    <button
+                      onClick={() => setShowSecret(!showSecret)}
+                      style={{ position: 'absolute', right: '14px', top: '16px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-4)' }}
+                    >
+                      {showSecret ? <EyeOff size={14} /> : <Eye size={14} />}
+                    </button>
+                  </div>
                 </div>
               </div>
 

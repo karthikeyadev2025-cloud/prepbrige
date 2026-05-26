@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Bell, BellOff, Tag, ExternalLink, CheckCheck } from 'lucide-react'
-import { useAppStore } from '../store/useStore'
+import { useAppStore, useUserStore } from '../store/useStore'
+import { registerPushNotifications } from '../services/notificationService'
+import { toast } from 'react-hot-toast'
 
 const SAMPLE_NOTIFS = [
   { id:1, type:'vacancy', title:'SSC CGL 2025 Notification Released', body:'17,727 vacancies announced. Application starts June 15, 2025. Last date July 15.', time:'2 hours ago', read:false, exam:'SSC CGL', priority:'high' },
@@ -28,6 +30,28 @@ const PRIORITY_BADGE = {
 export default function Notifications() {
   const [filter, setFilter] = useState('all')
   const [notifs, setNotifs] = useState(SAMPLE_NOTIFS)
+  const [subscribing, setSubscribing] = useState(false)
+  const { user, profile, updateProfile } = useUserStore()
+
+  const handleEnablePush = async () => {
+    if (!user?.uid) {
+      toast.error('Please sign in to enable notifications.')
+      return
+    }
+    setSubscribing(true)
+    try {
+      await registerPushNotifications(user.uid)
+      toast.success('Push notifications successfully enabled!')
+      if (updateProfile) {
+        updateProfile({ pushNotificationsEnabled: true })
+      }
+    } catch (e) {
+      console.error(e)
+      toast.error(e.message || 'Failed to enable push notifications.')
+    } finally {
+      setSubscribing(false)
+    }
+  }
   const unread = notifs.filter(n => !n.read).length
 
   const markAllRead = () => setNotifs(n => n.map(x => ({...x, read:true})))
@@ -58,18 +82,20 @@ export default function Notifications() {
       </div>
 
       {/* Push notification banner */}
-      <div className="card card-p" style={{ marginBottom: 20, background: 'linear-gradient(135deg,rgba(0,212,255,0.08),rgba(124,58,237,0.08))', border: '1px solid rgba(0,212,255,0.2)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <Bell size={24} color="var(--cyan)" />
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 700 }}>Enable Push Notifications</div>
-            <div style={{ fontSize: '0.82rem', color: 'var(--text-3)' }}>Get instant alerts on your phone for new vacancies, results and important dates — even when the app is closed.</div>
+      {!profile?.pushNotificationsEnabled && (
+        <div className="card card-p" style={{ marginBottom: 20, background: 'linear-gradient(135deg,rgba(0,212,255,0.08),rgba(124,58,237,0.08))', border: '1px solid rgba(0,212,255,0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+            <Bell size={24} color="var(--cyan)" />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700 }}>Enable Push Notifications</div>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-3)' }}>Get instant alerts on your phone for new vacancies, results and important dates — even when the app is closed.</div>
+            </div>
+            <button className="btn btn-primary btn-sm" onClick={handleEnablePush} disabled={subscribing}>
+              {subscribing ? 'Enabling...' : 'Enable Now'}
+            </button>
           </div>
-          <button className="btn btn-primary btn-sm" onClick={() => {
-            if ('Notification' in window) Notification.requestPermission()
-          }}>Enable Now</button>
         </div>
-      </div>
+      )}
 
       {/* Filters */}
       <div className="tabs" style={{ marginBottom: 20 }}>
