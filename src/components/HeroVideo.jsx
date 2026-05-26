@@ -179,6 +179,14 @@ function HeroTypewriter() {
   }, [phase, displayed, wordIdx])
 
   const { gradient, glow } = JOB_WORDS[wordIdx]
+  
+  const cursorColor = glow.includes('124,58,237') ? '#a855f7'
+    : glow.includes('0,128,255')  ? '#00d4ff'
+    : glow.includes('16,185,129') ? '#10b981'
+    : glow.includes('220,38,38')  ? '#f97316'
+    : glow.includes('29,78,216')  ? '#60a5fa'
+    : glow.includes('217,119,6')  ? '#fbbf24'
+    : '#a855f7'
 
   return (
     <div style={{ marginBottom: 24, animation: 'heroSlideIn 0.8s ease both' }}>
@@ -187,77 +195,73 @@ function HeroTypewriter() {
         Your Dream
       </div>
 
-      {/* Line 2: Typewriter word — changes each cycle */}
-      <div style={{ fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.15, letterSpacing: '-0.03em', marginBottom: 4, minHeight: '1.15em', position: 'relative', display: 'inline-block' }}>
-
-        {/* Glow halo BEHIND the text — separate element so it never breaks gradient clip */}
-        <div style={{
-          position: 'absolute', inset: '-8px -16px',
-          background: `radial-gradient(ellipse at center, ${glow} 0%, transparent 70%)`,
-          borderRadius: 16, filter: 'blur(18px)',
-          opacity: 0.65, transition: 'background 0.4s ease',
-          pointerEvents: 'none', zIndex: 0,
-        }} />
-
+      {/* Line 2: Typewriter word
+          ── RULE: NO filter:blur() anywhere inside this block or its ancestors.
+             Chrome will break -webkit-background-clip:text if ANY filter is nearby.
+             Glow is achieved via box-shadow on the outer wrapper ONLY. ── */}
+      <div style={{
+        fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.15,
+        letterSpacing: '-0.03em', marginBottom: 4, minHeight: '1.15em',
+        position: 'relative', display: 'inline-block',
+        /* Safe glow — box-shadow doesn't break gradient clip */
+        borderRadius: 12,
+        transition: 'box-shadow 0.5s ease',
+        boxShadow: `0 0 20px ${glow}`
+      }}>
+        {/* Gradient text — MUST have no filter on self or any sibling/child */}
         <span style={{
-          position: 'relative', zIndex: 1,
           background: gradient,
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
           transition: 'background 0.4s ease',
-          animation: phase === 'typing' && displayed.length === JOB_WORDS[wordIdx].word.length ? 'wordPop 0.4s ease' : 'none',
+          animation: phase === 'typing' && displayed.length === JOB_WORDS[wordIdx].word.length
+            ? 'wordPop 0.4s ease' : 'none',
         }}>
           {displayed}
         </span>
 
-        {/* Blinking cursor */}
+        {/* Blinking cursor — solid color, box-shadow glow only */}
         <span style={{
-          position: 'relative', zIndex: 1,
           display: 'inline-block', width: 3, height: '0.85em',
-          background: gradient.includes('7c3aed') ? '#a855f7' : gradient.includes('0080ff') ? '#00d4ff' : gradient.includes('059669') ? '#10b981' : gradient.includes('dc2626') ? '#f97316' : '#a855f7',
+          background: cursorColor,
           borderRadius: 2, marginLeft: 4, verticalAlign: 'middle',
           animation: 'cursorBlink 1s step-end infinite',
-          boxShadow: `0 0 8px ${glow}`,
+          boxShadow: `0 0 8px ${cursorColor}`,
         }} />
 
-        {/* Animated underline */}
+        {/* Underline — gradient background, box-shadow glow only */}
         {showUnder && (
           <div style={{
             position: 'absolute', bottom: -4, left: 0,
             height: 3, borderRadius: 2,
             background: gradient,
-            boxShadow: `0 0 10px ${glow}`,
+            boxShadow: `0 0 8px ${cursorColor}`,
             animation: 'underlineGrow 0.35s ease forwards',
-            zIndex: 1,
           }} />
         )}
       </div>
 
-      {/* Line 3: "Starts Here." + shimmer ₹599 */}
-      <div style={{ fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.03em', display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 14, flexWrap: 'wrap', animation: 'heroSlideIn 0.8s ease 0.15s both' }}>
+      {/* Line 3: "Starts Here." + ₹599 — NO filter anywhere near gradient text */}
+      <div style={{
+        fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.1,
+        letterSpacing: '-0.03em', display: 'flex', alignItems: 'baseline',
+        justifyContent: 'center', gap: 14, flexWrap: 'wrap',
+        animation: 'heroSlideIn 0.8s ease 0.15s both',
+      }}>
         <span style={{ color: 'rgba(255,255,255,0.85)' }}>Starts Here.</span>
-        {/* ₹599 — shimmer gradient only, glow via wrapper shadow NOT text-shadow */}
-        <span style={{ position: 'relative', display: 'inline-block' }}>
-          <span style={{
-            position: 'absolute', inset: '-6px -10px',
-            background: 'radial-gradient(ellipse at center, rgba(16,185,129,0.45) 0%, transparent 70%)',
-            borderRadius: 12, filter: 'blur(12px)',
-            animation: 'shimmerGlow 2.5s ease-in-out infinite',
-            pointerEvents: 'none',
-          }} />
-          <span style={{
-            position: 'relative',
-            background: 'linear-gradient(90deg, #10b981 0%, #00d4ff 30%, #ffffff 50%, #00d4ff 70%, #10b981 100%)',
-            backgroundSize: '200% auto',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            animation: 'shimmer599 2.5s linear infinite',
-          }}>₹599.</span>
-        </span>
+        <span style={{
+          background: 'linear-gradient(90deg,#10b981 0%,#00d4ff 30%,#ffffff 50%,#00d4ff 70%,#10b981 100%)',
+          backgroundSize: '200% auto',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          animation: 'shimmer599 2.5s linear infinite',
+        }}>₹599.</span>
       </div>
     </div>
   )
 }
+
 
 // ─── Main HeroVideo Component ─────────────────────────────────────────────────
 export default function HeroVideo() {
