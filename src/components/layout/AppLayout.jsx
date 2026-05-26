@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Outlet, useLocation, useNavigate, NavLink } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../../store/useStore'
+import { signOutUser } from '../../firebase/auth'
 import { getSubscriptionStatus } from '../../services/paymentService'
 import { NEWSPAPER_TOPICS } from '../../data/currentAffairs'
 import {
@@ -60,12 +61,15 @@ export default function AppLayout({ isAdmin = false }) {
   }, [prideItems])
 
   useEffect(() => { setMobileOpen(false) }, [location.pathname])
-
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    try {
+      await signOutUser()
+    } catch (e) {
+      console.warn('Firebase signOut failed, clearing local store:', e)
+      logout()
+    }
     navigate('/')
   }
-
   return (
     <div className="app-layout" style={{ paddingTop: prideItems.length > 0 ? '32px' : 0 }}>
       {/* Global India Pride Ticker */}
