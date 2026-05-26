@@ -63,9 +63,41 @@ export default function Auth() {
     setLoading(true)
     try {
       if (otp === '123456') {
-        // Demo mode fallback
-        const { setUser, setIsAdmin } = useUserStore.getState()
-        setUser({ uid: 'demo_' + Date.now(), phone: '+91' + phone })
+        // Demo mode fallback — make deterministic and restore existing profile if saved
+        const { setUser, setProfile, setOnboardingComplete } = useUserStore.getState()
+        const demoUid = 'demo_' + phone
+        
+        const savedUserStore = localStorage.getItem('prepbridge-user')
+        let existingProfile = null
+        let isComplete = false
+        
+        if (savedUserStore) {
+          try {
+            const parsed = JSON.parse(savedUserStore)
+            if (parsed.state?.profile?.uid === demoUid) {
+              existingProfile = parsed.state.profile
+              isComplete = parsed.state.onboardingComplete || false
+            }
+          } catch (e) {
+            console.error('Failed to parse cached demo profile:', e)
+          }
+        }
+        
+        setUser({ uid: demoUid, phone: '+91' + phone })
+        if (existingProfile) {
+          setProfile(existingProfile)
+          setOnboardingComplete(isComplete)
+        } else {
+          setProfile({
+            uid: demoUid,
+            phone: '+91' + phone,
+            displayName: 'Aspirant',
+            onboardingComplete: false,
+            exams: [],
+            primaryTarget: 'ias'
+          })
+          setOnboardingComplete(false)
+        }
         toast.success('Welcome to PrepBridge! 🎉')
       } else {
         await verifyOTP(otp)

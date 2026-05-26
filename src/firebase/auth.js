@@ -183,7 +183,10 @@ export function initAuthObserver() {
         store.setProfile(offlineProfile)
       }
     } else {
-      store.logout()
+      // Preserve local state if logged in as an offline/demo account
+      if (!store.user || !store.user.uid?.startsWith('demo_')) {
+        store.logout()
+      }
     }
   })
 }
