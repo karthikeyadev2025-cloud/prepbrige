@@ -162,7 +162,11 @@ export default function AdminUsers() {
                 >
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.8rem', color: 'white', flexShrink: 0 }}>{user.name[0]}</div>
+                      {user.photoURL ? (
+                        <img src={user.photoURL} alt={user.name} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--border)' }} />
+                      ) : (
+                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.8rem', color: 'white', flexShrink: 0 }}>{user.name[0]}</div>
+                      )}
                       <div>
                         <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>{user.name}</div>
                         <div style={{ fontSize: '0.72rem', color: 'var(--text-3)' }}>{user.email}</div>

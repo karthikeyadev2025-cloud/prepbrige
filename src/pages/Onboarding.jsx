@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { useUserStore } from '../store/useStore'
 import { toast } from 'react-hot-toast'
 import { EXAM_CATEGORIES, ALL_STATES, ALL_LANGUAGES } from '../data/exams'
-import { CheckCircle, ArrowRight, ArrowLeft, Zap, Brain } from 'lucide-react'
+import { CheckCircle, ArrowRight, ArrowLeft, Zap, Brain, Plus } from 'lucide-react'
 import { updateUserProfile } from '../firebase/auth'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { storage } from '../firebase/config'
 
 const STEPS = ['Language','State','Exams','Profile','Schedule']
 
@@ -19,6 +21,9 @@ export default function Onboarding() {
     education: '', targetYear: '2026',
     studyHours: '3-4 hours', examDate: ''
   })
+  const [photoFile, setPhotoFile] = useState(null)
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState('')
+  const [uploading, setUploading] = useState(false)
   const { updateProfile, setOnboardingComplete, user } = useUserStore()
   const navigate = useNavigate()
 
@@ -31,10 +36,47 @@ export default function Onboarding() {
     setStep(s => s + 1)
   }
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('Photo must be smaller than 2MB')
+        return
+      }
+      setPhotoFile(file)
+      setPhotoPreviewUrl(URL.createObjectURL(file))
+    }
+  }
+
   const handleComplete = async () => {
+    setUploading(true)
+    let finalPhotoUrl = user?.photoURL || ''
+
+    // Upload to Firebase Storage (with Base64 fallback if storage blocks/fails)
+    if (photoFile && user?.uid) {
+      try {
+        const photoRef = ref(storage, `profile_photos/${user.uid}`)
+        await uploadBytes(photoRef, photoFile)
+        finalPhotoUrl = await getDownloadURL(photoRef)
+      } catch (e) {
+        console.warn('Firebase Storage failed, trying Base64 conversion:', e)
+        try {
+          const reader = new FileReader()
+          finalPhotoUrl = await new Promise((resolve, reject) => {
+            reader.onload = () => resolve(reader.result)
+            reader.onerror = reject
+            reader.readAsDataURL(photoFile)
+          })
+        } catch (err) {
+          console.error('Base64 fallback failed:', err)
+        }
+      }
+    }
+
     const profileUpdates = {
       ...data,
       selectedLanguage: data.languageName,
+      photoURL: finalPhotoUrl,
       onboardingComplete: true,
       createdAt: new Date().toISOString(),
       points: 0, streak: 0, rank: null,
@@ -54,6 +96,7 @@ export default function Onboarding() {
       }
     }
 
+    setUploading(false)
     toast.success('Profile setup complete! 🎉')
     navigate('/app/dashboard')
   }
@@ -155,6 +198,24 @@ export default function Onboarding() {
           {/* Step 3: Profile */}
           {step === 3 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {/* Profile Photo Upload Container */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                <div style={{ position: 'relative', width: 90, height: 90 }}>
+                  {photoPreviewUrl ? (
+                    <img src={photoPreviewUrl} alt="Preview" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--cyan)' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 800, color: 'white' }}>
+                      {data.name ? data.name[0].toUpperCase() : 'U'}
+                    </div>
+                  )}
+                  <label htmlFor="photo-upload" style={{ position: 'absolute', bottom: 0, right: 0, width: 28, height: 28, borderRadius: '50%', background: 'var(--cyan)', border: '2px solid var(--bg-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: 'var(--shadow)' }}>
+                    <Plus size={16} color="white" />
+                  </label>
+                  <input id="photo-upload" type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>Upload a profile photo (under 2MB)</div>
+              </div>
+
               <div className="form-group">
                 <label className="form-label">Full Name</label>
                 <input className="form-input" placeholder="Your full name" value={data.name} onChange={e => setData(d => ({ ...d, name: e.target.value }))} />
