@@ -60,7 +60,7 @@ export default function Courses() {
   const navigate = useNavigate()
 
   const handleStartCourse = (course) => {
-    toast.success(`Starting "${course.title}" with Gemini AI Tutor!`)
+    toast.success(`Starting "${course.title}" with K² AI Tutor!`)
     navigate('/app/ai-tutor', { 
       state: { 
         initialQuery: `Hi! I want to study the "${course.title}" course for my "${course.exam}" exam. Let's start with the first topic: "${course.topics[0]}".` 

@@ -25,7 +25,7 @@ export default function AITutor() {
   const [messages, setMessages] = useState([
     {
       role: 'ai',
-      text: `नमस्ते! 👋 Welcome to **Gemini AI Doubt Solver**! 📸\n\nI'm here to help you crack your competitive exams. You can:\n• ✍️ **Ask any question** in Hindi, Tamil, Telugu, Marathi, or English\n• 📸 **Upload or snap a photo** of any textbook, newspaper, or test-series question\n• 💡 Get **step-by-step guidance** with memory tricks and shortcuts\n\nSelect your subject and native language above, snap/upload your question, and let's solve it! 🚀`,
+      text: `नमस्ते! 👋 Welcome to **K² Doubt Solver**! 📸\n\nI'm here to help you crack your competitive exams. You can:\n• ✍️ **Ask any question** in Hindi, Tamil, Telugu, Marathi, or English\n• 📸 **Upload or snap a photo** of any textbook, newspaper, or test-series question\n• 💡 Get **step-by-step guidance** with memory tricks and shortcuts\n\nSelect your subject and native language above, snap/upload your question, and let's solve it! 🚀`,
       time: new Date()
     }
   ])
@@ -183,7 +183,7 @@ export default function AITutor() {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h3 style={{ margin: 0 }}>Gemini AI Doubt Solver</h3>
+              <h3 style={{ margin: 0 }}>K² Doubt Solver</h3>
               <span style={{ fontSize: '0.7rem', background: 'var(--grad)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800, border: '1px solid var(--border-purple)', borderRadius: 'var(--r-full)', padding: '2px 8px', WebkitTextFillColor: 'unset', background: 'transparent', color: 'var(--purple)' }}>MULTIMODAL</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--text-3)' }}>
@@ -247,7 +247,7 @@ export default function AITutor() {
               <div style={{ fontSize: '0.9rem', lineHeight: 1.7, color: 'var(--text-1)' }} dangerouslySetInnerHTML={{ __html: formatMessage(msg.text) }} />
               <div style={{ fontSize: '0.68rem', color: 'var(--text-4)', marginTop: 6 }}>
                 {msg.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                {msg.role === 'ai' && <span style={{ marginLeft: 8, color: 'var(--purple)' }}>✦ Gemini AI</span>}
+                {msg.role === 'ai' && <span style={{ marginLeft: 8, color: 'var(--purple)' }}>✦ K²</span>}
               </div>
             </div>
           </div>
@@ -263,7 +263,7 @@ export default function AITutor() {
                 {[0, 1, 2].map(i => (
                   <span key={i} style={{ width: 7, height: 7, background: 'var(--cyan)', borderRadius: '50%', animation: `typing 1.2s ease-in-out infinite`, animationDelay: `${i * 0.2}s`, display: 'inline-block' }} />
                 ))}
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-3)', marginLeft: 8 }}>Gemini is thinking...</span>
+                <span style={{ fontSize: '0.78rem', color: 'var(--text-3)', marginLeft: 8 }}>K² is thinking...</span>
               </div>
             </div>
           </div>
@@ -296,7 +296,7 @@ export default function AITutor() {
             <img src={imagePreview} alt="Preview" style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', objectFit: 'cover', border: '1px solid var(--purple-20)' }} />
             <div style={{ fontSize: '0.78rem' }}>
               <div style={{ fontWeight: 600, color: 'white' }}>Question Scan Captured</div>
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-3)' }}>Gemini will solve this photo</div>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-3)' }}>K² will solve this photo</div>
             </div>
             <button type="button" onClick={() => { setSelectedImage(null); setImagePreview(null) }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#94a3b8', borderRadius: '50%', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginLeft: 8, transition: 'var(--t)' }}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
@@ -318,7 +318,7 @@ export default function AITutor() {
             animation: 'fadeUp 0.3s ease'
           }}>
             <div style={{ fontSize: '1.6rem', marginBottom: 6 }}>🔒 Daily Limit Reached</div>
-            <h4 style={{ margin: 0, marginBottom: 8, color: 'white', fontSize: '1.05rem' }}>Unlock Unlimited Gemini AI Doubt Solver</h4>
+            <h4 style={{ margin: 0, marginBottom: 8, color: 'white', fontSize: '1.05rem' }}>Unlock Unlimited K² Doubt Solver</h4>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-3)', margin: 0, marginBottom: 14, lineHeight: 1.55, maxWidth: 640, marginLeft: 'auto', marginRight: 'auto' }}>
               You have completed all 5 free daily competitive exam doubt scans for today. Upgrade to All-Access Premium starting at only <strong>₹249/month</strong> to solve unlimited textbook, test-series, and paper queries instantly!
             </p>
@@ -388,7 +388,7 @@ export default function AITutor() {
           </form>
         )}
         <p style={{ fontSize: '0.7rem', color: 'var(--text-4)', marginTop: 6, textAlign: 'center' }}>
-          Powered by Google Gemini 2.0 Flash • PrepBridge AI may make mistakes. Verify with official sources.
+          Powered by K² Proprietary AI Engine • PrepBridge AI may make mistakes. Verify with official sources.
         </p>
       </div>
     </div>
