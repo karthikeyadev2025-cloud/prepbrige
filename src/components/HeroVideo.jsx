@@ -403,9 +403,9 @@ export default function HeroVideo() {
           50% { opacity:0; }
         }
         @keyframes wordPop {
-          0% { opacity:0; transform: translateY(12px) scale(0.95); filter: blur(4px); }
-          60% { opacity:1; transform: translateY(-3px) scale(1.02); filter: blur(0); }
-          100% { opacity:1; transform: translateY(0) scale(1); filter: blur(0); }
+          0%   { opacity: 0; transform: translateY(10px) scale(0.96); }
+          60%  { opacity: 1; transform: translateY(-2px) scale(1.02); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes shimmer599 {
           0% { background-position: -200% center; }
