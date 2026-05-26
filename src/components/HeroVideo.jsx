@@ -107,7 +107,7 @@ function Counter({ target, suffix = '', prefix = '', duration = 2000 }) {
 // ─── Floating Exam Card ───────────────────────────────────────────────────────
 function FloatingCard({ exam, icon, color, delay, x, y }) {
   return (
-    <div style={{
+    <div className="floating-card" style={{
       position: 'absolute', left: `${x}%`, top: `${y}%`,
       background: `rgba(${color},0.12)`,
       border: `1px solid rgba(${color},0.35)`,
@@ -418,6 +418,11 @@ export default function HeroVideo() {
         @keyframes underlineGrow {
           from { width: 0%; }
           to { width: 100%; }
+        }
+        @media (max-width: 768px) {
+          .floating-card {
+            display: none !important;
+          }
         }
       `}</style>
     </section>

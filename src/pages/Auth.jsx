@@ -258,7 +258,7 @@ export default function Auth() {
         </div>
       </div>
 
-      <style>{`@media(max-width:768px){.auth-right{display:none}}`}</style>
+      <style>{`@media(max-width:768px){.auth-right{display:none !important}}`}</style>
     </div>
   )
 }

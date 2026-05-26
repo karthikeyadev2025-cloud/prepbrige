@@ -288,9 +288,9 @@ export default function Landing() {
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(ellipse at 50% 50%,rgba(124,58,237,0.08) 0%,transparent 70%)', pointerEvents: 'none' }} />
         <RevealDiv>
           <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--cyan)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 20 }}>Preparing for</div>
-          <div style={{ fontSize: 'clamp(2rem,5vw,3.5rem)', fontWeight: 900, letterSpacing: '-0.03em', minHeight: '1.3em', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
+          <div className="typewriter-banner-flex" style={{ fontSize: 'clamp(2rem,5vw,3.5rem)', fontWeight: 900, letterSpacing: '-0.03em', minHeight: '1.3em' }}>
             <span style={{ color: 'var(--text-1)' }}>We help you crack</span>
-            <span style={{ background: 'linear-gradient(90deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', minWidth: 280, textAlign: 'left' }}>
+            <span className="typewriter-banner-text">
               {typed}<span style={{ animation: 'blink 1s step-end infinite', color: '#7c3aed', WebkitTextFillColor: '#7c3aed' }}>|</span>
             </span>
           </div>
@@ -406,6 +406,32 @@ export default function Landing() {
         @keyframes growBar         { from{width:0} to{width:36px} }
         @keyframes starPop         { from{opacity:0;transform:scale(0) rotate(-30deg)} to{opacity:1;transform:scale(1) rotate(0deg)} }
         @keyframes borderSpin      { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        
+        .typewriter-banner-flex {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+        }
+        .typewriter-banner-text {
+          background: linear-gradient(90deg, #7c3aed, #00d4ff);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          min-width: 280px;
+          text-align: left;
+        }
+        @media (max-width: 768px) {
+          .typewriter-banner-flex {
+            flex-direction: column;
+            text-align: center;
+            gap: 6px;
+          }
+          .typewriter-banner-text {
+            text-align: center;
+            min-width: unset;
+          }
+        }
       `}</style>
     </div>
   )
