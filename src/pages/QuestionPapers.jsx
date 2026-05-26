@@ -31,13 +31,146 @@ export default function QuestionPapers() {
   const [previewId, setPreviewId] = useState(null)
 
   const handleDownload = (paper) => {
-    toast.loading(`Connecting to prep-server to compile ${paper.title} (${paper.paper})...`, { id: 'pyq-down' })
+    toast.loading(`Compiling "${paper.title}" with PrepBridge watermark protection...`, { id: 'pyq-down' })
+    
     setTimeout(() => {
-      toast.loading(`Generating clean PDF layout with full AI doubt solver solutions...`, { id: 'pyq-down' })
-      setTimeout(() => {
-        toast.success(`Download started! Check your device's downloads folder for "${paper.id}.pdf". 📁`, { id: 'pyq-down', duration: 4000 })
-      }, 1500)
-    }, 1200)
+      try {
+        // Extract some sample questions for this exam
+        const examKey = paper.exam.toLowerCase().replace(' ', '_');
+        const examData = QUESTION_BANK[examKey] || QUESTION_BANK.upsc;
+        let questionsList = [];
+        Object.keys(examData).forEach(sub => {
+          if (Array.isArray(examData[sub])) {
+            questionsList = [...questionsList, ...examData[sub]];
+          }
+        });
+        if (questionsList.length === 0) {
+          questionsList = QUESTION_BANK.upsc.history;
+        }
+        
+        let questionsHtml = '';
+        questionsList.forEach((q, i) => {
+          questionsHtml += `
+            <div class="question-card">
+              <div class="question-title">Q${i+1}. ${q.text}</div>
+              <ul class="options-list">
+                ${q.options.map((o, idx) => `
+                  <li class="${idx === q.correct ? 'correct-option' : ''}">
+                    ${String.fromCharCode(65 + idx)}) ${o} ${idx === q.correct ? '✓ (Correct)' : ''}
+                  </li>
+                `).join('')}
+              </ul>
+              <div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div>
+            </div>
+          `;
+        });
+
+        const docContent = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <title>${paper.title} — PrepBridge Protected PYQ</title>
+            <style>
+              body {
+                font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
+                background-color: #f8fafc;
+                color: #0f172a;
+                padding: 40px;
+                max-width: 800px;
+                margin: 0 auto;
+                position: relative;
+              }
+              .watermark {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(-45deg);
+                font-size: 5rem;
+                font-weight: 900;
+                color: rgba(124, 58, 237, 0.05);
+                white-space: nowrap;
+                pointer-events: none;
+                z-index: 9999;
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+              }
+              .header {
+                border-bottom: 2px solid #7c3aed;
+                padding-bottom: 20px;
+                margin-bottom: 30px;
+              }
+              .title { font-size: 1.8rem; font-weight: 800; color: #1e1b4b; margin: 0; }
+              .subtitle { font-size: 1rem; color: #64748b; margin-top: 5px; }
+              .copyright-shield {
+                background: #e0f2fe;
+                border: 1px solid #bae6fd;
+                border-radius: 8px;
+                padding: 12px 16px;
+                font-size: 0.82rem;
+                color: #0369a1;
+                margin-bottom: 24px;
+                line-height: 1.5;
+              }
+              .question-card {
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 20px;
+                margin-bottom: 20px;
+                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+                position: relative;
+              }
+              .question-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 12px; line-height: 1.5; }
+              .options-list { list-style: none; padding-left: 0; margin-bottom: 16px; }
+              .options-list li { padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; border: 1px solid #f1f5f9; font-size: 0.92rem; }
+              .correct-option { background: #d1fae5; border-color: #34d399 !important; color: #065f46; font-weight: 600; }
+              .explanation { font-size: 0.85rem; color: #475569; background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 3px solid #64748b; }
+            </style>
+          </head>
+          <body>
+            <div class="watermark">PREPBRIDGE COPYRIGHT SECURED</div>
+            <div class="watermark" style="top: 25%">PREPBRIDGE PYQ Resource</div>
+            <div class="watermark" style="top: 75%">PREPBRIDGE PYQ Resource</div>
+            
+            <div class="header">
+              <h1 class="title">PrepBridge Study Material</h1>
+              <div class="subtitle">${paper.title} (${paper.paper}) — Year ${paper.year}</div>
+            </div>
+
+            <div class="copyright-shield">
+              <strong>🔒 COPYRIGHT WARNING & WATERMARK PROTECTION:</strong><br>
+              This document is dynamically compiled and watermarked by PrepBridge. Any unauthorized reproduction, online hosting, redistribution, or modification of this document without explicit written permission from PrepBridge is strictly prohibited and constitutes a violation of copyright laws.
+            </div>
+
+            <h2>Solved Sectional Questions</h2>
+            ${questionsHtml}
+            
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 40px 0;">
+            <p style="text-align: center; font-size: 0.8rem; color: #94a3b8;">
+              Compiled dynamically by PrepBridge (C) 2026 — India's #1 All-in-One Exam Prep Platform. All Rights Reserved.
+            </p>
+          </body>
+          </html>
+        `;
+
+        // Create Blob and trigger download
+        const blob = new Blob([docContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${paper.id}_prepbridge_watermarked.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        toast.success(`Study material downloaded successfully! Watermarked & copyright-secured. 📁`, { id: 'pyq-down', duration: 4000 });
+      } catch (err) {
+        console.error('Download compilation failed:', err);
+        toast.error('Download failed. Please try again.', { id: 'pyq-down' });
+      }
+    }, 1500)
   }
 
   const exams = [...new Set(PAPER_LIST.map(p => p.exam))]

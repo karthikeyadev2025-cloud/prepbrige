@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { Trophy, Medal, Star, TrendingUp, Crown, Zap } from 'lucide-react'
-import { useUserStore } from '../store/useStore'
+import { Trophy, Crown, Star, Flame, Award, ChevronUp, ChevronDown, Minus } from 'lucide-react'
+import { useUserStore, useAppStore } from '../store/useStore'
 
 const MOCK_LEADERS = [
   { rank:1, name:'Arjun Sharma', state:'Rajasthan', exam:'UPSC', score:2840, streak:45, avatar:'A', change:0 },
@@ -21,10 +21,25 @@ export default function Leaderboard() {
   const [period, setPeriod] = useState('weekly')
   const [examFilter, setExamFilter] = useState('all')
   const { profile } = useUserStore()
+  const { streak, totalPoints } = useAppStore()
 
-  const myRank = 42
-  const myScore = 1240
-  const myStreak = 7
+  const myScore = totalPoints || 0
+  const myStreak = streak || 0
+  const myRank = myScore > 2800 ? 1 : myScore > 2700 ? 2 : myScore > 2600 ? 3 : myScore > 2000 ? 8 : myScore > 1000 ? 14 : 42
+
+  // Apply exam filtering dynamically
+  const filteredLeaders = MOCK_LEADERS.filter(l => {
+    if (examFilter !== 'all' && l.exam !== examFilter) return false
+    return true
+  })
+
+  // Safe fallback top 3 to prevent crashes if filtered list is small
+  const getLeaderAtRank = (pos) => {
+    const matchedLeader = filteredLeaders[pos === 1 ? 0 : pos === 2 ? 1 : 2] || filteredLeaders[0] || MOCK_LEADERS.find(l => l.rank === pos)
+    return matchedLeader || { rank: pos, name: 'Aspirant', avatar: 'U', score: 0 }
+  }
+
+  const top3 = [getLeaderAtRank(2), getLeaderAtRank(1), getLeaderAtRank(3)]
 
   return (
     <div className="page animate-fade-in">
@@ -57,21 +72,21 @@ export default function Leaderboard() {
               <div style={{ fontSize: '0.75rem', color: 'var(--text-3)' }}>Points</div>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--amber)' }}>🔥{myStreak}</div>
+              <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--amber)' }}>🔥 {myStreak}</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-3)' }}>Day Streak</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Top 3 */}
+      {/* Top 3 podium */}
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 16, marginBottom: 32 }}>
-        {[MOCK_LEADERS[1], MOCK_LEADERS[0], MOCK_LEADERS[2]].map((leader, idx) => {
+        {top3.map((leader, idx) => {
           const pos = idx === 0 ? 2 : idx === 1 ? 1 : 3
           const heights = { 1: 140, 2: 110, 3: 90 }
           return (
-            <div key={leader.rank} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-              {pos === 1 && <Crown size={24} color="#ffd700" />}
+            <div key={pos} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+              {pos === 1 && <Crown size={24} color="#ffd700" style={{ filter: 'drop-shadow(0px 2px 8px rgba(255,215,0,0.4))' }} />}
               <div style={{ width: 52, height: 52, borderRadius: '50%', background: `linear-gradient(135deg,${RANK_COLORS[pos]},${RANK_COLORS[pos]}88)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', color: '#000', boxShadow: `0 0 20px ${RANK_COLORS[pos]}55` }}>
                 {leader.avatar}
               </div>
@@ -103,15 +118,20 @@ export default function Leaderboard() {
 
       {/* Full List */}
       <div className="card" style={{ overflow: 'hidden' }}>
-        <div style={{ padding: '12px 20px', background: 'var(--bg-3)', borderBottom: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '50px 1fr 100px 80px 80px', gap: 12, fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div style={{ padding: '12px 20px', background: 'var(--bg-3)', borderBottom: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '70px 1fr 100px 80px 80px', gap: 12, fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           <div>Rank</div><div>Student</div><div>Exam</div><div>Streak</div><div>Points</div>
         </div>
-        {MOCK_LEADERS.map((l) => (
-          <div key={l.rank} style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '50px 1fr 100px 80px 80px', gap: 12, alignItems: 'center', background: l.rank <= 3 ? `${RANK_COLORS[l.rank]}08` : 'transparent', transition: 'background 0.2s' }}
+        {filteredLeaders.map((l) => (
+          <div key={l.rank} style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '70px 1fr 100px 80px 80px', gap: 12, alignItems: 'center', background: l.rank <= 3 ? `${RANK_COLORS[l.rank]}08` : 'transparent', transition: 'background 0.2s' }}
             onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-3)'}
             onMouseLeave={e => e.currentTarget.style.background = l.rank <= 3 ? `${RANK_COLORS[l.rank]}08` : 'transparent'}
           >
-            <div style={{ fontWeight: 800, fontSize: '1.1rem', color: RANK_COLORS[l.rank] || 'var(--text-2)' }}>#{l.rank}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ fontWeight: 800, fontSize: '1rem', color: RANK_COLORS[l.rank] || 'var(--text-2)', width: 26 }}>#{l.rank}</div>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {l.change > 0 ? <ChevronUp size={12} color="var(--emerald)" /> : l.change < 0 ? <ChevronDown size={12} color="var(--red)" /> : <Minus size={10} color="var(--text-4)" />}
+              </div>
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.85rem', color: 'white', flexShrink: 0 }}>{l.avatar}</div>
               <div>
