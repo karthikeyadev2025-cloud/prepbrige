@@ -1,8 +1,10 @@
 // Firebase Messaging Background Service Worker — PrepBridge
+/* eslint-disable no-undef */
 importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
 
 // Initialize Firebase inside the service worker context
+/* global firebase */
 firebase.initializeApp({
   apiKey: "AIzaSyBphAmrAzMyHn4n4PQ0GQ9Ixj0xnWhVmZk",
   authDomain: "prepbridge-85189.firebaseapp.com",
