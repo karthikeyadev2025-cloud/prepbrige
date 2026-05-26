@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Outlet, useLocation, useNavigate, NavLink } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../../store/useStore'
 import { getSubscriptionStatus } from '../../services/paymentService'
+import { NEWSPAPER_TOPICS } from '../../data/currentAffairs'
 import {
   LayoutDashboard, BookOpen, FileText, Newspaper, BrainCircuit,
   GraduationCap, Trophy, Bell, User, Settings, LogOut,
@@ -46,6 +47,18 @@ export default function AppLayout({ isAdmin = false }) {
   const unread = notifications.filter(n => !n.read).length
   const items = isAdmin ? ADMIN_ITEMS : NAV_ITEMS
 
+  // India Pride Ticker State
+  const prideItems = useMemo(() => (NEWSPAPER_TOPICS || []).filter(item => item.isPrideMoment), [])
+  const [tickerIndex, setTickerIndex] = useState(0)
+
+  useEffect(() => {
+    if (prideItems.length === 0) return
+    const timer = setInterval(() => {
+      setTickerIndex(prev => (prev + 1) % prideItems.length)
+    }, 8000)
+    return () => clearInterval(timer)
+  }, [prideItems])
+
   useEffect(() => { setMobileOpen(false) }, [location.pathname])
 
   const handleLogout = () => {
@@ -54,9 +67,49 @@ export default function AppLayout({ isAdmin = false }) {
   }
 
   return (
-    <div className="app-layout">
+    <div className="app-layout" style={{ paddingTop: prideItems.length > 0 ? '32px' : 0 }}>
+      {/* Global India Pride Ticker */}
+      {prideItems.length > 0 && (
+        <div className="india-pride-ticker" style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '32px',
+          background: 'linear-gradient(90deg, rgba(245, 158, 11, 0.15) 0%, rgba(5,6,10,0.96) 25%, rgba(5,6,10,0.96) 75%, rgba(16, 185, 129, 0.15) 100%)',
+          borderBottom: '1px solid rgba(245, 158, 11, 0.22)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999,
+          padding: '0 16px',
+          overflow: 'hidden',
+          fontSize: '0.78rem',
+          color: 'var(--text-2)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, color: 'var(--amber)', textTransform: 'uppercase', letterSpacing: '0.05em', marginRight: 12, flexShrink: 0 }}>
+            <span>🇮🇳</span> Proud to be an Indian:
+          </div>
+          <div style={{
+            flex: 1,
+            textAlign: 'left',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            fontStyle: 'italic',
+            color: 'white',
+            animation: 'fadeIn 0.5s ease'
+          }}>
+            "{prideItems[tickerIndex]?.prideDetails || prideItems[tickerIndex]?.summary}"
+          </div>
+          <div onClick={() => navigate('/app/current-affairs')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.7rem', color: 'var(--cyan)', fontWeight: 700, textTransform: 'uppercase', paddingLeft: 12, flexShrink: 0 }}>
+            Open Tracker <ChevronRight size={10} />
+          </div>
+        </div>
+      )}
+
       {/* Sidebar */}
-      <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
+      <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`} style={{ top: prideItems.length > 0 ? '32px' : 0, height: prideItems.length > 0 ? 'calc(100vh - 32px)' : '100vh' }}>
         <div className="sidebar-logo">
           <div style={{ width: 32, height: 32, background: 'linear-gradient(135deg,#00d4ff,#7c3aed)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Zap size={18} color="white" />
@@ -135,7 +188,7 @@ export default function AppLayout({ isAdmin = false }) {
       {mobileOpen && <div onClick={() => setMobileOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 150 }} />}
 
       {/* Topbar */}
-      <header className={`topbar ${collapsed ? 'sidebar-collapsed' : ''}`}>
+      <header className={`topbar ${collapsed ? 'sidebar-collapsed' : ''}`} style={{ top: prideItems.length > 0 ? '32px' : 0 }}>
         <div className="topbar-left">
           <button className="topbar-btn" onClick={() => setMobileOpen(o => !o)} id="hamburger">
             <Menu size={18} />
@@ -170,7 +223,7 @@ export default function AppLayout({ isAdmin = false }) {
       </header>
 
       {/* Main content */}
-      <main className={`main-content ${collapsed ? 'sidebar-collapsed' : ''}`}>
+      <main className={`main-content ${collapsed ? 'sidebar-collapsed' : ''}`} style={{ paddingTop: prideItems.length > 0 ? 'calc(var(--topbar-h, 64px) + 32px)' : undefined }}>
         <Outlet />
       </main>
     </div>
