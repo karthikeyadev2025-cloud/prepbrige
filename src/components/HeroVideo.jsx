@@ -195,26 +195,25 @@ function HeroTypewriter() {
         Your Dream
       </div>
 
-      {/* Line 2: Typewriter word — clean gradient text, NO filter, NO boxShadow box */}
-      <div style={{
-        fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.15,
-        letterSpacing: '-0.03em', marginBottom: 4, minHeight: '1.15em',
-        position: 'relative', display: 'inline-block',
-      }}>
-        {/* Gradient text — MUST have no filter on self or any sibling/child */}
+      {/* Line 2: Typewriter word — clean gradient text, NO key unmounting, NO shorthand background conflicts */}
+      <div
+        style={{
+          fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.15,
+          letterSpacing: '-0.03em', marginBottom: 4, minHeight: '1.15em',
+          position: 'relative', display: 'inline-block',
+        }}
+      >
+        {/* Gradient span — 100% STATIC, no dynamic unmounting or animation, uses backgroundImage */}
         <span style={{
-          background: gradient,
+          backgroundImage: gradient,
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
-          transition: 'background 0.4s ease',
-          animation: phase === 'typing' && displayed.length === JOB_WORDS[wordIdx].word.length
-            ? 'wordPop 0.4s ease' : 'none',
         }}>
           {displayed}
         </span>
 
-        {/* Blinking cursor — solid color, box-shadow glow only */}
+        {/* Cursor — solid color only, animation is safe on non-gradient elements */}
         <span style={{
           display: 'inline-block', width: 3, height: '0.85em',
           background: cursorColor,
@@ -223,19 +222,19 @@ function HeroTypewriter() {
           boxShadow: `0 0 8px ${cursorColor}`,
         }} />
 
-        {/* Underline — gradient background, box-shadow glow only */}
+        {/* Underline — solid div with backgroundImage, animation safe here */}
         {showUnder && (
           <div style={{
             position: 'absolute', bottom: -4, left: 0,
             height: 3, borderRadius: 2,
-            background: gradient,
+            backgroundImage: gradient,
             boxShadow: `0 0 8px ${cursorColor}`,
             animation: 'underlineGrow 0.35s ease forwards',
           }} />
         )}
       </div>
 
-      {/* Line 3: "Starts Here." + ₹599 — NO filter anywhere near gradient text */}
+      {/* Line 3: "Starts Here." + ₹599 — NO shorthand background conflicts */}
       <div style={{
         fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.1,
         letterSpacing: '-0.03em', display: 'flex', alignItems: 'baseline',
@@ -244,9 +243,10 @@ function HeroTypewriter() {
       }}>
         <span style={{ color: 'rgba(255,255,255,0.85)' }}>Starts Here.</span>
         <span style={{
-          background: 'linear-gradient(90deg,#10b981 0%,#00d4ff 30%,#ffffff 50%,#00d4ff 70%,#10b981 100%)',
+          backgroundImage: 'linear-gradient(90deg,#10b981 0%,#00d4ff 30%,#ffffff 50%,#00d4ff 70%,#10b981 100%)',
           backgroundSize: '200% auto',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
           animation: 'shimmer599 2.5s linear infinite',
         }}>₹599.</span>
