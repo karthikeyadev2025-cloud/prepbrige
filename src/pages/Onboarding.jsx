@@ -105,13 +105,15 @@ export default function Onboarding() {
     updateProfile(profileUpdates)
     setOnboardingComplete(true)
 
-    // 2. Sync to Firebase Firestore live so administrators can access it
+    // 2. Sync to Firebase Firestore live so administrators can access it (Non-blocking background sync)
     if (user?.uid) {
-      try {
-        await updateUserProfile(user.uid, profileUpdates)
-      } catch (e) {
-        console.error('Failed to sync onboarding profile to database:', e)
-      }
+      updateUserProfile(user.uid, profileUpdates)
+        .then(() => {
+          console.log('[Onboarding] Live Firestore sync complete.')
+        })
+        .catch((e) => {
+          console.error('[Onboarding] Live Firestore sync failed (ignoring for onboarding success):', e)
+        })
     }
 
     setUploading(false)
@@ -330,12 +332,21 @@ export default function Onboarding() {
         {/* Navigation */}
         <div style={{ display: 'flex', gap: 12 }}>
           {step > 0 && (
-            <button className="btn btn-outline" onClick={() => setStep(s => s - 1)} style={{ flex: 1 }}>
+            <button className="btn btn-outline" onClick={() => setStep(s => s - 1)} style={{ flex: 1 }} disabled={uploading}>
               <ArrowLeft size={16} /> Back
             </button>
           )}
-          <button className="btn btn-primary" onClick={next} style={{ flex: 2, justifyContent: 'center' }}>
-            {step === STEPS.length - 1 ? 'Complete Setup 🎉' : 'Continue'} <ArrowRight size={16} />
+          <button className="btn btn-primary" onClick={next} style={{ flex: 2, justifyContent: 'center' }} disabled={uploading}>
+            {uploading ? (
+              <>
+                <div className="spinner-loader" style={{ marginRight: 8 }} />
+                Completing Setup...
+              </>
+            ) : (
+              <>
+                {step === STEPS.length - 1 ? 'Complete Setup 🏃' : 'Continue'} <ArrowRight size={16} />
+              </>
+            )}
           </button>
         </div>
 

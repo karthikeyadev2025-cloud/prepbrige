@@ -109,7 +109,7 @@ export async function getUserProfile(uid) {
 
 export async function updateUserProfile(uid, data) {
   const ref = doc(db, 'users', uid)
-  await updateDoc(ref, { ...data, updatedAt: serverTimestamp() })
+  await setDoc(ref, { ...data, updatedAt: serverTimestamp() }, { merge: true })
 }
 
 // ─── Auth State Observer & Redirect Result Capture ───────────────
