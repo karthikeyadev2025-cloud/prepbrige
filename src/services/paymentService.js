@@ -3,6 +3,29 @@
 import { updateUserProfile } from '../firebase/auth'
 import { toast } from 'react-hot-toast'
 
+// Pricing constants — single source of truth
+export const PRICING = {
+  monthly: {
+    label: 'Monthly Plan',
+    amount: 249,           // ₹249/month
+    amountPaise: 24900,    // in paise for Razorpay
+    description: 'PrepBridge All-Access — Monthly Plan',
+    badge: '₹249/mo',
+    planDuration: '1 month',
+  },
+  sixMonth: {
+    label: '6-Month Plan',
+    amount: 1195,          // ₹249 × 6 × 0.8 = ₹1,195.20 → ₹1,195
+    amountPaise: 119500,   // in paise for Razorpay
+    description: 'PrepBridge All-Access — 6-Month Plan (20% OFF)',
+    badge: '₹1,195 for 6 months',
+    planDuration: '6 months',
+    savings: Math.round(249 * 6 * 0.20), // ₹299 saved
+    discountLabel: '20% OFF',
+    perMonth: Math.round(1195 / 6),      // ≈ ₹199/mo effective
+  }
+}
+
 // Helper to dynamically load the Razorpay script
 export function loadRazorpayScript() {
   return new Promise((resolve) => {
@@ -21,7 +44,10 @@ export function loadRazorpayScript() {
 }
 
 // Helper to initiate the premium checkout popup
-export async function initiatePremiumCheckout(user, profile, updateProfile, onComplete) {
+// planType: 'monthly' | 'sixMonth'
+export async function initiatePremiumCheckout(user, profile, updateProfile, onComplete, planType = 'monthly') {
+  const plan = PRICING[planType] || PRICING.monthly
+
   const isLoaded = await loadRazorpayScript()
   if (!isLoaded) {
     toast.error('Failed to load Razorpay payment gateway. Please check your internet connection.')
@@ -29,20 +55,32 @@ export async function initiatePremiumCheckout(user, profile, updateProfile, onCo
   }
 
   const options = {
-    // Standard test key for simulation
+    // Replace with your live Razorpay key in production
     key: 'rzp_test_prepbridgeKey123',
-    amount: 59900, // ₹599.00 in paise
+    amount: plan.amountPaise,
     currency: 'INR',
     name: 'PrepBridge Premium',
-    description: 'All India Exam Prep — Premium All-Access Plan',
+    description: plan.description,
     image: '/icons/icon-192.png',
     handler: async function (response) {
       const paymentId = response.razorpay_payment_id
-      toast.success('Payment Successful! Welcome to Premium! 🎉', { duration: 5000 })
-      
+      toast.success(`Payment Successful! Welcome to Premium! 🎉 ${plan.label} activated.`, { duration: 5000 })
+
+      const now = new Date()
+      const expiresAt = new Date(now)
+      if (planType === 'sixMonth') {
+        expiresAt.setMonth(expiresAt.getMonth() + 6)
+      } else {
+        expiresAt.setMonth(expiresAt.getMonth() + 1)
+      }
+
       const premiumSubscription = {
         plan: 'paid',
-        startDate: new Date().toISOString(),
+        planType: planType,
+        planLabel: plan.label,
+        amount: plan.amount,
+        startDate: now.toISOString(),
+        expiresAt: expiresAt.toISOString(),
         paymentId: paymentId
       }
 

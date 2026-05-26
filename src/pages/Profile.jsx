@@ -5,7 +5,7 @@ import { signOutUser } from '../firebase/auth'
 import { useNavigate } from 'react-router-dom'
 import { ALL_LANGUAGES, EXAM_CATEGORIES } from '../data/exams'
 import { toast } from 'react-hot-toast'
-import { initiatePremiumCheckout } from '../services/paymentService'
+import { initiatePremiumCheckout, PRICING } from '../services/paymentService'
 
 export default function Profile() {
   const { profile, user, logout, updateProfile } = useUserStore()
@@ -13,6 +13,7 @@ export default function Profile() {
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(profile?.name || '')
   const [activeTab, setActiveTab] = useState('profile')
+  const [selectedPlan, setSelectedPlan] = useState('sixMonth') // default highlight 6-mo deal
 
   const handleLogout = async () => {
     await signOutUser()
@@ -91,26 +92,57 @@ export default function Profile() {
       {profile?.subscription?.plan !== 'paid' && (
         <div className="card card-p animate-fade-in" style={{
           marginBottom: 20,
-          background: 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(0,212,255,0.1))',
+          background: 'linear-gradient(135deg, rgba(124,58,237,0.12), rgba(0,212,255,0.07))',
           border: '1px solid rgba(124,58,237,0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 16,
-          padding: '20px 24px'
+          padding: '24px'
         }}>
-          <div style={{ flex: 1, minWidth: 260 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <Star size={18} color="var(--amber)" style={{ fill: 'var(--amber)' }} />
-              <h4 style={{ margin: 0, fontSize: '1.05rem', color: 'white' }}>Unlock All-Access Premium 🚀</h4>
-            </div>
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-3)', margin: 0, lineHeight: 1.5 }}>
-              Get unlimited visual doubt solving, full access to All India mock tests, and direct expert study plan revisions for only <strong>₹599/year</strong>.
-            </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <Star size={18} color="var(--amber)" style={{ fill: 'var(--amber)' }} />
+            <h4 style={{ margin: 0, fontSize: '1.05rem', color: 'white' }}>Unlock All-Access Premium 🚀</h4>
           </div>
-          <button onClick={() => initiatePremiumCheckout(user, profile, updateProfile)} className="btn btn-primary" style={{ gap: 8, boxShadow: 'var(--glow-purple)', fontWeight: 700 }}>
-            <Zap size={14} /> Upgrade Now (₹599)
+          <p style={{ fontSize: '0.82rem', color: 'var(--text-3)', margin: '0 0 18px', lineHeight: 1.5 }}>
+            Unlimited AI doubt solving, all-India mock tests, live current affairs, 5L+ questions &amp; more.
+          </p>
+
+          {/* Plan selector */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 18 }}>
+            {/* Monthly Plan */}
+            <div
+              onClick={() => setSelectedPlan('monthly')}
+              style={{
+                padding: '14px 16px', borderRadius: 'var(--r-lg)', cursor: 'pointer', transition: 'var(--t)',
+                background: selectedPlan === 'monthly' ? 'rgba(124,58,237,0.18)' : 'rgba(255,255,255,0.03)',
+                border: selectedPlan === 'monthly' ? '2px solid var(--purple)' : '2px solid var(--border)'
+              }}
+            >
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>Monthly</div>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: selectedPlan === 'monthly' ? 'var(--purple)' : 'white', lineHeight: 1 }}>₹249</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-3)', marginTop: 2 }}>/month</div>
+            </div>
+
+            {/* 6-Month Plan (recommended) */}
+            <div
+              onClick={() => setSelectedPlan('sixMonth')}
+              style={{
+                padding: '14px 16px', borderRadius: 'var(--r-lg)', cursor: 'pointer', transition: 'var(--t)', position: 'relative',
+                background: selectedPlan === 'sixMonth' ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.03)',
+                border: selectedPlan === 'sixMonth' ? '2px solid var(--emerald)' : '2px solid var(--border)'
+              }}
+            >
+              <div style={{ position: 'absolute', top: -10, right: 10, background: 'var(--emerald)', color: 'white', fontSize: '0.65rem', fontWeight: 800, padding: '2px 8px', borderRadius: 'var(--r-full)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Best Value</div>
+              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 4 }}>6 Months <span style={{ color: 'var(--emerald)' }}>• 20% OFF</span></div>
+              <div style={{ fontSize: '1.6rem', fontWeight: 900, color: selectedPlan === 'sixMonth' ? 'var(--emerald)' : 'white', lineHeight: 1 }}>₹1,195</div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-3)', marginTop: 2 }}>≈ ₹{PRICING.sixMonth.perMonth}/mo · Save ₹{PRICING.sixMonth.savings}</div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => initiatePremiumCheckout(user, profile, updateProfile, null, selectedPlan)}
+            className="btn btn-primary"
+            style={{ width: '100%', gap: 8, boxShadow: 'var(--glow-purple)', fontWeight: 700, justifyContent: 'center' }}
+          >
+            <Zap size={14} />
+            {selectedPlan === 'sixMonth' ? 'Get 6-Month Plan — ₹1,195 (20% OFF)' : 'Get Monthly Plan — ₹249/mo'}
           </button>
         </div>
       )}
@@ -135,7 +167,7 @@ export default function Profile() {
             <div>
               <h4 style={{ margin: 0, fontSize: '0.98rem', color: 'var(--amber)' }}>PrepBridge All-Access Active 💎</h4>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', marginTop: 2 }}>
-                Payment ID: {profile?.subscription?.paymentId || 'rzp_test_VIP'} • Member since {new Date(profile?.subscription?.startDate || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                {profile?.subscription?.planLabel || 'All-Access'} · Payment ID: {profile?.subscription?.paymentId || 'rzp_test_VIP'} · Member since {new Date(profile?.subscription?.startDate || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}{profile?.subscription?.expiresAt ? ` · Renews ${new Date(profile.subscription.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}
               </div>
             </div>
           </div>

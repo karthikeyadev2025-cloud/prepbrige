@@ -309,10 +309,10 @@ export default function AITutor() {
             <div style={{ fontSize: '1.6rem', marginBottom: 6 }}>🔒 Daily Limit Reached</div>
             <h4 style={{ margin: 0, marginBottom: 8, color: 'white', fontSize: '1.05rem' }}>Unlock Unlimited Gemini AI Doubt Solver</h4>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-3)', margin: 0, marginBottom: 14, lineHeight: 1.55, maxWidth: 640, marginLeft: 'auto', marginRight: 'auto' }}>
-              You have completed all 5 free daily competitive exam doubt scans for today. Upgrade to All-Access Premium for only <strong>₹599/year</strong> to solve unlimited textbook, test-series, and paper queries instantly!
+              You have completed all 5 free daily competitive exam doubt scans for today. Upgrade to All-Access Premium starting at only <strong>₹249/month</strong> to solve unlimited textbook, test-series, and paper queries instantly!
             </p>
             <Link to="/app/profile" className="btn btn-primary" style={{ display: 'inline-flex', gap: 8, fontWeight: 700, boxShadow: 'var(--glow-purple)' }}>
-              <Zap size={14} /> Go Premium Now (₹599)
+              <Zap size={14} /> Go Premium Now (from ₹249/mo)
             </Link>
           </div>
         ) : (

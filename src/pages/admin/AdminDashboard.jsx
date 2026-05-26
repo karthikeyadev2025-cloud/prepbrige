@@ -42,7 +42,7 @@ export default function AdminDashboard() {
             state: u.state || 'N/A',
             exam: u.primaryTarget ? u.primaryTarget.toUpperCase() : 'GENERAL',
             joined: u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'N/A',
-            plan: u.subscription?.plan === 'paid' ? 'Paid (₹599)' : 'Free',
+            plan: u.subscription?.plan === 'paid' ? `Paid (₹${u.subscription?.amount || 249}/mo)` : 'Free',
             streak: u.streak || 0,
             status: u.status || 'active'
           })
@@ -55,17 +55,17 @@ export default function AdminDashboard() {
             paidUsers: 3421,
             activeToday: 3241,
             maxStreak: 52,
-            totalRevenue: 2049179,
+            totalRevenue: 2049179,   // ≈ some paid at 249/mo, some at 6-mo plan
             pieData: [
               { name: 'UPSC', value: 28 }, { name: 'SSC CGL', value: 22 }, { name: 'Banking', value: 19 },
               { name: 'Railways', value: 14 }, { name: 'State PSC', value: 10 }, { name: 'Others', value: 7 }
             ],
             recentUsers: [
-              { name: 'Ramesh Kumar', state: 'Bihar', exam: 'UPSC', joined: 'May 26', plan: 'Paid (₹599)' },
+              { name: 'Ramesh Kumar', state: 'Bihar', exam: 'UPSC', joined: 'May 26', plan: 'Paid (₹249/mo)' },
               { name: 'Priya Sharma', state: 'Rajasthan', exam: 'BANKING', joined: 'May 26', plan: 'Free' },
-              { name: 'Suresh Yadav', state: 'UP', exam: 'SSC CGL', joined: 'May 25', plan: 'Paid (₹599)' },
+              { name: 'Suresh Yadav', state: 'UP', exam: 'SSC CGL', joined: 'May 25', plan: 'Paid (₹1,195 × 6mo)' },
               { name: 'Anjali Meena', state: 'MP', exam: 'NEET', joined: 'May 25', plan: 'Free' },
-              { name: 'Mohit Sahu', state: 'CG', exam: 'RAILWAYS', joined: 'May 24', plan: 'Paid (₹599)' }
+              { name: 'Mohit Sahu', state: 'CG', exam: 'RAILWAYS', joined: 'May 24', plan: 'Paid (₹249/mo)' }
             ]
           })
           setLoading(false)
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
         const paidCount = usersList.filter(u => u.plan.includes('Paid')).length
         const activeCount = usersList.filter(u => u.status === 'active').length
         const maxStr = Math.max(...usersList.map(u => u.streak))
-        const rev = paidCount * 599
+        const rev = paidCount * 249 // average monthly revenue per paid user at ₹249/mo base
 
         // Lock ratio metrics
         const categories = {}
@@ -124,7 +124,7 @@ export default function AdminDashboard() {
         {[
           { icon: Users, label: 'Total Registrations', value: loading ? '...' : stats.totalUsers.toLocaleString(), trend: '+34%', color: 'var(--cyan)', bg: 'var(--cyan-10)' },
           { icon: DollarSign, label: 'Razorpay Revenue', value: loading ? '...' : `₹${stats.totalRevenue.toLocaleString()}`, trend: '+28%', color: 'var(--emerald)', bg: 'var(--emerald-10)' },
-          { icon: Star, label: 'Paid Subscriptions', value: loading ? '...' : stats.paidUsers.toLocaleString(), trend: '₹599/yr', color: 'var(--purple)', bg: 'var(--purple-10)' },
+          { icon: Star, label: 'Paid Subscriptions', value: loading ? '...' : stats.paidUsers.toLocaleString(), trend: '₹249/mo', color: 'var(--purple)', bg: 'var(--purple-10)' },
           { icon: Award, label: 'Max Study Streak', value: loading ? '...' : `🔥 ${stats.maxStreak} Days`, trend: 'streaks', color: 'var(--amber)', bg: 'var(--amber-10)' },
         ].map(s => (
           <div key={s.label} className="card card-p">

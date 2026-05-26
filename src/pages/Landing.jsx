@@ -268,7 +268,7 @@ export default function Landing() {
             { val: 500000, suffix: '+', label: 'Questions', color: '#00d4ff', prefix: '' },
             { val: 200, suffix: '+', label: 'Exams Covered', color: '#7c3aed', prefix: '' },
             { val: 245832, suffix: '+', label: 'Students Enrolled', color: '#10b981', prefix: '' },
-            { val: 599, suffix: '/yr', label: 'All Access Plan', color: '#f59e0b', prefix: '₹' },
+            { val: 249, suffix: '/mo', label: 'Starts At Just', color: '#f59e0b', prefix: '₹' },
           ].map((s, i) => (
             <RevealDiv key={i} delay={i * 0.1} direction="scale">
               <div style={{ padding: '20px 0' }}>
@@ -346,10 +346,13 @@ export default function Landing() {
                 <div style={{ fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--text-4)', marginBottom: 14 }}>All Access Plan</div>
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 4, marginBottom: 6 }}>
                   <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-3)' }}>₹</span>
-                  <span style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>599</span>
-                  <span style={{ color: 'var(--text-3)' }}>/year</span>
+                  <span style={{ fontSize: '5rem', fontWeight: 900, lineHeight: 1, background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>249</span>
+                  <span style={{ color: 'var(--text-3)' }}>/month</span>
                 </div>
-                <p style={{ marginBottom: 28, fontSize: '0.85rem', color: 'var(--text-3)' }}>That's just <strong style={{ color: '#10b981' }}>₹1.64/day</strong> — less than a chai ☕</p>
+                <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 'var(--r-full)', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 16px', marginBottom: 20, fontSize: '0.82rem' }}>
+                  <span style={{ color: '#10b981', fontWeight: 800 }}>20% OFF</span>
+                  <span style={{ color: 'var(--text-3)' }}>6-Month Plan — only ₹1,195 (save ₹299)</span>
+                </div>
                 {['All 200+ exams & question papers', '5 Lakh+ questions unlimited', 'Unlimited mock tests + All India Rank', 'AI Tutor in your language', 'Live current affairs every morning', 'Push notifications for every exam', 'All 22 Indian languages', 'Offline access on any Android phone'].map((f, i) => (
                   <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, textAlign: 'left', animation: `slideInRight 0.4s ease ${i * 0.06}s both` }}>
                     <CheckCircle size={15} color="#10b981" />
@@ -357,9 +360,9 @@ export default function Landing() {
                   </div>
                 ))}
                 <MagneticBtn to="/auth?signup=1" style={{ display: 'flex', justifyContent: 'center', marginTop: 28, padding: '16px 28px', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', borderRadius: 'var(--r-full)', fontWeight: 800, fontSize: '1rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 30px rgba(124,58,237,0.5)', width: '100%' }}>
-                  Get All Access — ₹599/yr <ArrowRight size={18} />
+                  Get All Access — from ₹249/mo <ArrowRight size={18} />
                 </MagneticBtn>
-                <div style={{ marginTop: 14, fontSize: '0.78rem', color: 'var(--text-4)' }}>7-day free trial · Cancel anytime · Scholarship for BPL families</div>
+                <div style={{ marginTop: 14, fontSize: '0.78rem', color: 'var(--text-4)' }}>7-day free trial · Cancel anytime · 6-month plan saves ₹299</div>
               </div>
             </div>
           </RevealDiv>
@@ -377,7 +380,7 @@ export default function Landing() {
               Prep<span style={{ background: 'linear-gradient(90deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bridge</span>
             </span>
           </div>
-          <p style={{ fontSize: '0.82rem', color: 'var(--text-4)', marginBottom: 8 }}>One platform for every Indian exam aspirant. 200+ exams. 22 languages. ₹599/year.</p>
+          <p style={{ fontSize: '0.82rem', color: 'var(--text-4)', marginBottom: 8 }}>One platform for every Indian exam aspirant. 200+ exams. 22 languages. From ₹249/month.</p>
           <div style={{ width: '100%', height: 1, background: 'rgba(255,255,255,0.05)', margin: '20px 0' }} />
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
             <span style={{ fontSize: '0.75rem', color: 'rgba(148,163,184,0.4)', letterSpacing: '0.04em' }}>Powered by</span>

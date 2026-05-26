@@ -412,12 +412,12 @@ export default function Dashboard() {
               <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'white' }}>Unlock All-Access Premium Prep 💎</h4>
             </div>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5 }}>
-              Upgrade to Premium for just <strong>₹599/yr</strong>. Unlock unlimited visual doubt solving, full coverage of All India test series, and direct expert study plan revisions.
+              Upgrade to Premium starting at just <strong>₹249/mo</strong>. Unlock unlimited visual doubt solving, full coverage of All India test series, and direct expert study plan revisions.
             </p>
           </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <Link to="/app/profile" className="btn btn-primary" style={{ gap: 8, boxShadow: 'var(--glow-purple)', fontWeight: 700 }}>
-              <Zap size={14} /> Upgrade Now (₹599)
+              <Zap size={14} /> Upgrade Now (from ₹249/mo)
             </Link>
           </div>
         </div>
