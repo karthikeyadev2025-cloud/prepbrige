@@ -38,7 +38,7 @@ export default function AdminUsers() {
             id: docSnap.id,
             name: u.displayName || u.name || 'Anonymous User',
             email: u.email || 'no-email@prepbridge.in',
-            phone: u.phone || '+91 0000000000',
+            phone: u.phone || u.phoneNumber || '+91 0000000000',
             state: u.state || 'N/A',
             exams: u.exams || [],
             joined: u.createdAt ? (typeof u.createdAt.toDate === 'function' ? u.createdAt.toDate().toISOString() : u.createdAt) : new Date().toISOString(),
@@ -48,14 +48,20 @@ export default function AdminUsers() {
             tests: u.tests || 0,
             photoURL: u.photoURL || null,
             primaryTarget: u.primaryTarget || null,
-            lakshyaSlogan: u.lakshyaSlogan || null
+            lakshyaSlogan: u.lakshyaSlogan || null,
+            selectedLanguage: u.selectedLanguage || u.languageName || 'English',
+            education: u.education || 'N/A',
+            studyHours: u.studyHours || 'N/A'
           })
         })
         setUsers(list.length > 0 ? list : MOCK_USERS.map(m => ({
           ...m,
           photoURL: null,
           primaryTarget: m.exams?.[0] || 'UPSC',
-          lakshyaSlogan: 'Crack competitive exams!'
+          lakshyaSlogan: 'Crack competitive exams!',
+          selectedLanguage: 'English',
+          education: 'Graduate',
+          studyHours: '3-4 hours'
         })))
       } catch (e) {
         console.error('Error fetching users from Firestore:', e)
@@ -184,7 +190,10 @@ export default function AdminUsers() {
                       )}
                       <div>
                         <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>{user.name}</div>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--text-3)' }}>{user.email}</div>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-3)', display: 'flex', flexDirection: 'column', gap: 2 }}>
+                          {user.email && <span>📧 {user.email}</span>}
+                          {user.phone && <span style={{ color: 'var(--cyan)' }}>📱 {user.phone}</span>}
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -215,7 +224,7 @@ export default function AdminUsers() {
                   <td style={{ padding: '12px 16px', color: 'var(--text-2)' }}>{user.tests}</td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      <button className="btn btn-ghost btn-icon btn-sm" title="View"><Eye size={14} /></button>
+                      <button onClick={() => setSelectedUser(user)} className="btn btn-ghost btn-icon btn-sm" title="View"><Eye size={14} /></button>
                       <button onClick={() => handleTogglePlan(user.id, user.plan)} className="btn btn-ghost btn-icon btn-sm" title="Toggle Paid Plan" style={{ color: user.plan === 'paid' ? 'var(--emerald)' : 'var(--text-3)' }}><Shield size={14} /></button>
                       <button onClick={() => handleToggleStatus(user.id, user.status)} className="btn btn-ghost btn-icon btn-sm" title={user.status === 'suspended' ? 'Activate' : 'Suspend'} style={{ color: user.status === 'suspended' ? 'var(--emerald)' : 'var(--red)' }}><Ban size={14} /></button>
                     </div>
@@ -226,6 +235,85 @@ export default function AdminUsers() {
           </table>
         </div>
       </div>
+
+      {/* Socratic Admin Detailed Profile Modal */}
+      {selectedUser && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(5,6,10,0.85)',
+          backdropFilter: 'blur(16px)', zIndex: 100000, display: 'flex',
+          alignItems: 'center', justifyContent: 'center', padding: 24,
+          animation: 'fadeIn 0.25s ease'
+        }}>
+          <div className="card card-p" style={{
+            maxWidth: 580, width: '100%', border: '1px solid var(--purple-20)',
+            maxHeight: '90vh', overflowY: 'auto', position: 'relative'
+          }}>
+            <button className="btn btn-ghost btn-icon btn-sm" onClick={() => setSelectedUser(null)} style={{ position: 'absolute', top: 16, right: 16, fontSize: '1.2rem', color: 'var(--text-3)' }}>×</button>
+            
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+              {selectedUser.photoURL ? (
+                <img src={selectedUser.photoURL} alt={selectedUser.name} style={{ width: 68, height: 68, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--purple)' }} />
+              ) : (
+                <div style={{ width: 68, height: 68, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.8rem', color: 'white' }}>{selectedUser.name[0]}</div>
+              )}
+              <div>
+                <h3 style={{ margin: 0, color: 'white' }}>{selectedUser.name}</h3>
+                <span className="badge badge-purple" style={{ marginTop: 6, display: 'inline-block' }}>Student Profile</span>
+              </div>
+            </div>
+
+            <div className="divider" style={{ margin: '16px 0' }} />
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px 24px', fontSize: '0.88rem' }}>
+              <div>
+                <div style={{ color: 'var(--text-3)', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>📧 Email Address</div>
+                <div style={{ fontWeight: 600, color: 'white' }}>{selectedUser.email}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-3)', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>📱 Mobile Number</div>
+                <div style={{ fontWeight: 600, color: 'var(--cyan)' }}>{selectedUser.phone}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-3)', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>🗺️ Selected State</div>
+                <div style={{ fontWeight: 600, color: 'white' }}>{selectedUser.state}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-3)', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>🌐 Chosen Language</div>
+                <div style={{ fontWeight: 600, color: 'white' }}>{selectedUser.selectedLanguage || 'English'}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-3)', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>🎓 Target Exam (Lakshya)</div>
+                <div style={{ fontWeight: 700, color: 'var(--amber)' }}>🎯 {selectedUser.primaryTarget?.toUpperCase() || 'N/A'}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-3)', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>⏰ Daily Study Target</div>
+                <div style={{ fontWeight: 600, color: 'white' }}>{selectedUser.studyHours || '3-4 hours'}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-3)', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>📝 Education Level</div>
+                <div style={{ fontWeight: 600, color: 'white' }}>{selectedUser.education || 'Graduate'}</div>
+              </div>
+              <div>
+                <div style={{ color: 'var(--text-3)', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>📅 Joined PrepBridge</div>
+                <div style={{ fontWeight: 600, color: 'white' }}>{new Date(selectedUser.joined).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+              </div>
+            </div>
+
+            <div className="divider" style={{ margin: '20px 0' }} />
+
+            <div style={{ padding: '14px 18px', background: 'rgba(124,58,237,0.06)', border: '1px solid var(--purple-20)', borderRadius: 'var(--r-md)' }}>
+              <div style={{ color: 'var(--purple)', fontWeight: 700, fontSize: '0.76rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>🌟 Active Socratic Lakshya Slogan:</div>
+              <div style={{ fontStyle: 'italic', fontSize: '0.9rem', color: 'var(--text-2)', lineHeight: 1.5 }}>
+                "{selectedUser.lakshyaSlogan || 'Crack competitive exams with hard work!'}"
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, marginTop: 24, justifyContent: 'flex-end' }}>
+              <button className="btn btn-outline" onClick={() => setSelectedUser(null)}>Close Profile</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
