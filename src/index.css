@@ -319,6 +319,7 @@ p { color: var(--text-2); line-height: 1.7; }
 }
 .topbar.sidebar-collapsed { left: var(--sidebar-collapsed); }
 .topbar-left { display: flex; align-items: center; gap: 12px; }
+#hamburger { display: none; }
 .topbar-right { display: flex; align-items: center; gap: 8px; }
 .topbar-title { font-size: 1rem; font-weight: 700; }
 .topbar-search {
@@ -440,6 +441,7 @@ p { color: var(--text-2); line-height: 1.7; }
   .sidebar.mobile-open { transform: translateX(0); width: 260px; }
   .main-content { margin-left: 0; }
   .topbar { left: 0; }
+  #hamburger { display: flex !important; }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
   .grid-4 { grid-template-columns: 1fr; }
   .page { padding: 16px; }

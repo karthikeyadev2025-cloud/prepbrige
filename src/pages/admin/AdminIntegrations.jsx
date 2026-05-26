@@ -378,7 +378,7 @@ export default function AdminIntegrations() {
                   <HelpCircle size={14} /> Google Cloud Security Setup Instructions
                 </div>
                 <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text-2)' }}>
-                  <li>Whitelists are essential for redirect loops. Add your Vercel deployment domain to your <b>Authorized JavaScript Origins</b>.</li>
+                  <li>Whitelists are essential for redirect loops. Add your custom domain (<b>https://prepbridge.in</b> and <b>https://www.prepbridge.in</b>) to your <b>Authorized JavaScript Origins</b>.</li>
                   <li>Configure <b>Authorized Redirect URIs</b> under Google Credentials using your Firebase auth handler link: <br /><code style={{ display: 'inline-block', background: 'var(--bg-3)', padding: '2px 6px', borderRadius: 4, marginTop: 4, fontFamily: 'monospace', fontSize: '0.75rem' }}>https://prepbridge-85189.firebaseapp.com/__/auth/handler</code></li>
                   <li>Enable Google Sign-in inside your Firebase Console and paste your Web client ID and Client Secret in the <b>Web SDK Configuration</b>.</li>
                 </ul>
@@ -443,7 +443,7 @@ export default function AdminIntegrations() {
                 </div>
                 <ul style={{ margin: 0, paddingLeft: 16, color: 'var(--text-2)' }}>
                   <li>Your storage bucket (default: <code style={{ fontFamily: 'monospace' }}>profile_photos</code>) MUST be set to <b>Public</b> inside the Supabase Storage dashboard.</li>
-                  <li>Enable open Read/Write CORS rules in the Supabase Storage tab so Vercel can upload profile images directly.</li>
+                  <li>Enable open Read/Write CORS rules in the Supabase Storage tab so your production domain (<b>https://prepbridge.in</b>) can upload profile images directly.</li>
                 </ul>
               </div>
             </div>

@@ -30,6 +30,22 @@ export default function QuestionPapers() {
   const [examFilter, setExamFilter] = useState('all')
   const [previewId, setPreviewId] = useState(null)
 
+  const [papers, setPapers] = useState(() => {
+    const local = localStorage.getItem('prepbridge_auto_updated_papers')
+    const parsed = local ? JSON.parse(local) : []
+    return [...parsed, ...PAPER_LIST]
+  })
+
+  React.useEffect(() => {
+    const handleSync = () => {
+      const local = localStorage.getItem('prepbridge_auto_updated_papers')
+      const parsed = local ? JSON.parse(local) : []
+      setPapers([...parsed, ...PAPER_LIST])
+    }
+    window.addEventListener('prepbridge-portal-sync', handleSync)
+    return () => window.removeEventListener('prepbridge-portal-sync', handleSync)
+  }, [])
+
   const handleDownload = (paper) => {
     toast.loading(`Compiling "${paper.title}" with PrepBridge watermark protection...`, { id: 'pyq-down' })
     
@@ -173,9 +189,9 @@ export default function QuestionPapers() {
     }, 1500)
   }
 
-  const exams = [...new Set(PAPER_LIST.map(p => p.exam))]
+  const exams = [...new Set(papers.map(p => p.exam))]
 
-  const filtered = PAPER_LIST.filter(p => {
+  const filtered = papers.filter(p => {
     if (yearFilter !== 'all' && p.year !== yearFilter) return false
     if (examFilter !== 'all' && p.exam !== examFilter) return false
     if (search && !p.title.toLowerCase().includes(search.toLowerCase()) && !p.exam.toLowerCase().includes(search.toLowerCase())) return false
@@ -189,7 +205,7 @@ export default function QuestionPapers() {
           <h1 className="page-title">Question Papers 📄</h1>
           <p className="page-subtitle">Previous year question papers with solutions — 10+ years, all major exams</p>
         </div>
-        <div className="stat-pill">📥 {PAPER_LIST.reduce((a,p) => a + p.downloads,0).toLocaleString()} downloads</div>
+        <div className="stat-pill">📥 {papers.reduce((a,p) => a + p.downloads,0).toLocaleString()} downloads</div>
       </div>
 
       {/* Filters */}

@@ -10,7 +10,23 @@ export default function MockTest() {
   const [filter, setFilter] = useState('all')
   const navigate = useNavigate()
 
-  const filtered = filter === 'all' ? MOCK_TESTS : MOCK_TESTS.filter(t => t.exam.startsWith(filter) || t.exam === filter)
+  const [tests, setTests] = useState(() => {
+    const local = localStorage.getItem('prepbridge_auto_updated_tests')
+    const parsed = local ? JSON.parse(local) : []
+    return [...parsed, ...MOCK_TESTS]
+  })
+
+  React.useEffect(() => {
+    const handleSync = () => {
+      const local = localStorage.getItem('prepbridge_auto_updated_tests')
+      const parsed = local ? JSON.parse(local) : []
+      setTests([...parsed, ...MOCK_TESTS])
+    }
+    window.addEventListener('prepbridge-portal-sync', handleSync)
+    return () => window.removeEventListener('prepbridge-portal-sync', handleSync)
+  }, [])
+
+  const filtered = filter === 'all' ? tests : tests.filter(t => t.exam.startsWith(filter) || t.exam === filter)
 
   return (
     <div className="page animate-fade-in">
@@ -20,7 +36,7 @@ export default function MockTest() {
           <p className="page-subtitle">Full-length tests with All India ranking, negative marking & analysis</p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <div className="stat-pill">⚡ {MOCK_TESTS.length} Mock Tests</div>
+          <div className="stat-pill">⚡ {tests.length} Mock Tests</div>
           <div className="stat-pill">🏆 All India Rank</div>
         </div>
       </div>

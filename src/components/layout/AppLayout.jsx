@@ -137,7 +137,7 @@ export default function AppLayout({ isAdmin = false }) {
       {/* Topbar */}
       <header className={`topbar ${collapsed ? 'sidebar-collapsed' : ''}`}>
         <div className="topbar-left">
-          <button className="topbar-btn" onClick={() => setMobileOpen(o => !o)} style={{ display: 'none' }} id="hamburger">
+          <button className="topbar-btn" onClick={() => setMobileOpen(o => !o)} id="hamburger">
             <Menu size={18} />
           </button>
           <div className="topbar-search">
