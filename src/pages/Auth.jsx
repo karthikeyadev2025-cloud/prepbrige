@@ -21,6 +21,7 @@ export default function Auth() {
   const [otp, setOtp] = useState('')
   const [showPwd, setShowPwd] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [isDemoMode, setIsDemoMode] = useState(false)
   const { user, onboardingComplete } = useUserStore()
   const navigate = useNavigate()
 
@@ -44,13 +45,15 @@ export default function Auth() {
     setLoading(true)
     try {
       await sendOTP('+91' + phone)
+      setIsDemoMode(false)
       setStep(2)
       toast.success('OTP sent to +91 ' + phone)
     } catch (err) {
       // Demo fallback — if Firebase phone auth not configured
       console.warn('Phone OTP error (using demo mode):', err.message)
+      setIsDemoMode(true)
       setStep(2)
-      toast.success('OTP sent! (Demo: use 123456)')
+      toast.success('OTP sent! (Demo Mode Activated)')
     }
     setLoading(false)
   }
@@ -183,9 +186,11 @@ export default function Auth() {
                 <button type="button" onClick={() => { setStep(1); setOtp('') }} style={{ background: 'none', border: 'none', color: 'var(--cyan)', fontSize: '0.82rem', cursor: 'pointer', textAlign: 'left', fontFamily: 'inherit' }}>
                   ← Change number / Resend OTP
                 </button>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-4)', background: 'var(--amber-10)', border: '1px solid var(--amber)33', borderRadius: 'var(--r-sm)', padding: '6px 10px' }}>
-                  💡 Demo mode: Enter <strong>123456</strong> as OTP
-                </div>
+                {isDemoMode && (
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-4)', background: 'var(--amber-10)', border: '1px solid ' + (isDemoMode ? 'var(--amber)' : 'transparent') + '33', borderRadius: 'var(--r-sm)', padding: '6px 10px' }}>
+                    💡 Demo mode: Enter <strong>123456</strong> as OTP
+                  </div>
+                )}
               </div>
             )}
 
