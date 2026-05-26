@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { CURRENT_AFFAIRS_DATA } from '../data/currentAffairs'
+import { getAutoUpdatedCurrentAffairs } from '../services/currentAffairsService'
 import { Search, Filter, Bookmark, Share2, ChevronDown, Newspaper, RefreshCw } from 'lucide-react'
 import { useAppStore } from '../store/useStore'
 import { toast } from 'react-hot-toast'
@@ -15,7 +15,7 @@ export default function CurrentAffairs() {
   const [refreshing, setRefreshing] = useState(false)
   const { bookmarks, toggleBookmark } = useAppStore()
 
-  const filtered = useMemo(() => CURRENT_AFFAIRS_DATA.filter(item => {
+  const filtered = useMemo(() => getAutoUpdatedCurrentAffairs().filter(item => {
     if (search && !item.title.toLowerCase().includes(search.toLowerCase()) && !item.summary.toLowerCase().includes(search.toLowerCase())) return false
     if (category !== 'All' && item.category !== category) return false
     if (importance !== 'All' && item.importance !== importance) return false

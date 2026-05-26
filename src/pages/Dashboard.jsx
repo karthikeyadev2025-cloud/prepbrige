@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../store/useStore'
 import { CURRENT_AFFAIRS_DATA, DAILY_QUIZ_QUESTIONS } from '../data/currentAffairs'
 import { MOCK_TESTS, QUESTION_BANK } from '../data/questions'
+import { getAutoUpdatedCurrentAffairs } from '../services/currentAffairsService'
 import { format } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import {
@@ -214,7 +215,7 @@ function StreakCard({ streak }) {
 
 function QuickCurrentAffairs() {
   const [active, setActive] = useState(0)
-  const top3 = CURRENT_AFFAIRS_DATA.slice(0, 3)
+  const top3 = getAutoUpdatedCurrentAffairs().slice(0, 3)
   return (
     <div className="card card-p">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
