@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useUserStore } from './store/useStore'
 import AppLayout from './components/layout/AppLayout'
+import PWAInstallPrompt from './components/layout/PWAInstallPrompt'
 
 // Lazy load pages
 const Landing = lazy(() => import('./pages/Landing'))
@@ -58,6 +59,7 @@ function OnboardingRoute({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <PWAInstallPrompt />
       <Toaster
         position="bottom-right"
         toastOptions={{
