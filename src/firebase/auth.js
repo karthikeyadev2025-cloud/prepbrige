@@ -129,7 +129,6 @@ export function initAuthObserver() {
   return onAuthStateChanged(auth, async (user) => {
     const store = useUserStore.getState()
     if (user) {
-      const profile = await getUserProfile(user.uid)
       store.setUser({
         uid: user.uid,
         email: user.email,
@@ -137,10 +136,32 @@ export function initAuthObserver() {
         displayName: user.displayName,
         isAdmin: user.email === 'admin@prepbridge.in',
       })
-      if (profile) {
-        store.setProfile(profile)
-        store.setOnboardingComplete(profile.onboardingComplete || false)
-        store.setIsAdmin(profile.isAdmin || user.email === 'admin@prepbridge.in')
+
+      try {
+        const profile = await getUserProfile(user.uid)
+        if (profile) {
+          store.setProfile(profile)
+          store.setOnboardingComplete(profile.onboardingComplete || false)
+          store.setIsAdmin(profile.isAdmin || user.email === 'admin@prepbridge.in')
+        } else {
+          // Document doesn't exist yet, set a fallback profile
+          store.setProfile({
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName || 'Aspirant',
+            onboardingComplete: false
+          })
+        }
+      } catch (err) {
+        console.warn('[Auth] Firestore profile loading failed, using offline fallback:', err.message)
+        // If Firestore is offline or fails, keep the user authenticated using cached/offline profile
+        const offlineProfile = store.profile || {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName || 'Aspirant',
+          onboardingComplete: false
+        }
+        store.setProfile(offlineProfile)
       }
     } else {
       store.logout()
