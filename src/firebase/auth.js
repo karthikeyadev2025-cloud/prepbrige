@@ -13,9 +13,18 @@ import {
 import { auth, googleProvider, db } from './config'
 import { useUserStore } from '../store/useStore'
 
-// ─── Sign in with Google (Redirect-based) ─────────────────────────
+// ─── Sign in with Google (Resilient Dual-Mode Auth) ────────────────
 export async function signInWithGoogle() {
-  await signInWithRedirect(auth, googleProvider)
+  try {
+    // Attempt popup login first to maintain page state on custom domains
+    const result = await signInWithPopup(auth, googleProvider)
+    await ensureUserDoc(result.user)
+    return result.user
+  } catch (error) {
+    console.warn('[Auth] signInWithPopup failed, falling back to signInWithRedirect:', error.message)
+    // Fallback to redirect authentication if popup is blocked or triggers COOP error
+    await signInWithRedirect(auth, googleProvider)
+  }
 }
 
 // ─── Email/Password Auth ────────────────────────────────────────
