@@ -129,7 +129,7 @@ export default function Profile() {
           </p>
 
           {/* 3-Plan Selector */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 18 }}>
+          <div className="plans-selector-grid">
             {[
               { key: 'monthly',  label: 'Monthly',  price: '₹249',   sub: '/month',         tag: null,          tagColor: null,          accent: 'var(--purple)',  accentRgb: '124,58,237' },
               { key: 'sixMonth', label: '6 Months', price: '₹1,195', sub: `≈₹${PRICING.sixMonth.perMonth}/mo`, tag: 'Popular',    tagColor: 'var(--cyan)',   accent: 'var(--cyan)',    accentRgb: '0,212,255' },

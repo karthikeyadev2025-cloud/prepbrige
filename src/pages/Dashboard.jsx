@@ -1059,7 +1059,7 @@ export default function Dashboard() {
       })()}
 
       {/* Main grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, marginBottom: 28 }}>
+      <div className="dashboard-layout-grid">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <AIRecommendation profile={profile} exams={profile?.exams || []} setActiveStudyPoint={setActiveStudyPoint} updateSyllabusProgress={updateSyllabusProgress} />
           

@@ -118,11 +118,12 @@ export default function Leaderboard() {
 
       {/* Full List */}
       <div className="card" style={{ overflow: 'hidden' }}>
-        <div style={{ padding: '12px 20px', background: 'var(--bg-3)', borderBottom: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '70px 1fr 100px 80px 80px', gap: 12, fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <div style={{ padding: '12px 20px', background: 'var(--bg-3)', borderBottom: '1px solid var(--border)', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.05em' }} className="leaderboard-row-grid">
           <div>Rank</div><div>Student</div><div>Exam</div><div>Streak</div><div>Points</div>
         </div>
         {filteredLeaders.map((l) => (
-          <div key={l.rank} style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '70px 1fr 100px 80px 80px', gap: 12, alignItems: 'center', background: l.rank <= 3 ? `${RANK_COLORS[l.rank]}08` : 'transparent', transition: 'background 0.2s' }}
+          <div key={l.rank} style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', alignItems: 'center', background: l.rank <= 3 ? `${RANK_COLORS[l.rank]}08` : 'transparent', transition: 'background 0.2s' }}
+            className="leaderboard-row-grid"
             onMouseEnter={e => e.currentTarget.style.background = 'var(--bg-3)'}
             onMouseLeave={e => e.currentTarget.style.background = l.rank <= 3 ? `${RANK_COLORS[l.rank]}08` : 'transparent'}
           >
@@ -136,7 +137,12 @@ export default function Leaderboard() {
               <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.85rem', color: 'white', flexShrink: 0 }}>{l.avatar}</div>
               <div>
                 <div style={{ fontWeight: 600, fontSize: '0.9rem' }}>{l.name}</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-3)' }}>{l.state}</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-3)', display: 'flex', flexWrap: 'wrap', gap: '4px 8px', marginTop: 2 }}>
+                  <span>{l.state}</span>
+                  <span className="mobile-only-inline" style={{ color: 'var(--amber)' }}>🔥 {l.streak}d streak</span>
+                  <span className="mobile-only-inline" style={{ color: 'var(--cyan)' }}>🎯 {l.score} pts</span>
+                  <span className="mobile-only-inline" style={{ color: 'var(--purple)' }}>{l.exam}</span>
+                </div>
               </div>
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{l.exam}</div>
