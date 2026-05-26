@@ -4,7 +4,8 @@ import {
   createUserWithEmailAndPassword, signOut,
   onAuthStateChanged, updateProfile,
   RecaptchaVerifier, signInWithPhoneNumber,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  signInWithRedirect, getRedirectResult
 } from 'firebase/auth'
 import {
   doc, setDoc, getDoc, updateDoc, serverTimestamp
@@ -12,12 +13,9 @@ import {
 import { auth, googleProvider, db } from './config'
 import { useUserStore } from '../store/useStore'
 
-// ─── Sign in with Google ────────────────────────────────────────
+// ─── Sign in with Google (Redirect-based) ─────────────────────────
 export async function signInWithGoogle() {
-  const result = await signInWithPopup(auth, googleProvider)
-  const user = result.user
-  await ensureUserDoc(user)
-  return user
+  await signInWithRedirect(auth, googleProvider)
 }
 
 // ─── Email/Password Auth ────────────────────────────────────────
@@ -114,8 +112,20 @@ export async function updateUserProfile(uid, data) {
   await updateDoc(ref, { ...data, updatedAt: serverTimestamp() })
 }
 
-// ─── Auth State Observer ────────────────────────────────────────
+// ─── Auth State Observer & Redirect Result Capture ───────────────
 export function initAuthObserver() {
+  // Capture Google Redirect result on app mount
+  getRedirectResult(auth)
+    .then(async (result) => {
+      if (result && result.user) {
+        console.log('[Auth] Google Redirect successful for:', result.user.email)
+        await ensureUserDoc(result.user)
+      }
+    })
+    .catch((error) => {
+      console.error('[Auth] Google Redirect error:', error)
+    })
+
   return onAuthStateChanged(auth, async (user) => {
     const store = useUserStore.getState()
     if (user) {
