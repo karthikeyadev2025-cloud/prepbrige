@@ -1,5 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Users, Search, Shield, Ban, Eye, Download, Filter, TrendingUp } from 'lucide-react'
+import { collection, getDocs, doc, updateDoc } from 'firebase/firestore'
+import { db } from '../../firebase/config'
+import { toast } from 'react-hot-toast'
 
 const MOCK_USERS = [
   { id:1, name:'Arjun Sharma', email:'arjun@gmail.com', phone:'+91 9876543210', state:'Rajasthan', exams:['UPSC','SSC CGL'], joined:'2025-01-15', plan:'paid', status:'active', streak:45, tests:23 },
@@ -15,12 +18,76 @@ const MOCK_USERS = [
 const STATUS_COLORS = { active:'var(--emerald)', inactive:'var(--amber)', suspended:'var(--red)' }
 
 export default function AdminUsers() {
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [planFilter, setPlanFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
   const [selectedUser, setSelectedUser] = useState(null)
 
-  const filtered = MOCK_USERS.filter(u => {
+  // 1. Fetch live users from Firestore
+  useEffect(() => {
+    async function fetchUsers() {
+      setLoading(true)
+      try {
+        const querySnapshot = await getDocs(collection(db, 'users'))
+        const list = []
+        querySnapshot.forEach(docSnap => {
+          const u = docSnap.data()
+          list.push({
+            id: docSnap.id,
+            name: u.displayName || u.name || 'Anonymous User',
+            email: u.email || 'no-email@prepbridge.in',
+            phone: u.phone || '+91 0000000000',
+            state: u.state || 'N/A',
+            exams: u.exams || [],
+            joined: u.createdAt ? (typeof u.createdAt.toDate === 'function' ? u.createdAt.toDate().toISOString() : u.createdAt) : new Date().toISOString(),
+            plan: u.subscription?.plan || 'free',
+            status: u.status || 'active',
+            streak: u.streak || 0,
+            tests: u.tests || 0
+          })
+        })
+        setUsers(list.length > 0 ? list : MOCK_USERS)
+      } catch (e) {
+        console.error('Error fetching users from Firestore:', e)
+        setUsers(MOCK_USERS) // Fallback to mocks
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchUsers()
+  }, [])
+
+  // 2. Action: Toggle User Suspension in Firestore
+  const handleToggleStatus = async (userId, currentStatus) => {
+    const nextStatus = currentStatus === 'active' ? 'suspended' : 'active'
+    try {
+      const ref = doc(db, 'users', userId)
+      await updateDoc(ref, { status: nextStatus })
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: nextStatus } : u))
+      toast.success(`User status updated to ${nextStatus}!`)
+    } catch (e) {
+      console.error('Failed to update user status in Firestore:', e)
+      toast.error('Failed to update user status in Firestore.')
+    }
+  }
+
+  // 3. Action: Toggle User Subscription Plan in Firestore
+  const handleTogglePlan = async (userId, currentPlan) => {
+    const nextPlan = currentPlan === 'paid' ? 'free' : 'paid'
+    try {
+      const ref = doc(db, 'users', userId)
+      await updateDoc(ref, { 'subscription.plan': nextPlan })
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: nextPlan } : u))
+      toast.success(`User plan updated to ${nextPlan === 'paid' ? 'Paid (₹599)' : 'Free'}!`)
+    } catch (e) {
+      console.error('Failed to update user subscription in Firestore:', e)
+      toast.error('Failed to update subscription in Firestore.')
+    }
+  }
+
+  const filtered = users.filter(u => {
     if (planFilter !== 'all' && u.plan !== planFilter) return false
     if (statusFilter !== 'all' && u.status !== statusFilter) return false
     if (search && !u.name.toLowerCase().includes(search.toLowerCase()) && !u.email.toLowerCase().includes(search.toLowerCase())) return false
@@ -124,8 +191,8 @@ export default function AdminUsers() {
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 6 }}>
                       <button className="btn btn-ghost btn-icon btn-sm" title="View"><Eye size={14} /></button>
-                      <button className="btn btn-ghost btn-icon btn-sm" title="Toggle Admin"><Shield size={14} /></button>
-                      <button className="btn btn-ghost btn-icon btn-sm" title="Suspend" style={{ color: 'var(--red)' }}><Ban size={14} /></button>
+                      <button onClick={() => handleTogglePlan(user.id, user.plan)} className="btn btn-ghost btn-icon btn-sm" title="Toggle Paid Plan" style={{ color: user.plan === 'paid' ? 'var(--emerald)' : 'var(--text-3)' }}><Shield size={14} /></button>
+                      <button onClick={() => handleToggleStatus(user.id, user.status)} className="btn btn-ghost btn-icon btn-sm" title={user.status === 'suspended' ? 'Activate' : 'Suspend'} style={{ color: user.status === 'suspended' ? 'var(--emerald)' : 'var(--red)' }}><Ban size={14} /></button>
                     </div>
                   </td>
                 </tr>

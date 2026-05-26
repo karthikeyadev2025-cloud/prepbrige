@@ -4,6 +4,7 @@ import { useUserStore } from '../store/useStore'
 import { toast } from 'react-hot-toast'
 import { EXAM_CATEGORIES, ALL_STATES, ALL_LANGUAGES } from '../data/exams'
 import { CheckCircle, ArrowRight, ArrowLeft, Zap, Brain } from 'lucide-react'
+import { updateUserProfile } from '../firebase/auth'
 
 const STEPS = ['Language','State','Exams','Profile','Schedule']
 
@@ -30,15 +31,29 @@ export default function Onboarding() {
     setStep(s => s + 1)
   }
 
-  const handleComplete = () => {
-    updateProfile({
+  const handleComplete = async () => {
+    const profileUpdates = {
       ...data,
       selectedLanguage: data.languageName,
+      onboardingComplete: true,
       createdAt: new Date().toISOString(),
       points: 0, streak: 0, rank: null,
       subscription: { plan: 'free', startDate: new Date().toISOString() }
-    })
+    }
+
+    // 1. Update local Zustand state
+    updateProfile(profileUpdates)
     setOnboardingComplete(true)
+
+    // 2. Sync to Firebase Firestore live so administrators can access it
+    if (user?.uid) {
+      try {
+        await updateUserProfile(user.uid, profileUpdates)
+      } catch (e) {
+        console.error('Failed to sync onboarding profile to database:', e)
+      }
+    }
+
     toast.success('Profile setup complete! 🎉')
     navigate('/app/dashboard')
   }
