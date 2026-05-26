@@ -26,7 +26,7 @@ Format your responses with:
 
 Always be encouraging and motivating — many users are first-generation exam takers from economically disadvantaged backgrounds.`
 
-export async function askGemini(userMessage, chatHistory = [], language = 'en', examContext = []) {
+export async function askGemini(userMessage, chatHistory = [], language = 'en', examContext = [], base64Image = null, mimeType = 'image/jpeg') {
   const languageInstruction = language !== 'en' 
     ? `\n\nIMPORTANT: The user prefers responses in ${getLanguageName(language)}. Please respond in ${getLanguageName(language)} while keeping technical terms in English.`
     : ''
@@ -35,17 +35,40 @@ export async function askGemini(userMessage, chatHistory = [], language = 'en', 
     ? `\n\nThe user is preparing for: ${examContext.join(', ')}. Tailor your response accordingly.`
     : ''
 
+  const currentParts = []
+  if (base64Image) {
+    currentParts.push({
+      inlineData: {
+        mimeType: mimeType,
+        data: base64Image
+      }
+    })
+  }
+  currentParts.push({ text: userMessage + languageInstruction + examInstruction })
+
   // Build messages array
   const messages = [
     // Previous chat history (last 6 messages for context)
-    ...chatHistory.slice(-6).map(msg => ({
-      role: msg.role === 'ai' ? 'model' : 'user',
-      parts: [{ text: msg.text }]
-    })),
+    ...chatHistory.slice(-6).map(msg => {
+      const parts = []
+      if (msg.image) {
+        parts.push({
+          inlineData: {
+            mimeType: msg.mimeType || 'image/jpeg',
+            data: msg.image
+          }
+        })
+      }
+      parts.push({ text: msg.text })
+      return {
+        role: msg.role === 'ai' ? 'model' : 'user',
+        parts: parts
+      }
+    }),
     // Current message
     {
       role: 'user',
-      parts: [{ text: userMessage + languageInstruction + examInstruction }]
+      parts: currentParts
     }
   ]
 

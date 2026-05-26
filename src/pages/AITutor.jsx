@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useUserStore } from '../store/useStore'
-import { Send, BrainCircuit, Sparkles, RefreshCw, Mic, Lightbulb, BookOpen, Zap } from 'lucide-react'
+import { Send, BrainCircuit, Sparkles, RefreshCw, Mic, Lightbulb, BookOpen, Zap, Paperclip, Camera, X } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { askGemini, generateQuestions } from '../services/gemini'
+import { ALL_LANGUAGES } from '../data/exams'
 
 const SUGGESTED_QUESTIONS = [
   'Explain Fundamental Rights in simple words',
@@ -22,35 +23,74 @@ export default function AITutor() {
   const [messages, setMessages] = useState([
     {
       role: 'ai',
-      text: `नमस्ते! 👋 I'm **PrepBridge AI**, powered by Google Gemini.\n\nI'm your personal exam tutor — I can:\n• Explain any topic for UPSC, SSC, Banking, Railways and more\n• Solve problems step-by-step with shortcuts\n• Generate practice questions instantly\n• Respond in **Hindi, Tamil, Telugu, Bengali** or any Indian language\n• Create personalized study strategies\n\nWhat would you like to learn today? 🎯`,
+      text: `नमस्ते! 👋 Welcome to **Gemini AI Doubt Solver**! 📸\n\nI'm here to help you crack your competitive exams. You can:\n• ✍️ **Ask any question** in Hindi, Tamil, Telugu, Marathi, or English\n• 📸 **Upload or snap a photo** of any textbook, newspaper, or test-series question\n• 💡 Get **step-by-step guidance** with memory tricks and shortcuts\n\nSelect your subject and native language above, snap/upload your question, and let's solve it! 🚀`,
       time: new Date()
     }
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [subject, setSubject] = useState('all')
+  const [language, setLanguage] = useState(profile?.language || 'en')
   const [showSuggest, setShowSuggest] = useState(true)
   const [generating, setGenerating] = useState(false)
+  const [selectedImage, setSelectedImage] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
+  const [imageType, setImageType] = useState('image/jpeg')
   const messagesEnd = useRef(null)
 
   useEffect(() => { messagesEnd.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      if (file.size > 3 * 1024 * 1024) {
+        toast.error('Question image must be smaller than 3MB')
+        return
+      }
+      setImageType(file.type)
+      const reader = new FileReader()
+      reader.onload = () => {
+        const rawBase64 = reader.result.split(',')[1]
+        setSelectedImage(rawBase64)
+        setImagePreview(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const sendMessage = async (text = input) => {
     const msg = text.trim()
-    if (!msg || loading) return
+    const imgData = selectedImage
+    const imgType = imageType
+    
+    // Allow sending just a scanned image without typing text
+    if (!msg && !imgData) return
+    if (loading) return
+
     setInput('')
+    setSelectedImage(null)
+    setImagePreview(null)
     setShowSuggest(false)
-    const userMsg = { role: 'user', text: msg, time: new Date() }
+
+    const userMsg = { 
+      role: 'user', 
+      text: msg || 'Please solve this exam question step-by-step.', 
+      image: imgData, 
+      mimeType: imgType, 
+      time: new Date() 
+    }
     setMessages(m => [...m, userMsg])
     setLoading(true)
 
     try {
       const history = messages.filter(m => m.role !== 'system')
       const response = await askGemini(
-        msg,
+        msg || 'Please solve this exam question step-by-step.',
         history,
-        profile?.language || 'en',
-        profile?.exams || []
+        language,
+        profile?.exams || [],
+        imgData,
+        imgType
       )
       setMessages(m => [...m, { role: 'ai', text: response, time: new Date() }])
     } catch (err) {
@@ -107,16 +147,25 @@ export default function AITutor() {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <h3 style={{ margin: 0 }}>AI Tutor</h3>
-              <span style={{ fontSize: '0.7rem', background: 'var(--grad)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800, border: '1px solid var(--border-purple)', borderRadius: 'var(--r-full)', padding: '2px 8px', WebkitTextFillColor: 'unset', background: 'transparent', color: 'var(--purple)' }}>GEMINI 2.0</span>
+              <h3 style={{ margin: 0 }}>Gemini AI Doubt Solver</h3>
+              <span style={{ fontSize: '0.7rem', background: 'var(--grad)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800, border: '1px solid var(--border-purple)', borderRadius: 'var(--r-full)', padding: '2px 8px', WebkitTextFillColor: 'unset', background: 'transparent', color: 'var(--purple)' }}>MULTIMODAL</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--text-3)' }}>
               <span className="dot-live" style={{ background: 'var(--emerald)' }} />
-              Real AI • Answers in your language • Available 24/7
+              Upload textbook photos • Ask in Hindi, Tamil, Telugu, Marathi • Step-by-Step Guidance
             </div>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Native Language Selector */}
+          <select className="form-select" style={{ width: 'auto', fontSize: '0.82rem', padding: '6px 12px' }} value={language} onChange={e => setLanguage(e.target.value)}>
+            {ALL_LANGUAGES.map(lang => (
+              <option key={lang.code} value={lang.code}>
+                {lang.flag} {lang.native} ({lang.name})
+              </option>
+            ))}
+          </select>
+          
           <select className="form-select" style={{ width: 'auto', fontSize: '0.82rem', padding: '6px 12px' }} value={subject} onChange={e => setSubject(e.target.value)}>
             <option value="all">All Subjects</option>
             <option value="Indian Polity">Polity</option>
@@ -154,6 +203,11 @@ export default function AITutor() {
               borderRadius: msg.role === 'user' ? 'var(--r-lg) var(--r-lg) 4px var(--r-lg)' : 'var(--r-lg) var(--r-lg) var(--r-lg) 4px',
               padding: '12px 16px'
             }}>
+              {msg.image && (
+                <div style={{ marginBottom: 10, borderRadius: 'var(--r-md)', overflow: 'hidden', border: '1px solid var(--border)', maxWidth: '100%' }}>
+                  <img src={`data:${msg.mimeType || 'image/jpeg'};base64,${msg.image}`} alt="Scan" style={{ display: 'block', maxWidth: '100%', maxHeight: 220, objectFit: 'contain' }} />
+                </div>
+              )}
               <div style={{ fontSize: '0.9rem', lineHeight: 1.7, color: 'var(--text-1)' }} dangerouslySetInnerHTML={{ __html: formatMessage(msg.text) }} />
               <div style={{ fontSize: '0.68rem', color: 'var(--text-4)', marginTop: 6 }}>
                 {msg.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -200,6 +254,23 @@ export default function AITutor() {
 
       {/* Input */}
       <div style={{ padding: '12px 24px 20px', borderTop: '1px solid var(--border)', flexShrink: 0 }}>
+        {/* Scanned Image Preview Chip */}
+        {imagePreview && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', padding: '10px 14px', marginBottom: 12, width: 'fit-content', position: 'relative', animation: 'fadeUp 0.2s ease' }}>
+            <img src={imagePreview} alt="Preview" style={{ width: 44, height: 44, borderRadius: 'var(--r-sm)', objectFit: 'cover', border: '1px solid var(--purple-20)' }} />
+            <div style={{ fontSize: '0.78rem' }}>
+              <div style={{ fontWeight: 600, color: 'white' }}>Question Scan Captured</div>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-3)' }}>Gemini will solve this photo</div>
+            </div>
+            <button type="button" onClick={() => { setSelectedImage(null); setImagePreview(null) }} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#94a3b8', borderRadius: '50%', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', marginLeft: 8, transition: 'var(--t)' }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.1)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+            >
+              <X size={12} />
+            </button>
+          </div>
+        )}
+
         <div id="recaptcha-container" />
         <form onSubmit={e => { e.preventDefault(); sendMessage() }} style={{ display: 'flex', gap: 10 }}>
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.04)', border: '1px solid var(--border-2)', borderRadius: 'var(--r-xl)', padding: '10px 18px', transition: 'var(--t)' }}
@@ -214,8 +285,46 @@ export default function AITutor() {
               onChange={e => setInput(e.target.value)}
               disabled={loading}
             />
+            {/* Hidden Input for file uploads */}
+            <input 
+              type="file" 
+              id="ai-scan-upload" 
+              accept="image/*" 
+              onChange={handleImageChange} 
+              style={{ display: 'none' }} 
+            />
+            {/* Hidden Input for camera capture specifically */}
+            <input 
+              type="file" 
+              id="ai-camera-capture" 
+              accept="image/*" 
+              capture="environment" 
+              onChange={handleImageChange} 
+              style={{ display: 'none' }} 
+            />
+            
+            <button 
+              type="button" 
+              onClick={() => document.getElementById('ai-camera-capture').click()} 
+              style={{ background: 'none', border: 'none', color: 'var(--text-3)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'var(--t)' }} 
+              title="Take question photo"
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--cyan)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-3)'}
+            >
+              <Camera size={18} />
+            </button>
+            <button 
+              type="button" 
+              onClick={() => document.getElementById('ai-scan-upload').click()} 
+              style={{ background: 'none', border: 'none', color: 'var(--text-3)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'var(--t)' }} 
+              title="Upload textbook query image"
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--purple)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--text-3)'}
+            >
+              <Paperclip size={18} />
+            </button>
           </div>
-          <button type="submit" className="btn btn-primary" disabled={!input.trim() || loading} style={{ borderRadius: '50%', width: 46, height: 46, padding: 0, flexShrink: 0 }}>
+          <button type="submit" className="btn btn-primary" disabled={(!input.trim() && !selectedImage) || loading} style={{ borderRadius: '50%', width: 46, height: 46, padding: 0, flexShrink: 0 }}>
             {loading
               ? <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} />
               : <Send size={18} />
