@@ -32,6 +32,7 @@ const ADMIN_ITEMS = [
   { path: '/admin/notifications', icon: Bell, label: 'Notifications' },
   { section: 'Customization' },
   { path: '/admin/theme', icon: Palette, label: 'Theme & CSS', badge: 'NEW' },
+  { path: '/admin/integrations', icon: Settings, label: 'Integrations & Payments', badge: 'NEW' },
 ]
 
 export default function AppLayout({ isAdmin = false }) {

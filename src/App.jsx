@@ -26,6 +26,7 @@ const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'))
 const AdminNotifications = lazy(() => import('./pages/admin/AdminNotifications'))
 const AdminContent = lazy(() => import('./pages/admin/AdminContent'))
 const AdminTheme = lazy(() => import('./pages/admin/AdminTheme'))
+const AdminIntegrations = lazy(() => import('./pages/admin/AdminIntegrations'))
 
 const Loader = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#08090f' }}>
@@ -57,6 +58,35 @@ function OnboardingRoute({ children }) {
 }
 
 export default function App() {
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem('prepbridge_admin_theme')
+      if (saved) {
+        const theme = JSON.parse(saved)
+        const root = document.documentElement
+        if (theme.colorPurple) root.style.setProperty('--purple', theme.colorPurple)
+        if (theme.colorCyan) root.style.setProperty('--cyan', theme.colorCyan)
+        if (theme.colorEmerald) root.style.setProperty('--emerald', theme.colorEmerald)
+        if (theme.colorAmber) root.style.setProperty('--amber', theme.colorAmber)
+        if (theme.colorRed) root.style.setProperty('--red', theme.colorRed)
+        if (theme.bgBase) root.style.setProperty('--bg', theme.bgBase)
+        if (theme.bgLayer2) root.style.setProperty('--bg-2', theme.bgLayer2)
+        if (theme.bgLayer3) root.style.setProperty('--bg-3', theme.bgLayer3)
+        if (theme.textPrimary) root.style.setProperty('--text-1', theme.textPrimary)
+        if (theme.textSecondary) root.style.setProperty('--text-2', theme.textSecondary)
+        if (theme.textMuted) root.style.setProperty('--text-3', theme.textMuted)
+        if (theme.borderRadius) {
+          root.style.setProperty('--r-md', `${theme.borderRadius}px`)
+          root.style.setProperty('--r-xl', `${parseInt(theme.borderRadius) + 8}px`)
+        }
+        if (theme.gradFrom && theme.gradTo) root.style.setProperty('--grad', `linear-gradient(135deg,${theme.gradFrom},${theme.gradTo})`)
+        if (theme.fontFamily) root.style.setProperty('--font-family', theme.fontFamily)
+      }
+    } catch (e) {
+      console.error('Failed to load dynamic theme:', e)
+    }
+  }, [])
+
   return (
     <BrowserRouter>
       <PWAInstallPrompt />
@@ -107,6 +137,7 @@ export default function App() {
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="content" element={<AdminContent />} />
             <Route path="theme" element={<AdminTheme />} />
+            <Route path="integrations" element={<AdminIntegrations />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" replace />} />
