@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Settings, CreditCard, Shield, Mail, Key, Phone, CloudLightning, Save, HelpCircle, Eye, EyeOff } from 'lucide-react'
+import { Settings, CreditCard, Shield, Mail, Key, Phone, CloudLightning, Save, HelpCircle, Eye, EyeOff, Smartphone } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { getSupabaseSettings, saveSupabaseSettings } from '../../services/supabaseService'
 
@@ -36,6 +36,15 @@ const DEFAULT_SETTINGS = {
   supportEmail: 'support@prepbridge.in',
   supportPhone: '+91 8080808080',
   maintenanceMode: false,
+
+  // App Store Links (managed from Admin → Integrations → App Downloads)
+  appStoreEnabled: true,
+  playStoreUrl: 'https://play.google.com/store/apps/details?id=in.prepbridge.app',
+  appStoreUrl: 'https://apps.apple.com/app/prepbridge/id0000000000',
+  appStoreHeadline: 'Take Your Prep Everywhere',
+  appStoreSubtext: 'Native app for Android & iOS. Works offline. Push alerts for every exam.',
+  showPlayStore: true,
+  showAppStore: true,
 }
 
 export default function AdminIntegrations() {
@@ -101,7 +110,7 @@ export default function AdminIntegrations() {
           <p className="page-subtitle">Configure live Razorpay payment processing, Firebase SDK keys, OTP triggers, and customer support rules without touching code.</p>
         </div>
         <button onClick={handleSave} className="btn btn-primary btn-sm" style={{ gap: 8 }} disabled={loading}>
-          <Save size={14} /> {loading ? 'Syncing...' : 'Save & Sync Live'}
+          <Save size={14} /> {loading ? 'Syncing...' : 'Save &amp; Sync Live'}
         </button>
       </div>
 
@@ -114,6 +123,7 @@ export default function AdminIntegrations() {
               { id: 'google', icon: Key, label: 'Google OAuth Config' },
               { id: 'firebase', icon: Shield, label: 'Firebase Platform' },
               { id: 'supabase', icon: CloudLightning, label: 'Supabase Storage' },
+              { id: 'appstore', icon: Smartphone, label: 'App Downloads' },
               { id: 'app', icon: Settings, label: 'Support & Globals' }
             ].map(tab => (
               <button
@@ -147,6 +157,94 @@ export default function AdminIntegrations() {
 
         {/* Configurations Area */}
         <div>
+          {activeTab === 'appstore' && (
+            <div className="card card-p animate-fade-in">
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                <Smartphone size={20} color="var(--cyan)" />
+                <h4 style={{ margin: 0 }}>App Download Section — Landing Page</h4>
+              </div>
+              <p style={{ fontSize: '0.82rem', color: 'var(--text-3)', marginBottom: 24 }}>
+                Control the Play Store &amp; App Store download badges shown on the landing page. Save to go live instantly.
+              </p>
+
+              {/* Live preview */}
+              <div style={{ background: 'linear-gradient(135deg,rgba(124,58,237,0.12),rgba(0,212,255,0.08))', border: '1px solid rgba(124,58,237,0.25)', borderRadius: 16, padding: '20px 24px', marginBottom: 24 }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--cyan)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 12 }}>Live Preview</div>
+                <div style={{ fontWeight: 800, fontSize: '1.15rem', color: 'white', marginBottom: 4 }}>{settings.appStoreHeadline || 'Take Your Prep Everywhere'}</div>
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-3)', marginBottom: 16 }}>{settings.appStoreSubtext || 'Native app for Android & iOS.'}</div>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  {settings.showPlayStore && (
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: '#000', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10, padding: '8px 16px', opacity: settings.appStoreEnabled ? 1 : 0.4 }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3.18 23.5a2 2 0 01-1.08-1.77V2.27A2 2 0 013.18.5l.14.08 11.65 11.65v.14L3.32 23.42l-.14.08z" fill="url(#gp1)"/><path d="M18.82 16.27L14.97 12.5v-.14l3.85-3.77.09.05 4.56 2.59c1.3.74 1.3 1.95 0 2.69l-4.56 2.59-.09-.24z" fill="url(#gp2)"/><path d="M18.91 16.03L14.97 12.1 3.18 23.5c.43.45 1.13.5 1.9.05l13.83-7.52" fill="url(#gp3)"/><path d="M18.91 8.23L5.08.71C4.31.26 3.61.31 3.18.76l11.79 11.34 3.94-3.87z" fill="url(#gp4)"/><defs><linearGradient id="gp1" x1="13.18" y1="12.5" x2="1.09" y2="12.5" gradientUnits="userSpaceOnUse"><stop stopColor="#00A0FF"/><stop offset="1" stopColor="#00A0FF" stopOpacity="0"/></linearGradient><linearGradient id="gp2" x1="23.82" y1="12.18" x2="13.66" y2="12.18" gradientUnits="userSpaceOnUse"><stop stopColor="#FFD000"/><stop offset="1" stopColor="#FFBC00"/></linearGradient><linearGradient id="gp3" x1="15.82" y1="14.3" x2="2.09" y2="27.82" gradientUnits="userSpaceOnUse"><stop stopColor="#FF3A44"/><stop offset="1" stopColor="#C31162"/></linearGradient><linearGradient id="gp4" x1="1.55" y1={"-1.2"} x2="11.63" y2="8.66" gradientUnits="userSpaceOnUse"><stop stopColor="#32A071"/><stop offset="1" stopColor="#2DA771"/></linearGradient></defs></svg>
+                      <div>
+                        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.6)' }}>GET IT ON</div>
+                        <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'white', lineHeight: 1.1 }}>Google Play</div>
+                      </div>
+                    </div>
+                  )}
+                  {settings.showAppStore && (
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: '#000', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 10, padding: '8px 16px', opacity: settings.appStoreEnabled ? 1 : 0.4 }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                      <div>
+                        <div style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.6)' }}>DOWNLOAD ON THE</div>
+                        <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'white', lineHeight: 1.1 }}>App Store</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Controls */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 16, background: 'rgba(0,212,255,0.04)', border: '1px solid rgba(0,212,255,0.15)', borderRadius: 'var(--r-md)' }}>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'white' }}>Show App Download Section</div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-3)' }}>Toggle the entire download section on the landing page</div>
+                  </div>
+                  <input type="checkbox" checked={settings.appStoreEnabled} onChange={e => updateSetting('appStoreEnabled', e.target.checked)}
+                    style={{ width: 18, height: 18, accentColor: 'var(--cyan)', cursor: 'pointer' }} />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Section Headline</label>
+                  <input type="text" className="form-input" value={settings.appStoreHeadline || ''} onChange={e => updateSetting('appStoreHeadline', e.target.value)} placeholder="Take Your Prep Everywhere" />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Section Subtext</label>
+                  <input type="text" className="form-input" value={settings.appStoreSubtext || ''} onChange={e => updateSetting('appStoreSubtext', e.target.value)} placeholder="Native app for Android & iOS..." />
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Show Play Store</span>
+                    <input type="checkbox" checked={settings.showPlayStore !== false} onChange={e => updateSetting('showPlayStore', e.target.checked)}
+                      style={{ width: 16, height: 16, accentColor: 'var(--emerald)', cursor: 'pointer' }} />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>Show App Store</span>
+                    <input type="checkbox" checked={settings.showAppStore !== false} onChange={e => updateSetting('showAppStore', e.target.checked)}
+                      style={{ width: 16, height: 16, accentColor: 'var(--emerald)', cursor: 'pointer' }} />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Google Play Store URL</label>
+                  <input type="url" className="form-input" value={settings.playStoreUrl || ''} onChange={e => updateSetting('playStoreUrl', e.target.value)} placeholder="https://play.google.com/store/apps/details?id=in.prepbridge.app" style={{ fontFamily: 'monospace', fontSize: '0.82rem' }} />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Apple App Store URL</label>
+                  <input type="url" className="form-input" value={settings.appStoreUrl || ''} onChange={e => updateSetting('appStoreUrl', e.target.value)} placeholder="https://apps.apple.com/app/prepbridge/id0000000000" style={{ fontFamily: 'monospace', fontSize: '0.82rem' }} />
+                </div>
+
+                <div style={{ background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 'var(--r-md)', padding: '12px 16px', fontSize: '0.8rem', color: 'var(--amber)' }}>
+                  {'💡'} Paste your real store URLs after publishing to Play Store and App Store. Changes go live instantly after Save &amp; Sync.
+                </div>
+              </div>
+            </div>
+          )}
+
           {activeTab === 'razorpay' && (
             <div className="card card-p animate-fade-in">
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>

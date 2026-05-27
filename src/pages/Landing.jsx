@@ -4,6 +4,186 @@ import { useUserStore } from '../store/useStore'
 import { Zap, CheckCircle, ArrowRight } from 'lucide-react'
 import HeroVideo from '../components/HeroVideo'
 import StorySection from '../components/StorySection'
+import { openInBrowser } from '../services/nativeService'
+
+/* ── App download badge SVGs ── */
+function PlayStoreBadge() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M3.18 23.5a2 2 0 01-1.08-1.77V2.27A2 2 0 013.18.5l.14.08 11.65 11.65v.14L3.32 23.42l-.14.08z" fill="url(#gp1)"/>
+      <path d="M18.82 16.27L14.97 12.5v-.14l3.85-3.77.09.05 4.56 2.59c1.3.74 1.3 1.95 0 2.69l-4.56 2.59-.09-.24z" fill="url(#gp2)"/>
+      <path d="M18.91 16.03L14.97 12.1 3.18 23.5c.43.45 1.13.5 1.9.05l13.83-7.52" fill="url(#gp3)"/>
+      <path d="M18.91 8.23L5.08.71C4.31.26 3.61.31 3.18.76l11.79 11.34 3.94-3.87z" fill="url(#gp4)"/>
+      <defs>
+        <linearGradient id="gp1" x1="13.18" y1="12.5" x2="1.09" y2="12.5" gradientUnits="userSpaceOnUse"><stop stopColor="#00A0FF"/><stop offset="1" stopColor="#00A0FF" stopOpacity="0"/></linearGradient>
+        <linearGradient id="gp2" x1="23.82" y1="12.18" x2="13.66" y2="12.18" gradientUnits="userSpaceOnUse"><stop stopColor="#FFD000"/><stop offset="1" stopColor="#FFBC00"/></linearGradient>
+        <linearGradient id="gp3" x1="15.82" y1="14.3" x2="2.09" y2="27.82" gradientUnits="userSpaceOnUse"><stop stopColor="#FF3A44"/><stop offset="1" stopColor="#C31162"/></linearGradient>
+        <linearGradient id="gp4" x1="1.55" y1={"-1.2"} x2="11.63" y2="8.66" gradientUnits="userSpaceOnUse"><stop stopColor="#32A071"/><stop offset="1" stopColor="#2DA771"/></linearGradient>
+      </defs>
+    </svg>
+  )
+}
+
+function AppStoreBadge() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+    </svg>
+  )
+}
+
+function AppDownloadSection() {
+  const [cfg] = useState(() => {
+    // Read from admin settings cache (updated by AdminIntegrations → Save & Sync)
+    try {
+      const s = localStorage.getItem('prepbridge_admin_settings')
+      if (s) return JSON.parse(s)
+    } catch { /* ignore */ }
+    return {}
+  })
+  const [ref, visible] = useScrollReveal()
+
+  const enabled = cfg.appStoreEnabled !== false
+  const showPlay = cfg.showPlayStore !== false
+  const showApple = cfg.showAppStore !== false
+  const playUrl = cfg.playStoreUrl || 'https://play.google.com/store/apps/details?id=in.prepbridge.app'
+  const appleUrl = cfg.appStoreUrl || 'https://apps.apple.com/app/prepbridge/id0000000000'
+  const headline = cfg.appStoreHeadline || 'Take Your Prep Everywhere'
+  const subtext = cfg.appStoreSubtext || 'Native app for Android & iOS. Works offline. Push alerts for every exam. No laptop needed.'
+
+  if (!enabled) return null
+
+  return (
+    <section ref={ref} style={{
+      padding: '90px 24px',
+      background: 'linear-gradient(135deg, rgba(124,58,237,0.1) 0%, rgba(0,212,255,0.06) 50%, rgba(16,185,129,0.08) 100%)',
+      borderTop: '1px solid rgba(255,255,255,0.05)',
+      borderBottom: '1px solid rgba(255,255,255,0.05)',
+      position: 'relative',
+      overflow: 'hidden',
+    }}>
+      {/* Background glow blobs */}
+      <div style={{ position: 'absolute', top: '-30%', left: '-10%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(124,58,237,0.15), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', bottom: '-20%', right: '-5%', width: 350, height: 350, background: 'radial-gradient(circle, rgba(0,212,255,0.12), transparent 70%)', filter: 'blur(60px)', pointerEvents: 'none' }} />
+
+      <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 48, flexWrap: 'wrap' }}>
+
+          {/* Left — text */}
+          <div style={{ flex: 1, minWidth: 280, opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateX(-30px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 'var(--r-full)', padding: '5px 14px', fontSize: '0.78rem', fontWeight: 700, color: '#10b981', marginBottom: 18, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              📱 Available Now
+            </div>
+            <h2 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.4rem)', fontWeight: 900, marginBottom: 14, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
+              {headline}
+            </h2>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-3)', lineHeight: 1.7, marginBottom: 32, maxWidth: 420 }}>
+              {subtext}
+            </p>
+
+            {/* Badge buttons */}
+            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+              {showPlay && (
+                <button
+                  onClick={() => openInBrowser(playUrl)}
+                  aria-label="Get PrepBridge on Google Play"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: '#000', border: '1.5px solid rgba(255,255,255,0.18)', borderRadius: 12, padding: '12px 20px', cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.5)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none' }}
+                >
+                  <PlayStoreBadge />
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>GET IT ON</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: 'white', lineHeight: 1.2 }}>Google Play</div>
+                  </div>
+                </button>
+              )}
+
+              {showApple && (
+                <button
+                  onClick={() => openInBrowser(appleUrl)}
+                  aria-label="Download PrepBridge on the App Store"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: '#000', border: '1.5px solid rgba(255,255,255,0.18)', borderRadius: 12, padding: '12px 20px', cursor: 'pointer', transition: 'all 0.2s', fontFamily: 'inherit' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)'; e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.5)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none' }}
+                >
+                  <AppStoreBadge />
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.2, textTransform: 'uppercase', letterSpacing: '0.04em' }}>DOWNLOAD ON THE</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: 'white', lineHeight: 1.2 }}>App Store</div>
+                  </div>
+                </button>
+              )}
+            </div>
+
+            <div style={{ marginTop: 20, fontSize: '0.78rem', color: 'var(--text-4)', display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              <span>⭐ 4.9 rating</span>
+              <span>📥 1L+ downloads</span>
+              <span>🆓 Free to start</span>
+            </div>
+          </div>
+
+          {/* Right — phone mockup */}
+          <div style={{ flexShrink: 0, opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateX(30px)', transition: 'opacity 0.8s ease 0.15s, transform 0.8s ease 0.15s' }}>
+            <div style={{ position: 'relative', width: 200 }}>
+              {/* Phone frame */}
+              <div style={{
+                width: 200, height: 400,
+                background: 'linear-gradient(180deg, #111827 0%, #0d1020 100%)',
+                borderRadius: 36,
+                border: '2.5px solid rgba(255,255,255,0.12)',
+                boxShadow: '0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)',
+                overflow: 'hidden',
+                position: 'relative',
+              }}>
+                {/* Notch */}
+                <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: 80, height: 24, background: '#0a0f1e', borderRadius: '0 0 16px 16px', zIndex: 10 }} />
+                {/* Screen content */}
+                <div style={{ padding: '32px 14px 14px', height: '100%', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  {/* Status bar */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: 'rgba(255,255,255,0.4)', marginBottom: 4 }}>
+                    <span>9:41</span><span>●●●●</span>
+                  </div>
+                  {/* App header */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                    <div style={{ width: 24, height: 24, background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Zap size={12} color="white" />
+                    </div>
+                    <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'white' }}>PrepBridge</span>
+                  </div>
+                  {/* Mock dashboard cards */}
+                  {[
+                    { label: 'Daily Quiz', sub: '+10 pts', color: '#7c3aed', w: '100%' },
+                    { label: 'AI Tutor', sub: 'Ask anything', color: '#00d4ff', w: '100%' },
+                    { label: 'Mock Test', sub: '24 questions', color: '#10b981', w: '100%' },
+                  ].map((c, i) => (
+                    <div key={i} style={{ background: `${c.color}18`, border: `1px solid ${c.color}33`, borderRadius: 10, padding: '8px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', animation: `floatCard ${4 + i * 0.8}s ease-in-out ${i * 0.4}s infinite` }}>
+                      <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'white' }}>{c.label}</span>
+                      <span style={{ fontSize: '0.6rem', color: c.color, fontWeight: 600 }}>{c.sub}</span>
+                    </div>
+                  ))}
+                  {/* Streak */}
+                  <div style={{ marginTop: 4, background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 10, padding: '8px 10px', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ fontSize: '0.85rem' }}>🔥</span>
+                    <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#f59e0b' }}>15 day streak</span>
+                  </div>
+                </div>
+                {/* Bottom nav bar */}
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 48, background: 'rgba(13,16,32,0.95)', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '0 8px' }}>
+                  {['🏠','📖','⚡','🏆','👤'].map((icon, i) => (
+                    <div key={i} style={{ fontSize: i === 0 ? '1rem' : '0.82rem', opacity: i === 0 ? 1 : 0.4 }}>{icon}</div>
+                  ))}
+                </div>
+              </div>
+              {/* Glow under phone */}
+              <div style={{ position: 'absolute', bottom: -20, left: '50%', transform: 'translateX(-50%)', width: 160, height: 40, background: 'rgba(124,58,237,0.3)', filter: 'blur(20px)', borderRadius: '50%', pointerEvents: 'none' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    DATA
@@ -390,6 +570,9 @@ export default function Landing() {
 
         </div>
       </section>
+
+      {/* ── APP DOWNLOAD ── */}
+      <AppDownloadSection />
 
       {/* ── FOOTER ── */}
       <footer style={{ padding: '44px 24px', borderTop: '1px solid var(--border)', textAlign: 'center' }}>
