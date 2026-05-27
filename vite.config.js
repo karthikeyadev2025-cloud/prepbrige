@@ -105,6 +105,8 @@ export default defineConfig({
           if (id.includes('node_modules/firebase')) return 'firebase'
           if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom') || id.includes('node_modules/zustand')) return 'vendor'
           if (id.includes('node_modules/lucide-react') || id.includes('node_modules/react-hot-toast') || id.includes('node_modules/date-fns')) return 'ui'
+          // Keep questions data in the main chunk to prevent TDZ across lazy chunks
+          if (id.includes('/src/data/questions')) return 'index'
         }
       }
     }

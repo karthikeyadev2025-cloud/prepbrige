@@ -78,6 +78,15 @@ export async function verifyOTP(code) {
 
 // ─── Sign Out ───────────────────────────────────────────────────
 export async function signOutUser() {
+  // Before clearing store, save demo profiles to a separate persistent key
+  const store = useUserStore.getState()
+  if (store.user?.uid?.startsWith('demo_') && store.profile && store.onboardingComplete) {
+    try {
+      const existing = JSON.parse(localStorage.getItem('prepbridge_demo_profiles') || '{}')
+      existing[store.user.uid] = { ...store.profile, onboardingComplete: true }
+      localStorage.setItem('prepbridge_demo_profiles', JSON.stringify(existing))
+    } catch { /* ignore */ }
+  }
   await signOut(auth)
   useUserStore.getState().logout()
 }

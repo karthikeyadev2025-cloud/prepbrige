@@ -101,31 +101,51 @@ export default function Auth() {
     setLoading(true)
     try {
       if (isDemoMode && otp === '123456') {
-        // Demo mode — restore existing profile if saved
+        // Demo mode — restore profile from dedicated demo store (survives logout)
         const { setUser, setProfile, setOnboardingComplete, setAuthLoading } = useUserStore.getState()
         const demoUid = 'demo_' + phone
         let existingProfile = null
         let isComplete = false
+
+        // Primary: check dedicated demo_profiles store (written by signOutUser before logout)
         try {
-          const saved = localStorage.getItem('prepbridge-user')
+          const saved = localStorage.getItem('prepbridge_demo_profiles')
           if (saved) {
-            const parsed = JSON.parse(saved)
-            if (parsed.state?.profile?.uid === demoUid) {
-              existingProfile = parsed.state.profile
-              isComplete = parsed.state.onboardingComplete || false
+            const profiles = JSON.parse(saved)
+            if (profiles[demoUid]) {
+              existingProfile = profiles[demoUid]
+              isComplete = existingProfile.onboardingComplete || false
             }
           }
         } catch { /* ignore */ }
+
+        // Fallback: check Zustand persisted store
+        if (!existingProfile) {
+          try {
+            const saved = localStorage.getItem('prepbridge-user')
+            if (saved) {
+              const parsed = JSON.parse(saved)
+              if (parsed.state?.profile?.uid === demoUid) {
+                existingProfile = parsed.state.profile
+                isComplete = parsed.state.onboardingComplete || false
+              }
+            }
+          } catch { /* ignore */ }
+        }
+
         setUser({ uid: demoUid, phone: '+91' + phone, isAdmin: false })
-        if (existingProfile) {
+        if (existingProfile && isComplete) {
           setProfile(existingProfile)
-          setOnboardingComplete(isComplete)
+          setOnboardingComplete(true)
+        } else if (existingProfile) {
+          setProfile(existingProfile)
+          setOnboardingComplete(false)
         } else {
           setProfile({ uid: demoUid, phone: '+91' + phone, displayName: 'Aspirant', onboardingComplete: false, exams: [], primaryTarget: 'ias' })
           setOnboardingComplete(false)
         }
-        setAuthLoading(false) // unlock routing
-        toast.success('Welcome to PrepBridge! 🎉')
+        setAuthLoading(false)
+        toast.success(isComplete ? 'Welcome back! 👋' : 'Welcome to PrepBridge! 🎉')
       } else if (isDemoMode) {
         toast.error('In demo mode — OTP is 123456')
         setLoading(false)
