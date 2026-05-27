@@ -4,6 +4,15 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
 
+/* ── Native App (Capacitor / PWA installed) ── */
+/* Safe area insets for notch, home bar, status bar */
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sar: env(safe-area-inset-right, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+}
+
 :root {
   /* Core Colors */
   --bg: #08090f;
@@ -82,12 +91,41 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+  /* Native app: prevent rubber-band scroll on iOS, show overscroll color */
+  overscroll-behavior: none;
+  /* Native app: respect notch / home bar on iOS and Android */
+  padding-top: var(--sat);
+  padding-bottom: var(--sab);
+  padding-left: var(--sal);
+  padding-right: var(--sar);
 }
-a { text-decoration: none; color: inherit; }
+/* iOS: remove tap highlight on buttons/links */
+a, button { -webkit-tap-highlight-color: transparent; text-decoration: none; color: inherit; }
 button { font-family: inherit; cursor: pointer; }
-input, select, textarea { font-family: inherit; }
+input, select, textarea {
+  font-family: inherit;
+  /* iOS: prevent zoom on input focus (font < 16px triggers zoom) */
+  font-size: 16px;
+}
 img { max-width: 100%; }
 ul { list-style: none; }
+
+/* ===== NATIVE APP LAYOUT ===== */
+/* Topbar and sidebar must account for status bar on native apps */
+.topbar {
+  padding-top: max(0px, var(--sat));
+}
+.sidebar {
+  padding-top: max(0px, var(--sat));
+}
+/* Main content bottom padding for home bar */
+.main-content {
+  padding-bottom: max(20px, calc(var(--sab) + 10px));
+}
+/* Auth page: full height including status bar */
+.auth-full-height {
+  min-height: calc(100vh - var(--sat) - var(--sab));
+}
 
 /* ===== SCROLLBAR ===== */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
