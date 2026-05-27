@@ -164,7 +164,7 @@ export default function AdminUsers() {
                       {user.photoURL ? (
                         <img src={user.photoURL} alt={user.name} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid var(--border)' }} />
                       ) : (
-                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.8rem', color: 'white', flexShrink: 0 }}>{user.name[0]}</div>
+                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.8rem', color: 'white', flexShrink: 0 }}>{(user?.name || '?')[0]}</div>
                       )}
                       <div>
                         <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>{user.name}</div>
@@ -184,7 +184,7 @@ export default function AdminUsers() {
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                      {user.exams.slice(0,2).map(e => <span key={e} style={{ fontSize: '0.65rem', background: 'rgba(124,58,237,0.1)', color: 'var(--purple)', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 'var(--r-full)', padding: '1px 6px' }}>{e}</span>)}
+                      {(user?.exams || []).slice(0,2).map(e => <span key={e} style={{ fontSize: '0.65rem', background: 'rgba(124,58,237,0.1)', color: 'var(--purple)', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 'var(--r-full)', padding: '1px 6px' }}>{e}</span>)}
                     </div>
                   </td>
                   <td style={{ padding: '12px 16px', fontSize: '0.8rem', color: 'var(--text-3)' }}>{user.joined ? new Date(user.joined).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—'}</td>
@@ -232,7 +232,7 @@ export default function AdminUsers() {
               {selectedUser.photoURL ? (
                 <img src={selectedUser.photoURL} alt={selectedUser.name} style={{ width: 68, height: 68, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--purple)' }} />
               ) : (
-                <div style={{ width: 68, height: 68, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.8rem', color: 'white' }}>{selectedUser.name[0]}</div>
+                <div style={{ width: 68, height: 68, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.8rem', color: 'white' }}>{(selectedUser?.name || '?')[0]}</div>
               )}
               <div>
                 <h3 style={{ margin: 0, color: 'white' }}>{selectedUser.name}</h3>

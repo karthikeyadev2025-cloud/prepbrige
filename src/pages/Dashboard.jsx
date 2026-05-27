@@ -492,7 +492,7 @@ function TargetCourseMaterialsCard({ primaryTarget }) {
     toast.success(`Connecting to K² AI doubts solver for "${matchedCourse.title}"!`)
     navigate('/app/ai-tutor', {
       state: {
-        initialQuery: `Hi K²! I am preparing for my "${matchedCourse.exam}" exam using the "${matchedCourse.title}" course. Can you guide me through a solved example on one of our core topics: "${matchedCourse.topics[0]}"?`
+        initialQuery: `Hi K²! I am preparing for my "${matchedCourse.exam}" exam using the "${matchedCourse.title}" course. Can you guide me through a solved example on one of our core topics: "${(matchedCourse?.topics?.[0] || "key concepts")}"?`
       }
     })
   }
@@ -581,7 +581,7 @@ function IndiaPrideMarqueeBanner() {
   }, [prideItems])
 
   if (prideItems.length === 0) return null
-  const currentItem = prideItems[activeIndex]
+  const currentItem = prideItems?.[activeIndex] || prideItems?.[0]
 
   return (
     <div className="card" style={{
@@ -614,10 +614,10 @@ function IndiaPrideMarqueeBanner() {
             </div>
             <div style={{ minHeight: 40 }}>
               <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'white', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {currentItem.title.split(': ')[1] || currentItem.title}
+                {currentItem?.title?.split(': ')[1] || currentItem?.title}
               </div>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', lineHeight: 1.45, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                {currentItem.prideDetails}
+                {currentItem?.prideDetails}
               </div>
             </div>
           </div>

@@ -90,7 +90,7 @@ export default function Leaderboard() {
               <div style={{ width: 52, height: 52, borderRadius: '50%', background: `linear-gradient(135deg,${RANK_COLORS[pos]},${RANK_COLORS[pos]}88)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.1rem', color: '#000', boxShadow: `0 0 20px ${RANK_COLORS[pos]}55` }}>
                 {leader.avatar}
               </div>
-              <div style={{ fontWeight: 700, fontSize: '0.85rem', textAlign: 'center' }}>{leader.name.split(' ')[0]}</div>
+              <div style={{ fontWeight: 700, fontSize: '0.85rem', textAlign: 'center' }}>{(leader?.name || 'Aspirant').split(' ')[0]}</div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-3)' }}>{leader.score} pts</div>
               <div style={{ height: heights[pos], width: 80, background: `linear-gradient(180deg,${RANK_COLORS[pos]}33,${RANK_COLORS[pos]}11)`, border: `1px solid ${RANK_COLORS[pos]}55`, borderRadius: 'var(--r-md) var(--r-md) 0 0', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 10 }}>
                 <span style={{ fontSize: '1.5rem', fontWeight: 900, color: RANK_COLORS[pos] }}>#{pos}</span>

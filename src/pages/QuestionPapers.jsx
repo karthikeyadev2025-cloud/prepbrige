@@ -190,15 +190,19 @@ export default function QuestionPapers() {
           </html>
         `;
 
-        // Create Blob and trigger download
+        // Create Blob and trigger download (web only — native uses share sheet)
         const blob = new Blob([docContent], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${paper.id}_prepbridge_watermarked.html`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        if (document.body) {
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${paper.id}_prepbridge_watermarked.html`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else {
+          window.open(url, '_blank');
+        }
         URL.revokeObjectURL(url);
 
         toast.success(`Study material downloaded successfully! Watermarked & copyright-secured. 📁`, { id: 'pyq-down', duration: 4000 });

@@ -194,7 +194,7 @@ export default function AdminDashboard() {
                   <td style={{ padding: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.82rem', fontWeight: 700, color: 'white' }}>
-                        {u.name[0]}
+                        {(u?.name || "?")[0]}
                       </div>
                       {u.name}
                     </div>

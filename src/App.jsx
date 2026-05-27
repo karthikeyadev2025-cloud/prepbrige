@@ -82,8 +82,9 @@ export default function App() {
         if (theme.textSecondary) root.style.setProperty('--text-2', theme.textSecondary)
         if (theme.textMuted) root.style.setProperty('--text-3', theme.textMuted)
         if (theme.borderRadius) {
-          root.style.setProperty('--r-md', `${theme.borderRadius}px`)
-          root.style.setProperty('--r-xl', `${parseInt(theme.borderRadius) + 8}px`)
+          const br = parseInt(theme.borderRadius, 10) || 8
+          root.style.setProperty('--r-md', `${br}px`)
+          root.style.setProperty('--r-xl', `${br + 8}px`)
         }
         if (theme.gradFrom && theme.gradTo) root.style.setProperty('--grad', `linear-gradient(135deg,${theme.gradFrom},${theme.gradTo})`)
         if (theme.fontFamily) root.style.setProperty('--font-family', theme.fontFamily)

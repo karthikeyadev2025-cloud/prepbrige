@@ -211,7 +211,7 @@ export default function AppLayout({ isAdmin = false }) {
         <div className="topbar-right">
           {profile?.selectedLanguage && (
             <span style={{ fontSize: '0.8rem', color: 'var(--text-3)', background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', padding: '6px 12px' }}>
-              🌐 {profile.selectedLanguage}
+              🌐 {profile?.selectedLanguage}
             </span>
           )}
           <NavLink to="/app/notifications" className="topbar-btn">

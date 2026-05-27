@@ -156,7 +156,7 @@ export default function Courses() {
     toast.success(`Starting "${course.title}" with K² AI Tutor!`)
     navigate('/app/ai-tutor', { 
       state: { 
-        initialQuery: `Hi! I want to study the "${course.title}" course for my "${course.exam}" exam. Let's start with the first topic: "${course.topics[0]}".` 
+        initialQuery: `Hi! I want to study the "${course.title}" course for my "${course.exam}" exam. Let's start with the first topic: "${(course?.topics?.[0] || "key concepts")}".` 
       } 
     })
   }

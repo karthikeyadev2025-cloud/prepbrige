@@ -253,7 +253,7 @@ export default function CurrentAffairs() {
                         <span style={{ fontSize: '0.72rem', color: 'var(--text-4)' }}>{item.date}</span>
                       </div>
                       <h4 style={{ margin: '0 0 8px 0', fontSize: '0.95rem', fontWeight: 700, color: 'white', lineHeight: 1.4 }}>
-                        {item.title.split(': ')[1] || item.title}
+                        {item?.title?.split(': ')[1] || item.title}
                       </h4>
                       <p style={{ fontSize: '0.82rem', color: 'var(--text-2)', lineHeight: 1.5, margin: '0 0 12px 0' }}>
                         {item.summary}

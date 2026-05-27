@@ -53,10 +53,16 @@ export default function AITutor() {
       setImageType(file.type)
       const reader = new FileReader()
       reader.onload = () => {
+        if (!reader.result || typeof reader.result !== 'string') {
+          toast.error('Could not read image file')
+          return
+        }
         const rawBase64 = reader.result.split(',')[1]
+        if (!rawBase64) { toast.error('Invalid image format'); return }
         setSelectedImage(rawBase64)
         setImagePreview(reader.result)
       }
+      reader.onerror = () => toast.error('Failed to read image')
       reader.readAsDataURL(file)
     }
   }

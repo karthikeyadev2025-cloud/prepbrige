@@ -344,7 +344,7 @@ export default function HeroVideo() {
         {/* Success story ticker */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--r-full)', padding: '10px 20px', animation: 'heroSlideIn 0.8s ease 0.5s both' }}>
           <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', color: 'white', flexShrink: 0 }}>
-            {STORIES[activeStory].name[0]}
+            {(STORIES[activeStory]?.name || '?')[0]}
           </div>
           <div style={{ textAlign: 'left', minWidth: 240 }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff', transition: 'all 0.4s' }}>
