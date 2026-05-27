@@ -38,23 +38,28 @@ const Loader = () => (
 )
 
 function ProtectedRoute({ children }) {
-  const { user, onboardingComplete, isAdmin } = useUserStore()
+  const { user, onboardingComplete, isAdmin, authLoading } = useUserStore()
+  if (authLoading) return <Loader />
   if (!user) return <Navigate to="/" replace />
   if (!onboardingComplete && !isAdmin) return <Navigate to="/onboarding" replace />
   return children
 }
 
 function AdminRoute({ children }) {
-  const { user, isAdmin } = useUserStore()
+  const { user, isAdmin, authLoading } = useUserStore()
+  if (authLoading) return <Loader />
   if (!user) return <Navigate to="/" replace />
   if (!isAdmin) return <Navigate to="/app/dashboard" replace />
   return children
 }
 
 function OnboardingRoute({ children }) {
-  const { user, isAdmin } = useUserStore()
+  const { user, isAdmin, onboardingComplete, authLoading } = useUserStore()
+  if (authLoading) return <Loader />
   if (!user) return <Navigate to="/" replace />
   if (isAdmin) return <Navigate to="/admin" replace />
+  // Already completed onboarding — go straight to dashboard
+  if (onboardingComplete) return <Navigate to="/app/dashboard" replace />
   return children
 }
 

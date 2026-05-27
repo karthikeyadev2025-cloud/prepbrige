@@ -25,17 +25,18 @@ export default function Auth() {
   const [isDemoMode, setIsDemoMode] = useState(false)
   const [resendCooldown, setResendCooldown] = useState(0)
   const cooldownRef = useRef(null)
-  const { user, onboardingComplete } = useUserStore()
+  const { user, onboardingComplete, authLoading } = useUserStore()
   const navigate = useNavigate()
 
-  // Redirect if already logged in
+  // Redirect if already logged in — wait for auth to resolve first
   useEffect(() => {
+    if (authLoading) return
     if (user) {
       if (user.isAdmin) navigate('/admin', { replace: true })
       else if (onboardingComplete) navigate('/app/dashboard', { replace: true })
       else navigate('/onboarding', { replace: true })
     }
-  }, [user, onboardingComplete, navigate])
+  }, [user, onboardingComplete, authLoading, navigate])
 
   // Setup invisible recaptcha once the phone tab is active and container exists
   const recaptchaReady = useRef(false)

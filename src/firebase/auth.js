@@ -156,56 +156,48 @@ export function initAuthObserver() {
   _authObserverUnsubscribe = onAuthStateChanged(auth, async (user) => {
     const store = useUserStore.getState()
     if (user) {
-      // Determine admin status — email check is the reliable server-side source
-      // profile.isAdmin from Supabase is also checked as a secondary source
       const emailIsAdmin = user.email === 'admin@prepbridge.in'
-
-      store.setUser({
-        uid: user.uid,
-        email: user.email,
-        phone: user.phoneNumber,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        isAdmin: emailIsAdmin,
-      })
 
       try {
         const profile = await getUserProfile(user.uid)
         if (profile) {
           const isAdmin = profile.isAdmin || emailIsAdmin
+          // Single atomic update — prevents intermediate state triggering wrong route
+          store.setUser({ uid: user.uid, email: user.email, phone: user.phoneNumber, displayName: user.displayName, photoURL: user.photoURL, isAdmin })
           store.setProfile({ ...profile, isAdmin })
           store.setOnboardingComplete(profile.onboardingComplete || isAdmin)
           store.setIsAdmin(isAdmin)
         } else {
-          // New user — no profile yet (will be created during onboarding)
-          store.setProfile({
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName || 'Aspirant',
-            photoURL: user.photoURL || null,
-            onboardingComplete: emailIsAdmin,
-            isAdmin: emailIsAdmin,
-          })
+          // New user — no profile yet, will complete onboarding
+          store.setUser({ uid: user.uid, email: user.email, phone: user.phoneNumber, displayName: user.displayName, photoURL: user.photoURL, isAdmin: emailIsAdmin })
+          store.setProfile({ uid: user.uid, email: user.email, displayName: user.displayName || 'Aspirant', photoURL: user.photoURL || null, onboardingComplete: emailIsAdmin, isAdmin: emailIsAdmin })
           store.setOnboardingComplete(emailIsAdmin)
           store.setIsAdmin(emailIsAdmin)
         }
       } catch (err) {
-        console.warn('[Auth] Supabase profile load failed, using offline fallback:', err.message)
-        const offlineProfile = store.profile || {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || 'Aspirant',
-          onboardingComplete: emailIsAdmin,
-          isAdmin: emailIsAdmin,
+        console.warn('[Auth] Supabase profile load failed, using cached fallback:', err.message)
+        // Use persisted Zustand state — it already has onboardingComplete from last session
+        const cached = store.profile
+        store.setUser({ uid: user.uid, email: user.email, phone: user.phoneNumber, displayName: user.displayName, photoURL: user.photoURL, isAdmin: emailIsAdmin })
+        if (cached && cached.uid === user.uid) {
+          // Restore exact cached profile — preserves onboardingComplete: true
+          store.setOnboardingComplete(cached.onboardingComplete || emailIsAdmin)
+          store.setIsAdmin(cached.isAdmin || emailIsAdmin)
+        } else {
+          store.setProfile({ uid: user.uid, email: user.email, displayName: user.displayName || 'Aspirant', onboardingComplete: emailIsAdmin, isAdmin: emailIsAdmin })
+          store.setOnboardingComplete(emailIsAdmin)
+          store.setIsAdmin(emailIsAdmin)
         }
-        store.setProfile(offlineProfile)
-        store.setOnboardingComplete(offlineProfile.onboardingComplete || emailIsAdmin)
-        store.setIsAdmin(offlineProfile.isAdmin || emailIsAdmin)
+      } finally {
+        // Always clear loading — routing can now proceed
+        store.setAuthLoading(false)
       }
     } else {
-      // Only logout if not a demo session (demo users have no Firebase user)
+      // No Firebase user
       if (!store.user?.uid?.startsWith('demo_')) {
-        store.logout()
+        store.logout() // logout() already sets authLoading: false
+      } else {
+        store.setAuthLoading(false)
       }
     }
   })

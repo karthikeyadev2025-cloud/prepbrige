@@ -8,18 +8,29 @@ export const useUserStore = create(
       profile: null,
       onboardingComplete: false,
       isAdmin: false,
+      authLoading: true, // blocks routing until Firebase resolves first check
 
       setUser: (user) => set({ user }),
       setProfile: (profile) => set({ profile }),
       setOnboardingComplete: (v) => set({ onboardingComplete: v }),
       setIsAdmin: (v) => set({ isAdmin: v }),
-      logout: () => set({ user: null, profile: null, onboardingComplete: false }),
+      setAuthLoading: (v) => set({ authLoading: v }),
+      logout: () => set({ user: null, profile: null, onboardingComplete: false, authLoading: false }),
 
       updateProfile: (updates) => set(state => ({
         profile: { ...state.profile, ...updates }
       })),
     }),
-    { name: 'prepbridge-user' }
+    {
+      name: 'prepbridge-user',
+      // Never persist authLoading — always start as true until observer fires
+      partialize: (state) => ({
+        user: state.user,
+        profile: state.profile,
+        onboardingComplete: state.onboardingComplete,
+        isAdmin: state.isAdmin,
+      }),
+    }
   )
 )
 
