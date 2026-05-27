@@ -102,7 +102,7 @@ export default function Auth() {
     try {
       if (isDemoMode && otp === '123456') {
         // Demo mode — restore existing profile if saved
-        const { setUser, setProfile, setOnboardingComplete } = useUserStore.getState()
+        const { setUser, setProfile, setOnboardingComplete, setAuthLoading } = useUserStore.getState()
         const demoUid = 'demo_' + phone
         let existingProfile = null
         let isComplete = false
@@ -124,6 +124,7 @@ export default function Auth() {
           setProfile({ uid: demoUid, phone: '+91' + phone, displayName: 'Aspirant', onboardingComplete: false, exams: [], primaryTarget: 'ias' })
           setOnboardingComplete(false)
         }
+        setAuthLoading(false) // unlock routing
         toast.success('Welcome to PrepBridge! 🎉')
       } else if (isDemoMode) {
         toast.error('In demo mode — OTP is 123456')
