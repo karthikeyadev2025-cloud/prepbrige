@@ -1,11 +1,30 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useUserStore } from '../store/useStore'
 import { Send, BrainCircuit, Sparkles, RefreshCw, Lightbulb, Zap, Paperclip, Camera, X, AlertTriangle } from 'lucide-react'
+import DOMPurify from 'dompurify'
 import { toast } from 'react-hot-toast'
 import { askGemini, generateQuestions } from '../services/gemini'
 import { ALL_LANGUAGES, EXAM_CATEGORIES } from '../data/exams'
 import { Link, useLocation } from 'react-router-dom'
 import { getSubscriptionStatus } from '../services/paymentService'
+
+// ---------- Free‑tier daily query limit ----------
+// Store count per day in localStorage under key `pb_ai_count_YYYY-MM-DD`.
+// Free users (non‑paid subscription) may send up to 5 queries per day.
+// When the limit is reached we show the upgrade banner (handled in UI elsewhere).
+// Helper functions:
+const getTodayKey = () => `pb_ai_count_${new Date().toISOString().slice(0,10)}`
+const incrementQueryCount = () => {
+  const key = getTodayKey()
+  const count = parseInt(localStorage.getItem(key) || '0', 10) + 1
+  localStorage.setItem(key, count)
+  return count
+}
+const getQueryCount = () => parseInt(localStorage.getItem(getTodayKey()) || '0', 10)
+const isFreeTierLimitReached = (subscription) => {
+  const sub = getSubscriptionStatus(subscription)
+  return !sub.isPaid && getQueryCount() >= 5
+}
 
 // Exam-specific suggested questions based on primaryTarget
 const EXAM_SUGGESTIONS = {
@@ -241,17 +260,9 @@ export default function AITutor() {
     }
   }
 
-  const getDailyQueryCount = () => {
-    const todayStr = new Date().toDateString()
-    const stored = localStorage.getItem(`pb_ai_count_${todayStr}`)
-    return stored ? parseInt(stored, 10) : 0
-  }
-
-  const incrementDailyQueryCount = () => {
-    const todayStr = new Date().toDateString()
-    const current = getDailyQueryCount()
-    localStorage.setItem(`pb_ai_count_${todayStr}`, (current + 1).toString())
-  }
+  // Use the centralized helper functions defined above
+  const getDailyQueryCount = () => getQueryCount()
+  const incrementDailyQueryCount = () => incrementQueryCount()
 
   const sendMessage = async (text = input) => {
     const sub = getSubscriptionStatus(profile?.subscription)
@@ -471,7 +482,7 @@ export default function AITutor() {
                   <img src={`data:${msg.mimeType || 'image/jpeg'};base64,${msg.image}`} alt="Scan" style={{ display: 'block', maxWidth: '100%', maxHeight: 220, objectFit: 'contain' }} />
                 </div>
               )}
-              <div style={{ fontSize: '0.9rem', lineHeight: 1.7, color: 'var(--text-1)' }} dangerouslySetInnerHTML={{ __html: formatMessage(msg.text) }} />
+              <div style={{ fontSize: '0.9rem', lineHeight: 1.7, color: 'var(--text-1)' }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatMessage(msg.text)) }} />
               <div style={{ fontSize: '0.68rem', color: 'var(--text-4)', marginTop: 6 }}>
                 {msg.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 {msg.role === 'ai' && <span style={{ marginLeft: 8, color: 'var(--purple)' }}>✦ K²</span>}

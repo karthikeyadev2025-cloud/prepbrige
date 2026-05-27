@@ -106,7 +106,7 @@ function generateQuestions(test) {
           'Both A and B are correct',
           'Neither A nor B is correct'
         ],
-        correct: Math.floor(Math.random() * 4),
+        correct: Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff * 4),
         explanation: 'This is a sample question. In the full platform, real exam-specific questions will appear here.',
         subject: 'General Studies',
         difficulty: 'medium'
@@ -157,7 +157,7 @@ export default function TestEngine() {
     const score = correct * marksPerQ + wrong * negMarks
     const maxScore = questions.length * marksPerQ
     const pct = Math.max(0, (score / maxScore) * 100).toFixed(1)
-    const rank = Math.floor(Math.random() * 5000) + 100
+    const rank = Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff * 5000) + 100
     const res = {
       testId,
       title: test.title,

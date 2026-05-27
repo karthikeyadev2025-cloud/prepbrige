@@ -15,13 +15,13 @@ function ParticleCanvas() {
     // Particles
     const NUM = 120
     const particles = Array.from({ length: NUM }, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: Math.random() * 2 + 0.3,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      alpha: Math.random() * 0.6 + 0.1,
-      color: Math.random() > 0.5 ? '124,58,237' : '0,212,255',
+      x: crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff * W,
+      y: crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff * H,
+      r: crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff * 2 + 0.3,
+      vx: (crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff - 0.5) * 0.4,
+      vy: (crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff - 0.5) * 0.4,
+      alpha: crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff * 0.6 + 0.1,
+      color: crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff > 0.5 ? '124,58,237' : '0,212,255',
     }))
 
     // Connection lines
