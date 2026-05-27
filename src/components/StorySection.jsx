@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 const STORY = [
   {
@@ -66,7 +66,7 @@ export default function StorySection() {
   }, [])
 
   // ── Smooth slide transition ──
-  const goTo = (nextIdx) => {
+  const goTo = useCallback((nextIdx) => {
     if (transitioning || nextIdx === activeRef.current) return
     setPrev(activeRef.current)
     setTransitioning(true)
@@ -76,7 +76,7 @@ export default function StorySection() {
       setActive(nextIdx)
       setTimeout(() => { setPrev(null); setTransitioning(false) }, 500)
     }, 60)
-  }
+  }, [transitioning])
 
   // ── Auto-play ──
   useEffect(() => {
@@ -87,10 +87,9 @@ export default function StorySection() {
       goTo(next)
     }, 5000)
     return () => clearInterval(timerRef.current)
-  }, [autoPlay, visible])
+  }, [autoPlay, visible, goTo])
 
   const story = STORY[active]
-  const prevStory = prev !== null ? STORY[prev] : null
 
   const particles = story.particles.map((e, i) => ({
     emoji: e, delay: i * 1.1, duration: 3.5 + i * 0.7, x: 8 + i * 18,
@@ -101,7 +100,7 @@ export default function StorySection() {
       ref={sectionRef}
       style={{
         padding: '100px 24px', position: 'relative', overflow: 'hidden',
-        background: story.bg, transition: 'background 0.7s ease',
+        background: story.bg,
         opacity: visible ? 1 : 0,
         transform: visible ? 'translateY(0)' : 'translateY(50px)',
         transition: 'opacity 0.7s ease, transform 0.7s ease, background 0.7s ease',

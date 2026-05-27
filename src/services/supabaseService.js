@@ -1,5 +1,28 @@
 // Supabase Storage REST API Service — PrepBridge
 
+// Default credentials from environment variables (never hardcode secrets in source)
+const DEFAULT_SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
+const DEFAULT_SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+const DEFAULT_SUPABASE_BUCKET = import.meta.env.VITE_SUPABASE_BUCKET || 'profile_photos'
+
+/** Read Supabase credentials: admin localStorage overrides env defaults */
+function getSupabaseCredentials(overrideBucket = false) {
+  let url = DEFAULT_SUPABASE_URL
+  let anonKey = DEFAULT_SUPABASE_ANON_KEY
+  let bucket = DEFAULT_SUPABASE_BUCKET
+  try {
+    const local = localStorage.getItem('prepbridge_admin_settings')
+    if (local) {
+      const data = JSON.parse(local)
+      if (data.supabaseUrl) url = data.supabaseUrl
+      if (data.supabaseAnonKey) anonKey = data.supabaseAnonKey
+      if (overrideBucket && data.supabaseBucket) bucket = data.supabaseBucket
+    }
+  } catch { // ignore JSON parse errors
+  }
+  return { url, anonKey, bucket }
+}
+
 /**
  * Uploads a file directly to Supabase Storage using lightweight native REST API.
  * Pulls credentials live from local settings cache with fallback.
@@ -9,21 +32,7 @@
  * @returns {Promise<string>} - The public, accessible CDN URL of the uploaded asset
  */
 export async function uploadToSupabase(file, path) {
-  let supabaseUrl = 'https://stmnmxkosnxbckvqojxw.supabase.co'
-  let supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bW5teGtvc254YmNrdnFvanh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODgwOTcsImV4cCI6MjA5NTM2NDA5N30.37fJYUOxQs6gvgZYzSkOOWMvaY1qKsZheIKicsr_G5w'
-  let supabaseBucket = 'profile_photos'
-
-  try {
-    const local = localStorage.getItem('prepbridge_admin_settings')
-    if (local) {
-      const data = JSON.parse(local)
-      if (data.supabaseUrl) supabaseUrl = data.supabaseUrl
-      if (data.supabaseAnonKey) supabaseAnonKey = data.supabaseAnonKey
-      if (data.supabaseBucket) supabaseBucket = data.supabaseBucket
-    }
-  } catch (e) {
-    console.warn('Failed to parse cached admin settings in uploadToSupabase:', e)
-  }
+  const { url: supabaseUrl, anonKey: supabaseAnonKey, bucket: supabaseBucket } = getSupabaseCredentials(true)
 
   // Normalize url
   const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
@@ -77,19 +86,7 @@ function cleanAnonKeyExists(key) {
  * @param {object} profileData - The complete profile data to synchronize
  */
 export async function syncProfileToSupabase(uid, profileData) {
-  let supabaseUrl = 'https://stmnmxkosnxbckvqojxw.supabase.co'
-  let supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bW5teGtvc254YmNrdnFvanh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODgwOTcsImV4cCI6MjA5NTM2NDA5N30.37fJYUOxQs6gvgZYzSkOOWMvaY1qKsZheIKicsr_G5w'
-
-  try {
-    const local = localStorage.getItem('prepbridge_admin_settings')
-    if (local) {
-      const data = JSON.parse(local)
-      if (data.supabaseUrl) supabaseUrl = data.supabaseUrl
-      if (data.supabaseAnonKey) supabaseAnonKey = data.supabaseAnonKey
-    }
-  } catch (e) {
-    console.warn('Failed to parse cached admin settings in syncProfileToSupabase:', e)
-  }
+  const { url: supabaseUrl, anonKey: supabaseAnonKey } = getSupabaseCredentials()
 
   const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
   
@@ -146,17 +143,7 @@ export async function syncProfileToSupabase(uid, profileData) {
  * Falls back to local storage cache if database is offline or unconfigured.
  */
 export async function getSupabaseSettings() {
-  let supabaseUrl = 'https://stmnmxkosnxbckvqojxw.supabase.co'
-  let supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bW5teGtvc254YmNrdnFvanh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODgwOTcsImV4cCI6MjA5NTM2NDA5N30.37fJYUOxQs6gvgZYzSkOOWMvaY1qKsZheIKicsr_G5w'
-
-  const local = localStorage.getItem('prepbridge_admin_settings')
-  if (local) {
-    try {
-      const parsed = JSON.parse(local)
-      if (parsed.supabaseUrl) supabaseUrl = parsed.supabaseUrl
-      if (parsed.supabaseAnonKey) supabaseAnonKey = parsed.supabaseAnonKey
-    } catch (e) {}
-  }
+  const { url: supabaseUrl, anonKey: supabaseAnonKey } = getSupabaseCredentials()
 
   const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
   const dbUrl = `${cleanUrl}/rest/v1/settings?key=eq.integrations&select=value`
@@ -188,11 +175,9 @@ export async function getSupabaseSettings() {
  * Saves integrations settings to Supabase Database settings table.
  */
 export async function saveSupabaseSettings(settingsData) {
-  let supabaseUrl = 'https://stmnmxkosnxbckvqojxw.supabase.co'
-  let supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bW5teGtvc254YmNrdnFvanh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODgwOTcsImV4cCI6MjA5NTM2NDA5N30.37fJYUOxQs6gvgZYzSkOOWMvaY1qKsZheIKicsr_G5w'
-
-  if (settingsData.supabaseUrl) supabaseUrl = settingsData.supabaseUrl
-  if (settingsData.supabaseAnonKey) supabaseAnonKey = settingsData.supabaseAnonKey
+  const { url: defaultUrl, anonKey: defaultKey } = getSupabaseCredentials()
+  const supabaseUrl = settingsData.supabaseUrl || defaultUrl
+  const supabaseAnonKey = settingsData.supabaseAnonKey || defaultKey
 
   const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
   const dbUrl = `${cleanUrl}/rest/v1/settings`
@@ -223,17 +208,7 @@ export async function saveSupabaseSettings(settingsData) {
  * Fetches user profile from Supabase Database profiles table.
  */
 export async function getSupabaseProfile(uid) {
-  let supabaseUrl = 'https://stmnmxkosnxbckvqojxw.supabase.co'
-  let supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bW5teGtvc254YmNrdnFvanh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODgwOTcsImV4cCI6MjA5NTM2NDA5N30.37fJYUOxQs6gvgZYzSkOOWMvaY1qKsZheIKicsr_G5w'
-
-  const local = localStorage.getItem('prepbridge_admin_settings')
-  if (local) {
-    try {
-      const parsed = JSON.parse(local)
-      if (parsed.supabaseUrl) supabaseUrl = parsed.supabaseUrl
-      if (parsed.supabaseAnonKey) supabaseAnonKey = parsed.supabaseAnonKey
-    } catch (e) {}
-  }
+  const { url: supabaseUrl, anonKey: supabaseAnonKey } = getSupabaseCredentials()
 
   const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
   const dbUrl = `${cleanUrl}/rest/v1/profiles?id=eq.${uid}&select=*`
@@ -289,17 +264,7 @@ export async function getSupabaseProfile(uid) {
  * Upserts a user profile into Supabase Database profiles table.
  */
 export async function upsertSupabaseProfile(uid, data) {
-  let supabaseUrl = 'https://stmnmxkosnxbckvqojxw.supabase.co'
-  let supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bW5teGtvc254YmNrdnFvanh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODgwOTcsImV4cCI6MjA5NTM2NDA5N30.37fJYUOxQs6gvgZYzSkOOWMvaY1qKsZheIKicsr_G5w'
-
-  const local = localStorage.getItem('prepbridge_admin_settings')
-  if (local) {
-    try {
-      const parsed = JSON.parse(local)
-      if (parsed.supabaseUrl) supabaseUrl = parsed.supabaseUrl
-      if (parsed.supabaseAnonKey) supabaseAnonKey = parsed.supabaseAnonKey
-    } catch (e) {}
-  }
+  const { url: supabaseUrl, anonKey: supabaseAnonKey } = getSupabaseCredentials()
 
   const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
   const dbUrl = `${cleanUrl}/rest/v1/profiles`
@@ -359,17 +324,7 @@ export async function upsertSupabaseProfile(uid, data) {
  * Fetches all user profiles from Supabase Database profiles table (for Admin Panel).
  */
 export async function getAllSupabaseProfiles() {
-  let supabaseUrl = 'https://stmnmxkosnxbckvqojxw.supabase.co'
-  let supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bW5teGtvc254YmNrdnFvanh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODgwOTcsImV4cCI6MjA5NTM2NDA5N30.37fJYUOxQs6gvgZYzSkOOWMvaY1qKsZheIKicsr_G5w'
-
-  const local = localStorage.getItem('prepbridge_admin_settings')
-  if (local) {
-    try {
-      const parsed = JSON.parse(local)
-      if (parsed.supabaseUrl) supabaseUrl = parsed.supabaseUrl
-      if (parsed.supabaseAnonKey) supabaseAnonKey = parsed.supabaseAnonKey
-    } catch (e) {}
-  }
+  const { url: supabaseUrl, anonKey: supabaseAnonKey } = getSupabaseCredentials()
 
   const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
   const dbUrl = `${cleanUrl}/rest/v1/profiles?select=*`

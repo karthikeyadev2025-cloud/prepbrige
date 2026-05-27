@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
-import { BookOpen, Clock, Star, Users, ChevronRight, Play, Lock } from 'lucide-react'
+import { useState } from 'react'
+import { BookOpen, Clock, Star, Users, Play } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import { useUserStore } from '../store/useStore'
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const COURSES = [
   {
     id: 'upsc_complete', title: 'UPSC CSE Complete Course', exam: 'UPSC', icon: '🏛️',

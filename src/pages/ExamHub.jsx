@@ -1,11 +1,10 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { EXAM_CATEGORIES, ALL_STATES } from '../data/exams'
-import { Search, Star, Bell, ChevronRight, Filter } from 'lucide-react'
-import { useUserStore } from '../store/useStore'
+import { Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export default function ExamHub() {
-  const { profile } = useUserStore()
+
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('all')
   const [activeLevel, setActiveLevel] = useState('all')

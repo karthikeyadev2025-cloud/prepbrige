@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { MOCK_TESTS, QUESTION_BANK } from '../data/questions'
-import { useExamStore, useAppStore } from '../store/useStore'
+import { useAppStore } from '../store/useStore'
 import { toast } from 'react-hot-toast'
-import { Clock, Flag, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle, XCircle, BarChart2 } from 'lucide-react'
+import { Clock, Flag, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
 
 function generateQuestions(test) {
   // Generate questions for the test from the question bank or create placeholders
@@ -39,7 +39,7 @@ export default function TestEngine() {
   const { testId } = useParams()
   const navigate = useNavigate()
   const test = MOCK_TESTS.find(t => t.id === testId) || MOCK_TESTS[0]
-  const questions = useRef(generateQuestions(test))
+  const [questions] = useState(() => generateQuestions(test))
   const [current, setCurrent] = useState(0)
   const [answers, setAnswers] = useState({})
   const [flagged, setFlagged] = useState(new Set())
@@ -59,7 +59,7 @@ export default function TestEngine() {
       })
     }, 1000)
     return () => clearInterval(timer)
-  }, [submitted])
+  }, [submitted, handleSubmit])
 
   const formatTime = (s) => {
     const m = Math.floor(s / 60)
@@ -69,18 +69,18 @@ export default function TestEngine() {
 
   const handleAnswer = (optIdx) => {
     if (submitted) return
-    setAnswers(a => ({ ...a, [questions.current[current].id]: optIdx }))
+    setAnswers(a => ({ ...a, [questions[current].id]: optIdx }))
   }
 
   const handleFlag = () => {
-    const qid = questions.current[current].id
+    const qid = questions[current].id
     setFlagged(f => { const n = new Set(f); n.has(qid) ? n.delete(qid) : n.add(qid); return n })
   }
 
   const handleSubmit = useCallback(() => {
     if (submitted) return
     setSubmitted(true)
-    const qs = questions.current
+    const qs = questions
     let correct = 0, wrong = 0, skipped = 0
     qs.forEach(q => {
       const ans = answers[q.id]
@@ -100,10 +100,10 @@ export default function TestEngine() {
     addPoints(Math.floor(correct * 5))
     setShowResult(true)
     toast.success('Test submitted! 🎉')
-  }, [submitted, answers, test])
+  }, [submitted, answers, test, questions, testId, addTestResult, addPoints])
 
   if (showResult && result) {
-    const qs = questions.current
+    const qs = questions
     return (
       <div className="page animate-fade-in">
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
@@ -175,7 +175,7 @@ export default function TestEngine() {
     )
   }
 
-  const q = questions.current[current]
+  const q = questions[current]
   const timerColor = timeLeft < 300 ? 'danger' : timeLeft < 600 ? 'warning' : ''
 
   return (
@@ -184,7 +184,7 @@ export default function TestEngine() {
       <div className="test-header">
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-1)' }}>{test.title}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-3)' }}>{Object.keys(answers).length}/{questions.current.length} answered</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-3)' }}>{Object.keys(answers).length}/{questions.length} answered</div>
         </div>
         <div className={`test-timer ${timerColor}`}>
           <Clock size={18} style={{ display: 'inline', marginRight: 6 }} />
@@ -203,7 +203,7 @@ export default function TestEngine() {
         {/* Question panel */}
         <div style={{ flex: 1, padding: 24, overflowY: 'auto' }}>
           <div className="question-panel" style={{ maxWidth: 700 }}>
-            <div className="question-number">Question {current + 1} of {questions.current.length} • {q.subject} • {q.difficulty}</div>
+            <div className="question-number">Question {current + 1} of {questions.length} • {q.subject} • {q.difficulty}</div>
             <div className="question-text">{q.text}</div>
             <div className="options-list">
               {q.options.map((opt, i) => (
@@ -217,7 +217,7 @@ export default function TestEngine() {
               <button className="btn btn-outline" onClick={() => setCurrent(c => Math.max(0, c-1))} disabled={current === 0}>
                 <ChevronLeft size={16} /> Previous
               </button>
-              <button className="btn btn-primary" onClick={() => setCurrent(c => Math.min(questions.current.length-1, c+1))} disabled={current === questions.current.length-1}>
+              <button className="btn btn-primary" onClick={() => setCurrent(c => Math.min(questions.length-1, c+1))} disabled={current === questions.length-1}>
                 Next <ChevronRight size={16} />
               </button>
             </div>
@@ -229,7 +229,7 @@ export default function TestEngine() {
           <div style={{ marginBottom: 14 }}>
             <div style={{ fontSize: '0.82rem', fontWeight: 700, marginBottom: 10, color: 'var(--text-3)' }}>QUESTION PALETTE</div>
             <div className="question-nav">
-              {questions.current.map((q2, i) => (
+              {questions.map((q2, i) => (
                 <button key={q2.id}
                   className={`q-nav-btn ${i === current ? 'current' : answers[q2.id] !== undefined ? 'answered' : flagged.has(q2.id) ? 'skipped' : ''}`}
                   onClick={() => setCurrent(i)}
@@ -238,7 +238,7 @@ export default function TestEngine() {
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.78rem', color: 'var(--text-3)' }}>
-            {[['answered','var(--purple)','Answered'],['current','var(--cyan)','Current'],['skipped','var(--amber)','Flagged'],['','rgba(255,255,255,0.06)','Not visited']].map(([cls,clr,lbl]) => (
+            {[['var(--purple)','Answered'],['var(--cyan)','Current'],['var(--amber)','Flagged'],['rgba(255,255,255,0.06)','Not visited']].map(([clr,lbl]) => (
               <div key={lbl} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 16, height: 16, borderRadius: 4, background: clr, border: '1.5px solid ' + clr }} />
                 {lbl}
@@ -249,7 +249,7 @@ export default function TestEngine() {
           <div style={{ fontSize: '0.82rem', color: 'var(--text-3)' }}>
             <div>Answered: <strong style={{ color: 'var(--text-1)' }}>{Object.keys(answers).length}</strong></div>
             <div>Flagged: <strong style={{ color: 'var(--amber)' }}>{flagged.size}</strong></div>
-            <div>Remaining: <strong style={{ color: 'var(--red)' }}>{questions.current.length - Object.keys(answers).length}</strong></div>
+            <div>Remaining: <strong style={{ color: 'var(--red)' }}>{questions.length - Object.keys(answers).length}</strong></div>
           </div>
           <button className="btn btn-primary" style={{ width: '100%', marginTop: 16, justifyContent: 'center' }} onClick={() => setShowExitConfirm(true)}>
             Submit Test
@@ -265,7 +265,7 @@ export default function TestEngine() {
               <AlertTriangle size={24} color="var(--amber)" />
               <div>
                 <h3 style={{ marginBottom: 4 }}>Submit Test?</h3>
-                <p style={{ fontSize: '0.9rem', margin: 0 }}>{questions.current.length - Object.keys(answers).length} question(s) unanswered. Are you sure you want to submit?</p>
+                <p style={{ fontSize: '0.9rem', margin: 0 }}>{questions.length - Object.keys(answers).length} question(s) unanswered. Are you sure you want to submit?</p>
               </div>
             </div>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>

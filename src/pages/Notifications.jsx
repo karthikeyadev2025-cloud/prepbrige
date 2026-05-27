@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { Bell, BellOff, Tag, ExternalLink, CheckCheck } from 'lucide-react'
-import { useAppStore, useUserStore } from '../store/useStore'
+import { useState } from 'react'
+import { Bell, BellOff, CheckCheck } from 'lucide-react'
+import { useUserStore } from '../store/useStore'
 import { registerPushNotifications } from '../services/notificationService'
 import { toast } from 'react-hot-toast'
 

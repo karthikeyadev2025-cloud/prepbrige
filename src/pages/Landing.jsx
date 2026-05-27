@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useUserStore } from '../store/useStore'
 import { Zap, CheckCircle, ArrowRight } from 'lucide-react'
@@ -116,7 +116,7 @@ function TiltCard({ children, style = {} }) {
     el.style.transform = `perspective(600px) rotateY(${x}deg) rotateX(${y}deg) translateY(-6px) scale(1.02)`
     el.style.boxShadow = `${-x}px ${y}px 30px rgba(124,58,237,0.25)`
   }
-  const handleLeave = (e) => {
+  const handleLeave = () => {
     const el = ref.current; if (!el) return
     el.style.transform = 'perspective(600px) rotateY(0deg) rotateX(0deg) translateY(0px) scale(1)'
     el.style.boxShadow = 'none'
@@ -177,7 +177,7 @@ export default function Landing() {
   useEffect(() => {
     if (user && onboardingComplete) navigate('/app/dashboard')
     else if (user) navigate('/onboarding')
-  }, [user])
+  }, [user, onboardingComplete, navigate])
 
   return (
     <div style={{ background: 'var(--bg)', minHeight: '100vh', overflowX: 'hidden' }}>

@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MOCK_TESTS } from '../data/questions'
-import { EXAM_CATEGORIES } from '../data/exams'
 import { useNavigate } from 'react-router-dom'
-import { Clock, Target, Users, Zap, BarChart3, Trophy, ChevronRight } from 'lucide-react'
+import { Clock, Target, Users, Zap, BarChart3 } from 'lucide-react'
 
 const DIFFICULTY_COLOR = { easy: 'var(--emerald)', medium: 'var(--amber)', hard: 'var(--red)' }
 
@@ -16,7 +15,7 @@ export default function MockTest() {
     return [...parsed, ...MOCK_TESTS]
   })
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleSync = () => {
       const local = localStorage.getItem('prepbridge_auto_updated_tests')
       const parsed = local ? JSON.parse(local) : []

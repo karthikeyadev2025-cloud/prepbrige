@@ -10,8 +10,8 @@ export function getAutoUpdatedCurrentAffairs() {
   const today = new Date()
   
   return CURRENT_AFFAIRS_DATA.map(item => {
-    let articleDate = today
-    
+    let articleDate
+
     // Distribute articles dynamically based on their ID
     if (item.id === 1 || item.id === 2) {
       articleDate = today

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // ─── Particle Canvas ──────────────────────────────────────────────────────────
 function ParticleCanvas() {
@@ -162,7 +162,7 @@ function HeroTypewriter() {
       if (displayed.length < current.length) {
         timeout = setTimeout(() => setDisplayed(current.slice(0, displayed.length + 1)), 80)
       } else {
-        setShowUnder(true)
+        setShowUnder(true) // eslint-disable-line react-hooks/set-state-in-effect
         timeout = setTimeout(() => setPhase('pause'), 1800)
       }
     } else if (phase === 'pause') {
@@ -259,7 +259,6 @@ function HeroTypewriter() {
 // ─── Main HeroVideo Component ─────────────────────────────────────────────────
 export default function HeroVideo() {
   const [activeStory, setActiveStory] = useState(0)
-  const videoRef = useRef(null)
 
   // Cycle success stories
   useEffect(() => {

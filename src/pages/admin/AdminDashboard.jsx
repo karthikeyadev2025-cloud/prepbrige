@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Users, ClipboardList, BookOpen, Bell, TrendingUp, DollarSign, Activity, Star, Award, Zap } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Users, ClipboardList, BookOpen, Bell, DollarSign, Star, Award } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Link } from 'react-router-dom'
 import { getAllSupabaseProfiles } from '../../services/supabaseService'

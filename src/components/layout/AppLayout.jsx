@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Outlet, useLocation, useNavigate, NavLink } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../../store/useStore'
 import { signOutUser } from '../../firebase/auth'
@@ -8,7 +8,7 @@ import {
   LayoutDashboard, BookOpen, FileText, Newspaper, BrainCircuit,
   GraduationCap, Trophy, Bell, User, Settings, LogOut,
   ChevronLeft, ChevronRight, Search, Menu, Zap, Shield,
-  ClipboardList, Users, MessageSquare, Star, Palette
+  ClipboardList, Users, Palette
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -60,7 +60,7 @@ export default function AppLayout({ isAdmin = false }) {
     return () => clearInterval(timer)
   }, [prideItems])
 
-  useEffect(() => { setMobileOpen(false) }, [location.pathname])
+  useEffect(() => { setMobileOpen(false) }, [location.pathname]) // eslint-disable-line react-hooks/set-state-in-effect
   const handleLogout = async () => {
     try {
       await signOutUser()

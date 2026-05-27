@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { useUserStore } from '../store/useStore'
 import { toast } from 'react-hot-toast'
@@ -39,7 +39,7 @@ export default function Auth() {
         navigate('/onboarding')
       }
     }
-  }, [user, onboardingComplete])
+  }, [user, onboardingComplete, navigate])
   // Setup invisible recaptcha
   useEffect(() => {
     setupRecaptcha('recaptcha-container')
@@ -108,7 +108,7 @@ export default function Auth() {
         await verifyOTP(otp)
         toast.success('Welcome to PrepBridge! 🎉')
       }
-    } catch (err) {
+    } catch {
       toast.error('Invalid OTP. Please try again.')
     }
     setLoading(false)

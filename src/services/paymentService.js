@@ -118,7 +118,7 @@ export async function initiatePremiumCheckout(user, profile, updateProfile, onCo
   }
 
   const options = {
-    key: 'rzp_test_prepbridgeKey123', // Replace with live key in production
+    key: import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_prepbridgeKey123',
     amount: plan.amountPaise,
     currency: 'INR',
     name: 'PrepBridge Premium',

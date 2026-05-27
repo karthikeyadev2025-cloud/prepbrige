@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { QUESTION_BANK, MOCK_TESTS } from '../data/questions'
-import { Search, Download, Eye, Filter, FileText, Calendar } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { QUESTION_BANK } from '../data/questions'
+import { Search, Download, Eye } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 const YEARS = ['2025','2024','2023','2022','2021','2020','2019','2018']
@@ -39,7 +39,7 @@ export default function QuestionPapers() {
     return [...parsed, ...PAPER_LIST]
   })
 
-  React.useEffect(() => {
+  useEffect(() => {
     const handleSync = () => {
       const local = localStorage.getItem('prepbridge_auto_updated_papers')
       const parsed = local ? JSON.parse(local) : []

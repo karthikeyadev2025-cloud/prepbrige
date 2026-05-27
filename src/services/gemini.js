@@ -1,7 +1,7 @@
 // Gemini AI Service — PrepBridge AI Tutor
 // Uses Google Gemini 2.0 Flash for real-time tutoring
 
-const GEMINI_API_KEY = 'AIzaSyBphAmrAzMyHn4n4PQ0GQ9Ixj0xnWhVmZk'
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent'
 
 const SYSTEM_PROMPT = `You are K² (K-square) AI, an expert proprietary competitive exam doubt solver and tutor for Indian competitive exam aspirants.
@@ -335,8 +335,8 @@ export async function askGemini(userMessage, chatHistory = [], language = 'en', 
     
     // Parse query for keywords to find the most relevant locally-cached syllabus answer
     const query = userMessage.toLowerCase()
-    let topicKey = 'polity' // default fallback
-    
+    let topicKey
+
     if (query.includes('right') || query.includes('polity') || query.includes('constitution') || query.includes('article') || query.includes('fundamental')) {
       topicKey = 'polity'
     } else if (query.includes('science') || query.includes('technology') || query.includes('policy') || query.includes('policies')) {
@@ -350,7 +350,7 @@ export async function askGemini(userMessage, chatHistory = [], language = 'en', 
     } else {
       // Pick random category or default to polity
       const keys = Object.keys(LOCAL_KNOWLEDGE_BASE)
-      topicKey = keys[Math.floor(Math.random() * keys.length)]
+      topicKey = keys[Math.floor(Math.random() * keys.length)] || 'polity'
     }
 
     const kbItem = LOCAL_KNOWLEDGE_BASE[topicKey]

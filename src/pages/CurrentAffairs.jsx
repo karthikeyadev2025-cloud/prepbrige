@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { getAutoUpdatedCurrentAffairs } from '../services/currentAffairsService'
 import { NEWSPAPER_TOPICS, MOCK_INTERVIEW_PREP } from '../data/currentAffairs'
-import { Search, Filter, Bookmark, Share2, ChevronDown, Newspaper, RefreshCw, Award, Sparkles, MessageSquare, Mic, ShieldAlert, Heart, Star, CheckCircle, Brain, Send } from 'lucide-react'
+import { Search, Bookmark, ChevronDown, Newspaper, RefreshCw, Award, Sparkles, Mic, Heart, Star, CheckCircle, Brain } from 'lucide-react'
 import { useAppStore } from '../store/useStore'
 import { toast } from 'react-hot-toast'
 
@@ -172,7 +172,7 @@ export default function CurrentAffairs() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {filtered.map((item, idx) => (
+            {filtered.map((item) => (
               <div key={item.id} className={`card card-p ca-card ${item.importance}`} style={{ cursor: 'pointer', transition: 'var(--t)' }}
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
                 onMouseLeave={e => e.currentTarget.style.transform = ''}

@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 
 export const useUserStore = create(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       profile: null,
       onboardingComplete: false,

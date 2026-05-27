@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { QUESTION_BANK, MOCK_TESTS } from '../../data/questions'
-import { Plus, Upload, Search, Filter, Edit, Trash2, Eye, ChevronDown } from 'lucide-react'
+import { useState } from 'react'
+import { QUESTION_BANK } from '../../data/questions'
+import { Plus, Upload, Search, Edit, Trash2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 const allQ = Object.entries(QUESTION_BANK).flatMap(([exam, subjects]) =>

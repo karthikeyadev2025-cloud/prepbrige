@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Send, Bell, Users, Target, Clock, CheckCircle, Plus } from 'lucide-react'
+import { useState } from 'react'
+import { Send, Users, Clock, CheckCircle, Plus } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { EXAM_CATEGORIES, ALL_STATES } from '../../data/exams'
 

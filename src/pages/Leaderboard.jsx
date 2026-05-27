@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Trophy, Crown, Star, Flame, Award, ChevronUp, ChevronDown, Minus } from 'lucide-react'
+import { useState } from 'react'
+import { Crown, ChevronUp, ChevronDown, Minus } from 'lucide-react'
 import { useUserStore, useAppStore } from '../store/useStore'
 
 const MOCK_LEADERS = [

@@ -1,43 +1,36 @@
-import React, { useState, useEffect } from 'react'
-import { Zap, Download, Share, Smartphone, HelpCircle, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Zap, Download, Share, Smartphone, X } from 'lucide-react'
 
 export default function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null)
-  const [isInstalled, setIsInstalled] = useState(false)
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
-  const [isIOS, setIsIOS] = useState(false)
-  const [isSafari, setIsSafari] = useState(false)
+  const [isInstalled, setIsInstalled] = useState(() =>
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true
+  )
+  const [isMobile, setIsMobile] = useState(() => {
+    const isMobileSize = window.innerWidth <= 768
+    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    return isMobileSize || hasTouch
+  })
+  const [isIOS] = useState(() => {
+    const ua = window.navigator.userAgent.toLowerCase()
+    return /iphone|ipad|ipod/.test(ua)
+  })
   const [showPrompt, setShowPrompt] = useState(false)
   const [showInstructions, setShowInstructions] = useState(false)
 
   useEffect(() => {
-    // 1. Detect if already running as standalone PWA
-    const isStandalone = 
-      window.matchMedia('(display-mode: standalone)').matches || 
-      window.navigator.standalone === true
+    if (isInstalled) return
 
-    if (isStandalone) {
-      setIsInstalled(true)
-      return
-    }
-
-    // 2. Detect mobile / tablet
+    // Detect mobile / tablet (keep resize listener)
     const checkMobile = () => {
       const isMobileSize = window.innerWidth <= 768
       const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
       setIsMobile(isMobileSize || hasTouch)
     }
-    checkMobile()
     window.addEventListener('resize', checkMobile)
 
-    // 3. Detect iOS and Safari specifically
-    const ua = window.navigator.userAgent.toLowerCase()
-    const ios = /iphone|ipad|ipod/.test(ua)
-    const safari = ua.includes('safari') && !ua.includes('chrome') && !ua.includes('crios')
-    setIsIOS(ios)
-    setIsSafari(safari)
-
-    // 4. Handle beforeinstallprompt event (Android / Chrome Desktop)
+    // Handle beforeinstallprompt event (Android / Chrome Desktop)
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault()
       setDeferredPrompt(e)
@@ -66,7 +59,7 @@ export default function PWAInstallPrompt() {
     // Wait 2.5s and then show the prompt if not already dismissed in this session
     const timer = setTimeout(() => {
       const dismissedThisSession = sessionStorage.getItem('pwa_prompt_dismissed')
-      if (!dismissedThisSession && !isStandalone && (isMobileSize() || hasTouchSupport())) {
+      if (!dismissedThisSession && (isMobileSize() || hasTouchSupport())) {
         setShowPrompt(true)
       }
     }, 2500)
@@ -76,7 +69,7 @@ export default function PWAInstallPrompt() {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
       clearTimeout(timer)
     }
-  }, [])
+  }, [isInstalled])
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {

@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { BookOpen, FileText, Newspaper, Plus, Edit3, Trash2, Eye, Upload, Globe, CheckCircle } from 'lucide-react'
+import { useState } from 'react'
+import { Plus, Edit3, Trash2, Eye, Upload, CheckCircle } from 'lucide-react'
 import { EXAM_CATEGORIES } from '../../data/exams'
 import { toast } from 'react-hot-toast'
 

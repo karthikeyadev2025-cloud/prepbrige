@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useUserStore } from '../store/useStore'
-import { User, Lock, Globe, Bell, LogOut, Camera, Edit3, ChevronRight, Shield, Flame, Star, Target, BookOpen, Clock, Zap } from 'lucide-react'
+import { User, Lock, Globe, Bell, LogOut, Edit3, ChevronRight, Shield, Star, Target, BookOpen, Clock, Zap } from 'lucide-react'
 import { signOutUser } from '../firebase/auth'
 import { useNavigate } from 'react-router-dom'
-import { ALL_LANGUAGES, EXAM_CATEGORIES } from '../data/exams'
+import { EXAM_CATEGORIES } from '../data/exams'
 import { toast } from 'react-hot-toast'
 import { initiatePremiumCheckout, PRICING, getSubscriptionStatus } from '../services/paymentService'
 
 export default function Profile() {
-  const { profile, user, logout, updateProfile } = useUserStore()
+  const { profile, user, updateProfile } = useUserStore()
   const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(profile?.name || '')
@@ -222,7 +222,7 @@ export default function Profile() {
             <div>
               <h4 style={{ margin: 0, fontSize: '0.98rem', color: 'var(--amber)' }}>PrepBridge All-Access Active 💎</h4>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', marginTop: 2 }}>
-                {profile?.subscription?.planLabel || 'All-Access'} · Payment ID: {profile?.subscription?.paymentId || 'rzp_test_VIP'} · Member since {new Date(profile?.subscription?.startDate || Date.now()).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}{profile?.subscription?.expiresAt ? ` · Renews ${new Date(profile.subscription.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}
+                {profile?.subscription?.planLabel || 'All-Access'} · Payment ID: {profile?.subscription?.paymentId || 'rzp_test_VIP'} · Member since {new Date(profile?.subscription?.startDate || profile?.createdAt || '2024-01-01').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}{profile?.subscription?.expiresAt ? ` · Renews ${new Date(profile.subscription.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}
               </div>
             </div>
           </div>

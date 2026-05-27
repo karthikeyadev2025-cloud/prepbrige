@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Palette, Save, RotateCcw, Eye, Code, Sliders, Moon, Sun, Monitor, Check, Copy } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Palette, Save, RotateCcw, Eye, Code, Check, Copy } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 // ─── Default theme tokens ──────────────────────────────────────────────────────
@@ -107,17 +107,18 @@ function SliderInput({ label, value, onChange, min = 4, max = 24, unit = 'px' })
 }
 
 export default function AdminTheme() {
-  const [theme, setTheme] = useState(DEFAULT_THEME)
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('prepbridge_admin_theme')
+      return saved ? JSON.parse(saved) : DEFAULT_THEME
+    } catch {
+      return DEFAULT_THEME
+    }
+  })
   const [activeTab, setActiveTab] = useState('colors')
   const [preview, setPreview] = useState(false)
   const [saved, setSaved] = useState(false)
   const [cssOutput, setCssOutput] = useState('')
-
-  // Load saved theme from localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('prepbridge_admin_theme')
-    if (saved) setTheme(JSON.parse(saved))
-  }, [])
 
   // Build CSS vars string and inject into page root
   useEffect(() => {
@@ -288,7 +289,7 @@ export default function AdminTheme() {
               <div style={{ marginTop: 16 }}>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-3)', marginBottom: 10 }}>Radius preview:</div>
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  {['Button', 'Card', 'Input', 'Badge'].map((l, i) => (
+                  {['Button', 'Card', 'Input', 'Badge'].map((l) => (
                     <div key={l} style={{ background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: `${theme.borderRadius}px`, padding: '10px 16px', fontSize: '0.8rem', color: 'var(--text-2)' }}>{l}</div>
                   ))}
                 </div>

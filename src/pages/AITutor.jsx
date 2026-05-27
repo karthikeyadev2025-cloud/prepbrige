@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useUserStore } from '../store/useStore'
-import { Send, BrainCircuit, Sparkles, RefreshCw, Mic, Lightbulb, BookOpen, Zap, Paperclip, Camera, X } from 'lucide-react'
+import { Send, BrainCircuit, Sparkles, RefreshCw, Lightbulb, Zap, Paperclip, Camera, X } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { askGemini, generateQuestions } from '../services/gemini'
 import { ALL_LANGUAGES } from '../data/exams'
@@ -135,11 +135,10 @@ export default function AITutor() {
 
   useEffect(() => {
     if (location.state?.initialQuery) {
-      sendMessage(location.state.initialQuery)
-      // Clear location state after executing to prevent duplicate triggers on page reload
+      sendMessage(location.state.initialQuery) // eslint-disable-line react-hooks/set-state-in-effect
       window.history.replaceState({}, document.title)
     }
-  }, [location])
+  }, [location]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleGenerateQuiz = async () => {
     setGenerating(true)
@@ -201,7 +200,7 @@ export default function AITutor() {
                 }}>K²</span>
                 Doubt Solver
               </h3>
-              <span style={{ fontSize: '0.7rem', background: 'var(--grad)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800, border: '1px solid var(--border-purple)', borderRadius: 'var(--r-full)', padding: '2px 8px', WebkitTextFillColor: 'unset', background: 'transparent', color: 'var(--purple)' }}>MULTIMODAL</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: 800, border: '1px solid var(--border-purple)', borderRadius: 'var(--r-full)', padding: '2px 8px', background: 'transparent', color: 'var(--purple)' }}>MULTIMODAL</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--text-3)' }}>
               <span className="dot-live" style={{ background: 'var(--emerald)' }} />

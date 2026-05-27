@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../store/useStore'
-import { CURRENT_AFFAIRS_DATA, DAILY_QUIZ_QUESTIONS, NEWSPAPER_TOPICS } from '../data/currentAffairs'
+import { DAILY_QUIZ_QUESTIONS, NEWSPAPER_TOPICS } from '../data/currentAffairs'
 import { MOCK_TESTS, QUESTION_BANK } from '../data/questions'
 import { COURSES } from './Courses'
 import { getAutoUpdatedCurrentAffairs } from '../services/currentAffairsService'
 import { format } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import {
-  Flame, Target, Star, TrendingUp, BookOpen, ClipboardList,
-  Newspaper, BrainCircuit, Bell, ChevronRight, CheckCircle,
-  Clock, Zap, Trophy, Calendar, AlertCircle, ArrowRight, Play, Timer, RefreshCw, X, Brain
+  Flame, Target, Star, TrendingUp, ClipboardList,
+  Newspaper, BrainCircuit, ChevronRight, CheckCircle,
+  Clock, Zap, Trophy, Calendar, ArrowRight, Play, Timer, RefreshCw, X, Brain
 } from 'lucide-react'
 import { getSubscriptionStatus } from '../services/paymentService'
 
@@ -53,7 +53,7 @@ const getSyllabusProgress = (target) => {
     }
   }
 
-  let defaultSyllabus = []
+  let defaultSyllabus
   if (target === 'ias' || target === 'ips' || target === 'upsc') {
     defaultSyllabus = [
       { name: 'Indian Polity & Constitution', pct: 72, color: 'var(--cyan)' },
@@ -825,7 +825,10 @@ function PortalAutoSync() {
 export default function Dashboard() {
   const { profile } = useUserStore()
   const { streak, totalPoints, incrementStreak, addPoints } = useAppStore()
-  const [greeting, setGreeting] = useState('')
+  const [greeting] = useState(() => {
+    const h = new Date().getHours()
+    return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
+  })
   const [dailyQuiz, setDailyQuiz] = useState(null)
   const [quizAnswer, setQuizAnswer] = useState(null)
   const [activeStudyPoint, setActiveStudyPoint] = useState(null)
@@ -854,7 +857,7 @@ export default function Dashboard() {
 
   // Listener for dynamic updates across other components (like PortalAutoSync) and target changes
   useEffect(() => {
-    setSyllabusList(getSyllabusProgress(primaryTarget))
+    setSyllabusList(getSyllabusProgress(primaryTarget)) // eslint-disable-line react-hooks/set-state-in-effect
     const handlePortalSync = () => {
       setSyllabusList(getSyllabusProgress(primaryTarget))
     }
@@ -876,9 +879,6 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    const h = new Date().getHours()
-    setGreeting(h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening')
-
     const primaryTarget = profile?.primaryTarget || (profile?.exams && profile.exams[0]) || 'ias'
     let bank = []
     if (primaryTarget === 'ias' || primaryTarget === 'ips' || primaryTarget === 'upsc') {
@@ -939,7 +939,7 @@ export default function Dashboard() {
 
     if (bank.length > 0) {
       const dayIdx = new Date().getDate() % bank.length
-      setDailyQuiz(bank[dayIdx])
+      setDailyQuiz(bank[dayIdx]) // eslint-disable-line react-hooks/set-state-in-effect
     } else {
       setDailyQuiz(DAILY_QUIZ_QUESTIONS[new Date().getDate() % DAILY_QUIZ_QUESTIONS.length])
     }

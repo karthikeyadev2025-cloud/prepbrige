@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { Users, Search, Shield, Ban, Eye, Download, Filter, TrendingUp } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, Shield, Ban, Eye, Download } from 'lucide-react'
 import { getAllSupabaseProfiles, upsertSupabaseProfile } from '../../services/supabaseService'
 import { toast } from 'react-hot-toast'
 
@@ -18,7 +18,6 @@ const STATUS_COLORS = { active:'var(--emerald)', inactive:'var(--amber)', suspen
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([])
-  const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [planFilter, setPlanFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -27,7 +26,6 @@ export default function AdminUsers() {
   // 1. Fetch live users from Supabase Database profiles table
   useEffect(() => {
     async function fetchUsers() {
-      setLoading(true)
       try {
         const list = await getAllSupabaseProfiles()
         setUsers(list.length > 0 ? list : MOCK_USERS.map(m => ({
@@ -42,8 +40,6 @@ export default function AdminUsers() {
       } catch (e) {
         console.error('Error fetching users from Supabase:', e)
         setUsers(MOCK_USERS)
-      } finally {
-        setLoading(false)
       }
     }
     fetchUsers()
