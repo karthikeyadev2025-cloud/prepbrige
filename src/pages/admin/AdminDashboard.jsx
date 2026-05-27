@@ -3,6 +3,7 @@ import { Users, ClipboardList, BookOpen, Bell, DollarSign, Star, Award } from 'l
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import { Link } from 'react-router-dom'
 import { getAllSupabaseProfiles } from '../../services/supabaseService'
+import { PRICING } from '../../services/paymentService'
 
 const COLORS = ['#00d4ff', '#7c3aed', '#10b981', '#f59e0b', '#ef4444', '#3b82f6']
 
@@ -45,9 +46,9 @@ export default function AdminDashboard() {
               { name: 'Railways', value: 14 }, { name: 'State PSC', value: 10 }, { name: 'Others', value: 7 }
             ],
             recentUsers: [
-              { name: 'Ramesh Kumar', state: 'Bihar', exam: 'UPSC', joined: 'May 26', plan: 'Paid (₹249/mo)' },
+              { name: 'Ramesh Kumar', state: 'Bihar', exam: 'UPSC', joined: 'May 26', plan: `Paid (${PRICING.monthly.badge})` },
               { name: 'Priya Sharma', state: 'Rajasthan', exam: 'BANKING', joined: 'May 26', plan: 'Free' },
-              { name: 'Suresh Yadav', state: 'UP', exam: 'SSC CGL', joined: 'May 25', plan: 'Paid (₹1,195 × 6mo)' },
+              { name: 'Suresh Yadav', state: 'UP', exam: 'SSC CGL', joined: 'May 25', plan: `Paid (${PRICING.sixMonth.badge})` },
               { name: 'Anjali Meena', state: 'MP', exam: 'NEET', joined: 'May 25', plan: 'Free' },
               { name: 'Mohit Sahu', state: 'CG', exam: 'RAILWAYS', joined: 'May 24', plan: 'Paid (₹249/mo)' }
             ]
@@ -61,7 +62,7 @@ export default function AdminDashboard() {
         const paidCount = usersList.filter(u => u.plan === 'paid').length
         const activeCount = usersList.filter(u => u.status === 'active').length
         const maxStr = Math.max(...usersList.map(u => u.streak || 0))
-        const rev = paidCount * 249 // average monthly revenue per paid user at ₹249/mo base
+        const rev = paidCount * PRICING.monthly.amount // revenue estimate at base monthly rate
 
         // Lock ratio metrics
         const categories = {}
@@ -80,7 +81,7 @@ export default function AdminDashboard() {
           state: u.state,
           exam: u.primaryTarget ? u.primaryTarget.toUpperCase() : 'GENERAL',
           joined: u.joined ? new Date(u.joined).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'N/A',
-          plan: u.plan === 'paid' ? 'Paid (₹249/mo)' : 'Free',
+          plan: u.plan === 'paid' ? `Paid (${PRICING.monthly.badge})` : 'Free',
           streak: u.streak || 0
         }))
 
@@ -115,7 +116,7 @@ export default function AdminDashboard() {
         {[
           { icon: Users, label: 'Total Registrations', value: loading ? '...' : stats.totalUsers.toLocaleString(), trend: '+34%', color: 'var(--cyan)', bg: 'var(--cyan-10)' },
           { icon: DollarSign, label: 'Razorpay Revenue', value: loading ? '...' : `₹${stats.totalRevenue.toLocaleString()}`, trend: '+28%', color: 'var(--emerald)', bg: 'var(--emerald-10)' },
-          { icon: Star, label: 'Paid Subscriptions', value: loading ? '...' : stats.paidUsers.toLocaleString(), trend: '₹249/mo', color: 'var(--purple)', bg: 'var(--purple-10)' },
+          { icon: Star, label: 'Paid Subscriptions', value: loading ? '...' : stats.paidUsers.toLocaleString(), trend: PRICING.monthly.badge, color: 'var(--purple)', bg: 'var(--purple-10)' },
           { icon: Award, label: 'Max Study Streak', value: loading ? '...' : `🔥 ${stats.maxStreak} Days`, trend: 'streaks', color: 'var(--amber)', bg: 'var(--amber-10)' },
         ].map(s => (
           <div key={s.label} className="card card-p">
@@ -185,8 +186,8 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {stats.recentUsers.map((u, i) => (
-                <tr key={i} style={{ borderBottom: '1px solid var(--border)' }}
+              {stats.recentUsers.map((u) => (
+                <tr key={u.name} style={{ borderBottom: '1px solid var(--border)' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
                   onMouseLeave={e => e.currentTarget.style.background = ''}
                 >

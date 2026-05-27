@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Search, Shield, Ban, Eye, Download } from 'lucide-react'
 import { getAllSupabaseProfiles, upsertSupabaseProfile } from '../../services/supabaseService'
+import { PRICING } from '../../services/paymentService'
 import { toast } from 'react-hot-toast'
 
 const MOCK_USERS = [
@@ -74,11 +75,11 @@ export default function AdminUsers() {
         })
       }
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: nextPlan } : u))
-      toast.success(`User plan updated to ${nextPlan === 'paid' ? 'Paid (₹599)' : 'Free'}!`)
+      toast.success(`User plan updated to ${nextPlan === 'paid' ? `Paid (${PRICING.monthly.badge})` : 'Free'}!`)
     } catch (e) {
       console.warn('Failed to update live user plan on Supabase, applying mock local fallback:', e)
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: nextPlan } : u))
-      toast.success(`Mock local user plan updated to ${nextPlan === 'paid' ? 'Paid (₹599)' : 'Free'}!`)
+      toast.success(`Mock local user plan updated to ${nextPlan === 'paid' ? `Paid (${PRICING.monthly.badge})` : 'Free'}!`)
     }
   }
 
@@ -94,7 +95,7 @@ export default function AdminUsers() {
       <div className="page-header">
         <div>
           <h1 className="page-title">User Management 👥</h1>
-          <p className="page-subtitle">Manage {MOCK_USERS.length.toLocaleString()}+ registered students</p>
+          <p className="page-subtitle">Manage {users.length > 0 ? users.length.toLocaleString() : MOCK_USERS.length.toLocaleString()}+ registered students</p>
         </div>
         <button className="btn btn-outline btn-sm" style={{ gap: 6 }}>
           <Download size={14} /> Export CSV
@@ -104,10 +105,10 @@ export default function AdminUsers() {
       {/* Stats */}
       <div className="grid-4" style={{ gap: 14, marginBottom: 24 }}>
         {[
-          { label: 'Total Users', value: '2,45,832', icon: '👥', color: 'var(--purple)' },
-          { label: 'Paid Users', value: '1,23,419', icon: '💳', color: 'var(--emerald)' },
-          { label: 'Active Today', value: '18,432', icon: '🟢', color: 'var(--cyan)' },
-          { label: 'New This Month', value: '12,543', icon: '📈', color: 'var(--amber)' },
+          { label: 'Total Users', value: users.length.toLocaleString(), icon: '👥', color: 'var(--purple)' },
+          { label: 'Paid Users', value: users.filter(u => u.plan === 'paid').length.toLocaleString(), icon: '💳', color: 'var(--emerald)' },
+          { label: 'Active Users', value: users.filter(u => u.status === 'active').length.toLocaleString(), icon: '🟢', color: 'var(--cyan)' },
+          { label: 'Showing', value: filtered.length.toLocaleString(), icon: '🔍', color: 'var(--amber)' },
         ].map(s => (
           <div key={s.label} className="card card-p" style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '1.4rem', marginBottom: 4 }}>{s.icon}</div>
@@ -126,7 +127,7 @@ export default function AdminUsers() {
           </div>
           <select className="form-select" style={{ width: 'auto' }} value={planFilter} onChange={e => setPlanFilter(e.target.value)}>
             <option value="all">All Plans</option>
-            <option value="paid">Paid ₹599</option>
+            <option value="paid">Paid (Premium)</option>
             <option value="free">Free</option>
           </select>
           <select className="form-select" style={{ width: 'auto' }} value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
@@ -186,10 +187,10 @@ export default function AdminUsers() {
                       {user.exams.slice(0,2).map(e => <span key={e} style={{ fontSize: '0.65rem', background: 'rgba(124,58,237,0.1)', color: 'var(--purple)', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 'var(--r-full)', padding: '1px 6px' }}>{e}</span>)}
                     </div>
                   </td>
-                  <td style={{ padding: '12px 16px', fontSize: '0.8rem', color: 'var(--text-3)' }}>{new Date(user.joined).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</td>
+                  <td style={{ padding: '12px 16px', fontSize: '0.8rem', color: 'var(--text-3)' }}>{user.joined ? new Date(user.joined).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '—'}</td>
                   <td style={{ padding: '12px 16px' }}>
                     <span style={{ fontSize: '0.72rem', padding: '3px 8px', borderRadius: 'var(--r-full)', background: user.plan === 'paid' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.06)', color: user.plan === 'paid' ? 'var(--emerald)' : 'var(--text-3)', fontWeight: 700 }}>
-                      {user.plan === 'paid' ? '✓ ₹599' : 'Free'}
+                      {user.plan === 'paid' ? '✓ ' + PRICING.monthly.badge : 'Free'}
                     </span>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
@@ -272,7 +273,7 @@ export default function AdminUsers() {
               </div>
               <div>
                 <div style={{ color: 'var(--text-3)', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: 4 }}>📅 Joined PrepBridge</div>
-                <div style={{ fontWeight: 600, color: 'white' }}>{new Date(selectedUser.joined).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
+                <div style={{ fontWeight: 600, color: 'white' }}>{selectedUser.joined ? new Date(selectedUser.joined).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : '—'}</div>
               </div>
             </div>
 

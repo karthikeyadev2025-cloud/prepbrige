@@ -5,8 +5,8 @@ import { getSupabaseSettings, saveSupabaseSettings } from '../../services/supaba
 
 const DEFAULT_SETTINGS = {
   // Razorpay
-  razorpayKeyId: 'rzp_test_PrepBridge2026',
-  razorpayKeySecret: '••••••••••••••••••••••••••••',
+  razorpayKeyId: import.meta.env.VITE_RAZORPAY_KEY || '',
+  razorpayKeySecret: '',
   planPrice: '249',
   currency: 'INR',
   razorpayMode: 'test', // test | live
@@ -16,21 +16,21 @@ const DEFAULT_SETTINGS = {
   googleClientId: 'YOUR_GOOGLE_CLIENT_ID',
   googleClientSecret: 'YOUR_GOOGLE_CLIENT_SECRET',
 
-  // Firebase
-  firebaseApiKey: 'AIzaSyBphAmrAzMyHn4n4PQ0GQ9Ixj0xnWhVmZk',
-  firebaseAuthDomain: 'prepbridge-85189.firebaseapp.com',
-  firebaseProjectId: 'prepbridge-85189',
-  firebaseStorageBucket: 'prepbridge-85189.firebasestorage.app',
-  firebaseSenderId: '1074613140786',
-  firebaseAppId: '1:1074613140786:web:6092d00d86da43c8426b2b',
+  // Firebase — pre-filled from environment variables
+  firebaseApiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
+  firebaseAuthDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || '',
+  firebaseProjectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+  firebaseStorageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || '',
+  firebaseSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
+  firebaseAppId: import.meta.env.VITE_FIREBASE_APP_ID || '',
   forcePhoneOtp: false,
-  firebaseVapidKey: 'KgbnAHVC-8kSUu1MsUSetejeLlL9i2oBbJ80qTTnt84',
-  webPushPrivateKey: 'YOUR_WEBPUSH_PRIVATE_KEY',
+  firebaseVapidKey: '',
+  webPushPrivateKey: '',
 
-  // Supabase Storage
-  supabaseUrl: 'https://stmnmxkosnxbckvqojxw.supabase.co',
-  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bW5teGtvc254YmNrdnFvanh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3ODgwOTcsImV4cCI6MjA5NTM2NDA5N30.37fJYUOxQs6gvgZYzSkOOWMvaY1qKsZheIKicsr_G5w',
-  supabaseBucket: 'profile_photos',
+  // Supabase Storage — pre-filled from environment variables
+  supabaseUrl: import.meta.env.VITE_SUPABASE_URL || '',
+  supabaseAnonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || '',
+  supabaseBucket: import.meta.env.VITE_SUPABASE_BUCKET || 'profile_photos',
 
   // General App Settings
   supportEmail: 'support@prepbridge.in',
