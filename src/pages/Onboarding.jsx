@@ -144,8 +144,9 @@ export default function Onboarding() {
     }
 
     setUploading(false)
-    toast.success('Profile setup complete! Your 2-day free trial has started 🎉', { duration: 5000 })
-    navigate('/app/dashboard')
+    toast.success('Profile setup complete! Your 2-day free trial has started 🎉', { duration: 4000 })
+    // Small delay so toast renders before route change
+    setTimeout(() => navigate('/app/dashboard', { replace: true }), 300)
   }
 
   const toggleExam = (examId) => {

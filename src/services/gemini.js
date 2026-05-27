@@ -254,6 +254,8 @@ Competitive teaching exams place huge emphasis on child development theories, le
 
 export async function askGemini(userMessage, chatHistory = [], language = 'en', examContext = [], base64Image = null, mimeType = 'image/jpeg') {
   try {
+    if (!GEMINI_API_KEY) throw new Error('Gemini API key not configured — using offline knowledge base')
+
     const languageInstruction = language !== 'en' 
       ? `\n\nIMPORTANT: The user prefers responses in ${getLanguageName(language)}. Please respond in ${getLanguageName(language)} while keeping technical terms in English.`
       : ''

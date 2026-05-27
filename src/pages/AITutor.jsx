@@ -32,7 +32,7 @@ export default function AITutor() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [subject, setSubject] = useState('all')
-  const [language, setLanguage] = useState(profile?.language || 'en')
+  const [language, setLanguage] = useState(profile?.language || profile?.selectedLanguage || 'en')
   const [showSuggest, setShowSuggest] = useState(true)
   const [generating, setGenerating] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null)

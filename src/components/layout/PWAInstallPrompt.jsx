@@ -30,6 +30,9 @@ export default function PWAInstallPrompt() {
     }
     window.addEventListener('resize', checkMobile)
 
+    const isMobileSize = () => window.innerWidth <= 768
+    const hasTouchSupport = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0
+
     // Handle beforeinstallprompt event (Android / Chrome Desktop)
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault()
@@ -41,9 +44,6 @@ export default function PWAInstallPrompt() {
         setShowPrompt(true)
       }
     }
-
-    const isMobileSize = () => window.innerWidth <= 768
-    const hasTouchSupport = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
 

@@ -27,7 +27,7 @@ export async function registerPushNotifications(uid) {
   }
 
   // Load VAPID public key configuration (with dynamic Supabase priority and prefilled fallbacks)
-  let vapidKey = 'KgbnAHVC-8kSUu1MsUSetejeLlL9i2oBbJ80qTTnt84' // default prefilled user key
+  let vapidKey = import.meta.env.VITE_FIREBASE_VAPID_KEY || 'KgbnAHVC-8kSUu1MsUSetejeLlL9i2oBbJ80qTTnt84'
 
   try {
     const liveSettings = await getSupabaseSettings()

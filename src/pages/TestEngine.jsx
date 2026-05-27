@@ -88,8 +88,8 @@ export default function TestEngine() {
       else if (ans === q.correct) correct++
       else wrong++
     })
-    const marksPerQ = test.marksPerQuestion
-    const negMarks = test.negativeMarking
+    const marksPerQ = test?.marksPerQuestion ?? 2
+    const negMarks = test?.negativeMarking ?? -0.66
     const score = correct * marksPerQ + wrong * negMarks
     const maxScore = qs.length * marksPerQ
     const pct = Math.max(0, (score / maxScore) * 100).toFixed(1)

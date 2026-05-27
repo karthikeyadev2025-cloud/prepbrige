@@ -346,7 +346,7 @@ function AIRecommendation({ profile, exams, setActiveStudyPoint, updateSyllabusP
         <span className="badge badge-purple" style={{ marginLeft: 'auto' }}>Personalized</span>
       </div>
       <p style={{ fontSize: '0.82rem', marginBottom: 16, color: 'var(--text-3)' }}>
-        Based on your performance + {exams.length} target exam(s) — here's what to focus on today:
+        Based on your performance + {(exams || []).length} target exam(s) — here's what to focus on today:
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {tasks.map((task, i) => (
@@ -953,7 +953,7 @@ export default function Dashboard() {
           <div>
             <h2 style={{ marginBottom: 4 }}>{greeting}, {profile?.name?.split(' ')[0] || 'Aspirant'} 👋</h2>
             <p style={{ fontSize: '0.9rem', margin: 0 }}>
-              {format(new Date(), 'EEEE, d MMMM yyyy')} • Target: {(profile?.exams || []).map(e => examNames[e] || e).slice(0, 3).join(', ')}{(profile?.exams || []).length > 3 ? ` +${profile.exams.length - 3} more` : ''}
+              {format(new Date(), 'EEEE, d MMMM yyyy')} • Target: {(profile?.exams || []).map(e => examNames[e] || e).slice(0, 3).join(', ')}{(profile?.exams?.length || 0) > 3 ? ` +${(profile?.exams?.length || 0) - 3} more` : ''}
             </p>
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
