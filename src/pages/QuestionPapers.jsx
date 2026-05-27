@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { QUESTION_BANK } from '../data/questions'
-import { Search, Download, Eye } from 'lucide-react'
+import { useUserStore } from '../store/useStore'
+import { EXAM_CATEGORIES } from '../data/exams'
+import { Search, Download, Eye, Star } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 const YEARS = ['2025','2024','2023','2022','2021','2020','2019','2018']
@@ -27,10 +29,39 @@ const PAPER_LIST = [
   { id:'uppsc_2023', title:'UPPSC PCS 2023', exam:'UPPSC', year:'2023', paper:'Prelims GS', questions:150, pages:30, downloads:56000 },
 ]
 
+// Map examId to paper exam label (partial match)
+function getPaperExamId(examId) {
+  // Maps profile examId to paper exam name pattern
+  const MAP = {
+    ias: 'UPSC', ips: 'UPSC', upsc: 'UPSC',
+    ssc_cgl: 'SSC CGL', ssc_chsl: 'SSC CHSL',
+    ibps_po: 'IBPS PO', ibps_clerk: 'IBPS Clerk', sbi_po: 'SBI PO', sbi_clerk: 'SBI Clerk',
+    rrb_ntpc: 'RRB NTPC', rrb_po: 'RRB PO',
+    neet_ug: 'NEET UG', jee_main: 'JEE Mains',
+    ctet: 'CTET',
+  }
+  return MAP[examId] || null
+}
+
 export default function QuestionPapers() {
+  const { profile } = useUserStore()
+  const userExams = profile?.exams || []
+  const primaryTarget = profile?.primaryTarget || null
+
+  // Map user's primaryTarget to a paper exam label for pre-filter
+  const defaultExamFilter = useMemo(() => {
+    const mapped = getPaperExamId(primaryTarget)
+    if (mapped) return mapped
+    // Try user's first exam
+    for (const e of userExams) {
+      const m = getPaperExamId(e)
+      if (m) return m
+    }
+    return 'all'
+  }, [primaryTarget, userExams])
   const [search, setSearch] = useState('')
   const [yearFilter, setYearFilter] = useState('all')
-  const [examFilter, setExamFilter] = useState('all')
+  const [examFilter, setExamFilter] = useState(defaultExamFilter)
   const [previewId, setPreviewId] = useState(null)
 
   const [papers, setPapers] = useState(() => {
@@ -222,6 +253,15 @@ export default function QuestionPapers() {
     return true
   })
 
+  // Papers relevant to user's selected exams (for personalization banner)
+  const userRelevantExamNames = useMemo(() => {
+    return userExams.map(getPaperExamId).filter(Boolean)
+  }, [userExams])
+
+  const isRelevantToUser = (paper) => {
+    return userRelevantExamNames.some(name => paper.exam?.includes(name) || name?.includes(paper.exam))
+  }
+
   return (
     <div className="page animate-fade-in">
       <div className="page-header">
@@ -229,8 +269,34 @@ export default function QuestionPapers() {
           <h1 className="page-title">Question Papers 📄</h1>
           <p className="page-subtitle">Previous year question papers with solutions — 10+ years, all major exams</p>
         </div>
-        <div className="stat-pill">📥 {papers.reduce((a,p) => a + p.downloads,0).toLocaleString()} downloads</div>
+        <div className="stat-pill">📥 {papers.reduce((a, p) => a + p.downloads, 0).toLocaleString()} downloads</div>
       </div>
+
+      {/* Personalization Banner */}
+      {userExams.length > 0 && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(124,58,237,0.1), rgba(0,212,255,0.07))',
+          border: '1px solid rgba(124,58,237,0.25)',
+          borderRadius: 'var(--r-lg)',
+          padding: '12px 20px',
+          marginBottom: 20,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          fontSize: '0.82rem'
+        }}>
+          <Star size={14} color="var(--purple)" />
+          <span style={{ color: 'var(--purple)', fontWeight: 700 }}>Personalized:</span>
+          <span style={{ color: 'var(--text-3)' }}>
+            Papers relevant to your exams are highlighted with ⭐ and shown first when filtered.
+          </span>
+          {examFilter !== 'all' && (
+            <button className="btn btn-outline btn-sm" style={{ marginLeft: 'auto' }} onClick={() => setExamFilter('all')}>
+              Show All
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Filters */}
       <div className="card card-p" style={{ marginBottom: 20 }}>
@@ -250,13 +316,22 @@ export default function QuestionPapers() {
         </div>
       </div>
 
-      {/* Papers Grid */}
+      {/* Papers Grid — relevant papers first */}
       <div className="grid-3" style={{ gap: 14 }}>
-        {filtered.map(paper => (
-          <div key={paper.id} className="card card-hover" style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {[
+          ...filtered.filter(p => isRelevantToUser(p)),
+          ...filtered.filter(p => !isRelevantToUser(p))
+        ].map(paper => (
+          <div key={paper.id} className="card card-hover" style={{
+            padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 12,
+            border: isRelevantToUser(paper) ? '1px solid rgba(124,58,237,0.3)' : '1px solid var(--border)'
+          }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: 3 }}>{paper.title}</div>
+                <div style={{ fontWeight: 700, fontSize: '0.95rem', marginBottom: 3, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  {isRelevantToUser(paper) && <span title="Relevant to your exams">⭐</span>}
+                  {paper.title}
+                </div>
                 <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{paper.paper}</div>
               </div>
               <span style={{ fontSize: '0.7rem', background: 'rgba(0,212,255,0.1)', color: 'var(--cyan)', borderRadius: 'var(--r-full)', padding: '3px 10px', fontWeight: 700, flexShrink: 0 }}>{paper.year}</span>

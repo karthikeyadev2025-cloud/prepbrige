@@ -253,8 +253,14 @@ Competitive teaching exams place huge emphasis on child development theories, le
 }
 
 export async function askGemini(userMessage, chatHistory = [], language = 'en', examContext = [], base64Image = null, mimeType = 'image/jpeg') {
+  // Throw a specific, identifiable error so the UI can show a clear setup message
+  if (!GEMINI_API_KEY) {
+    const err = new Error('NO_API_KEY')
+    err.message = 'NO_API_KEY'
+    throw err
+  }
+
   try {
-    if (!GEMINI_API_KEY) throw new Error('Gemini API key not configured — using offline knowledge base')
 
     const languageInstruction = language !== 'en' 
       ? `\n\nIMPORTANT: The user prefers responses in ${getLanguageName(language)}. Please respond in ${getLanguageName(language)} while keeping technical terms in English.`
@@ -333,37 +339,55 @@ export async function askGemini(userMessage, chatHistory = [], language = 'en', 
     return text
 
   } catch (err) {
-    console.warn('Gemini API failed, using smart Socratic local fallback:', err)
-    
-    // Parse query for keywords to find the most relevant locally-cached syllabus answer
-    const query = userMessage.toLowerCase()
-    let topicKey
+    // Re-throw the NO_API_KEY error so the UI can handle it specifically
+    if (err.message === 'NO_API_KEY') throw err
 
-    if (query.includes('right') || query.includes('polity') || query.includes('constitution') || query.includes('article') || query.includes('fundamental')) {
-      topicKey = 'polity'
-    } else if (query.includes('science') || query.includes('technology') || query.includes('policy') || query.includes('policies')) {
-      topicKey = 'science'
-    } else if (query.includes('telangana') || query.includes('tgpsc') || query.includes('ts ') || query.includes('hyderabad') || query.includes('movement') || query.includes('kakatiya') || query.includes('nizam')) {
-      topicKey = 'telangana'
-    } else if (query.includes('andhra') || query.includes('appsc') || query.includes('ap ') || query.includes('reorganisation') || query.includes('bifurcation') || query.includes('amaravati') || query.includes('polavaram')) {
-      topicKey = 'andhra'
-    } else if (query.includes('teach') || query.includes('pedagogy') || query.includes('psychology') || query.includes('dsc') || query.includes('sgt') || query.includes('school assistant') || query.includes('piaget') || query.includes('vygotsky') || query.includes('kohlberg')) {
-      topicKey = 'teaching'
-    } else {
-      // Pick random category or default to polity
-      const keys = Object.keys(LOCAL_KNOWLEDGE_BASE)
-      topicKey = keys[Math.floor(Math.random() * keys.length)] || 'polity'
+    console.warn('Gemini API failed, using exam-aware local fallback:', err)
+
+    // Pick the most relevant locally-cached topic based on:
+    // 1. examContext (user's selected exams)
+    // 2. Keywords in the query
+    const query = userMessage.toLowerCase()
+    let topicKey = null
+
+    // Exam-context-first selection
+    if (examContext.length > 0) {
+      const primaryExam = examContext[0]
+      if (primaryExam === 'tgpsc' || primaryExam === 'ts_police' || primaryExam?.includes('ts_dsc')) {
+        topicKey = 'telangana'
+      } else if (primaryExam === 'appsc' || primaryExam === 'ap_police' || primaryExam?.includes('ap_dsc')) {
+        topicKey = 'andhra'
+      } else if (primaryExam?.includes('dsc') || primaryExam?.includes('teaching') || primaryExam?.includes('sgt') || primaryExam?.includes('sa')) {
+        topicKey = 'teaching'
+      } else if (primaryExam === 'ias' || primaryExam === 'ips' || primaryExam === 'upsc' || primaryExam?.includes('ssc') || primaryExam?.includes('ibps') || primaryExam?.includes('sbi') || primaryExam?.includes('rrb')) {
+        topicKey = 'polity' // General/central exam — default to polity
+      }
     }
 
-    const kbItem = LOCAL_KNOWLEDGE_BASE[topicKey]
+    // Keyword fallback if exam context didn't resolve
+    if (!topicKey) {
+      if (query.includes('telangana') || query.includes('tgpsc') || query.includes('hyderabad') || query.includes('kakatiya') || query.includes('nizam') || query.includes('movement')) {
+        topicKey = 'telangana'
+      } else if (query.includes('andhra') || query.includes('appsc') || query.includes('reorganisation') || query.includes('bifurcation') || query.includes('amaravati') || query.includes('polavaram') || query.includes('satavahana')) {
+        topicKey = 'andhra'
+      } else if (query.includes('teach') || query.includes('pedagogy') || query.includes('psychology') || query.includes('piaget') || query.includes('vygotsky') || query.includes('kohlberg') || query.includes('nep') || query.includes('dsc')) {
+        topicKey = 'teaching'
+      } else if (query.includes('science') || query.includes('technology') || query.includes('policy') || query.includes('isro') || query.includes('nasa')) {
+        topicKey = 'science'
+      } else {
+        topicKey = 'polity' // Default to polity for general queries
+      }
+    }
+
+    const kbItem = LOCAL_KNOWLEDGE_BASE[topicKey] || LOCAL_KNOWLEDGE_BASE['polity']
     const responseText = kbItem[language] || kbItem['en']
-    
-    // Add custom Socratic greeting to show personalization
-    const welcome = language === 'te' 
+
+    // Add a clear offline-mode greeting
+    const welcome = language === 'te'
       ? `**క్షమించండి, సర్వర్ కనెక్షన్ కాస్త బిజీగా ఉంది. అయినప్పటికీ మీ ప్రిపరేషన్ ఆగకూడదు! కనుక K² స్థానిక నాలెడ్జ్ బేస్ నుండి తక్షణ వివరణ ఇక్కడ ఉంది:**\n\n`
       : language === 'hi'
       ? `**क्षमा करें, सर्वर कनेक्शन थोड़ा व्यस्त है। लेकिन आपकी तैयारी रुकनी नहीं चाहिए! इसलिए K² स्थानीय नॉलेज बेस से तत्काल समाधान यहाँ है:**\n\n`
-      : `**Sorry, the main server is slightly busy, but your competitive prep must never stop! Here is your instant socratic explanation from K² local high-accuracy database:**\n\n`
+      : `**Sorry, the main server is slightly busy, but your competitive prep must never stop! Here is an instant explanation from K² local knowledge base:**\n\n`
 
     return welcome + responseText
   }
