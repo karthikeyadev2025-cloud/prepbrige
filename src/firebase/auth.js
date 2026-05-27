@@ -148,39 +148,46 @@ export function initAuthObserver() {
   return onAuthStateChanged(auth, async (user) => {
     const store = useUserStore.getState()
     if (user) {
+      const isAdmin = user.email === 'admin@prepbridge.in'
       store.setUser({
         uid: user.uid,
         email: user.email,
         phone: user.phoneNumber,
         displayName: user.displayName,
-        isAdmin: user.email === 'admin@prepbridge.in',
+        isAdmin: isAdmin,
       })
 
       try {
         const profile = await getUserProfile(user.uid)
         if (profile) {
           store.setProfile(profile)
-          store.setOnboardingComplete(profile.onboardingComplete || false)
-          store.setIsAdmin(profile.isAdmin || user.email === 'admin@prepbridge.in')
+          store.setOnboardingComplete(profile.onboardingComplete || isAdmin || false)
+          store.setIsAdmin(profile.isAdmin || isAdmin)
         } else {
           // Document doesn't exist yet, set a fallback profile
           store.setProfile({
             uid: user.uid,
             email: user.email,
             displayName: user.displayName || 'Aspirant',
-            onboardingComplete: false
+            onboardingComplete: isAdmin,
+            isAdmin: isAdmin
           })
+          store.setOnboardingComplete(isAdmin)
+          store.setIsAdmin(isAdmin)
         }
       } catch (err) {
-        console.warn('[Auth] Firestore profile loading failed, using offline fallback:', err.message)
-        // If Firestore is offline or fails, keep the user authenticated using cached/offline profile
+        console.warn('[Auth] Supabase profile loading failed, using offline fallback:', err.message)
+        // If Supabase is offline or fails, keep the user authenticated using cached/offline profile
         const offlineProfile = store.profile || {
           uid: user.uid,
           email: user.email,
           displayName: user.displayName || 'Aspirant',
-          onboardingComplete: false
+          onboardingComplete: isAdmin,
+          isAdmin: isAdmin
         }
         store.setProfile(offlineProfile)
+        store.setOnboardingComplete(offlineProfile.onboardingComplete || isAdmin)
+        store.setIsAdmin(offlineProfile.isAdmin || isAdmin)
       }
     } else {
       // Preserve local state if logged in as an offline/demo account
