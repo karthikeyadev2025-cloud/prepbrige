@@ -142,7 +142,6 @@ export function initAuthObserver() {
   getRedirectResult(auth)
     .then(async (result) => {
       if (result?.user) {
-        console.log('[Auth] Google Redirect successful for:', result.user.email)
         await ensureUserDoc(result.user)
       }
     })

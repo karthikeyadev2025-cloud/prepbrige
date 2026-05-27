@@ -46,7 +46,6 @@ export async function uploadToSupabase(file, path) {
   // Construct target REST endpoint
   const uploadUrl = `${cleanUrl}/storage/v1/object/${cleanBucket}/${cleanPath}`
 
-  console.log(`[Supabase Storage] Uploading ${file.name} to bucket: ${cleanBucket}...`)
 
   // Perform upload via native fetch with x-upsert to allow overwrites
   const response = await fetch(uploadUrl, {
@@ -65,8 +64,7 @@ export async function uploadToSupabase(file, path) {
     throw new Error(`Supabase Upload HTTP ${response.status}: ${errText || response.statusText}`)
   }
 
-  const result = await response.json()
-  console.log('[Supabase Storage] Success:', result)
+  await response.json()
 
   // Construct Public CDN URL
   return `${cleanUrl}/storage/v1/object/public/${cleanBucket}/${cleanPath}`
@@ -96,7 +94,6 @@ export async function syncProfileToSupabase(uid, profileData) {
   }
 
   const dbUrl = `${cleanUrl}/rest/v1/profiles`
-  console.log(`[Supabase DB] Synchronizing profile for: ${uid}...`)
 
   const payload = {
     id: uid,
@@ -130,8 +127,6 @@ export async function syncProfileToSupabase(uid, profileData) {
     if (!response.ok) {
       const errText = await response.text()
       console.warn(`[Supabase DB] Sync failed (HTTP ${response.status}): ${errText}`)
-    } else {
-      console.log('[Supabase DB] Success: Profile synced.')
     }
   } catch (err) {
     console.error('[Supabase DB] Sync request error:', err)

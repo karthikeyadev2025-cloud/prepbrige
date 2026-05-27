@@ -58,13 +58,11 @@ export async function registerPushNotifications(uid) {
     throw new Error('Firebase messaging is not supported in this browser environment.')
   }
 
-  console.log(`[Web Push] Requesting token with VAPID Key: ${vapidKey.substring(0, 10)}...`)
 
   // Retrieve token from FCM
   const token = await getToken(messaging, { vapidKey: vapidKey.trim() })
 
   if (token) {
-    console.log('[Web Push] FCM registration token generated:', token)
 
     // Save token and subscription flags to the user profile
     await updateUserProfile(uid, {

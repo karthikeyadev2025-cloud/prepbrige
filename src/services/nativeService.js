@@ -76,7 +76,6 @@ export async function registerPushNotifications(onToken, onNotification) {
 
     // Get device token
     PushNotifications.addListener('registration', token => {
-      console.log('[Push] Native FCM token:', token.value)
       onToken?.(token.value)
     })
 
@@ -86,13 +85,11 @@ export async function registerPushNotifications(onToken, onNotification) {
 
     // Foreground notification
     PushNotifications.addListener('pushNotificationReceived', notification => {
-      console.log('[Push] Received:', notification)
       onNotification?.(notification)
     })
 
     // Notification tap
     PushNotifications.addListener('pushNotificationActionPerformed', action => {
-      console.log('[Push] Action:', action)
       const data = action.notification.data
       if (data?.url) window.location.href = data.url
     })

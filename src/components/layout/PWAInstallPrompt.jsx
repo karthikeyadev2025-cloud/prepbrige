@@ -52,7 +52,6 @@ export default function PWAInstallPrompt() {
       setIsInstalled(true)
       setShowPrompt(false)
       setDeferredPrompt(null)
-      console.log('PrepBridge PWA installed successfully!')
     })
 
     // 6. Fallback trigger: for iOS or if beforeinstallprompt doesn't fire but it's mobile
