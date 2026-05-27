@@ -132,68 +132,83 @@ export async function updateUserProfile(uid, data) {
 }
 
 // ─── Auth State Observer & Redirect Result Capture ───────────────
+let _authObserverUnsubscribe = null
+
 export function initAuthObserver() {
+  // Prevent duplicate registrations (called once from main.jsx)
+  if (_authObserverUnsubscribe) return _authObserverUnsubscribe
+
   // Capture Google Redirect result on app mount
   getRedirectResult(auth)
     .then(async (result) => {
-      if (result && result.user) {
+      if (result?.user) {
         console.log('[Auth] Google Redirect successful for:', result.user.email)
         await ensureUserDoc(result.user)
       }
     })
     .catch((error) => {
-      console.error('[Auth] Google Redirect error:', error)
+      // auth/null-user is expected when no redirect happened — suppress it
+      if (error.code !== 'auth/null-user') {
+        console.error('[Auth] Google Redirect error:', error)
+      }
     })
 
-  return onAuthStateChanged(auth, async (user) => {
+  _authObserverUnsubscribe = onAuthStateChanged(auth, async (user) => {
     const store = useUserStore.getState()
     if (user) {
-      const isAdmin = user.email === 'admin@prepbridge.in'
+      // Determine admin status — email check is the reliable server-side source
+      // profile.isAdmin from Supabase is also checked as a secondary source
+      const emailIsAdmin = user.email === 'admin@prepbridge.in'
+
       store.setUser({
         uid: user.uid,
         email: user.email,
         phone: user.phoneNumber,
         displayName: user.displayName,
-        isAdmin: isAdmin,
+        photoURL: user.photoURL,
+        isAdmin: emailIsAdmin,
       })
 
       try {
         const profile = await getUserProfile(user.uid)
         if (profile) {
-          store.setProfile(profile)
-          store.setOnboardingComplete(profile.onboardingComplete || isAdmin || false)
-          store.setIsAdmin(profile.isAdmin || isAdmin)
+          const isAdmin = profile.isAdmin || emailIsAdmin
+          store.setProfile({ ...profile, isAdmin })
+          store.setOnboardingComplete(profile.onboardingComplete || isAdmin)
+          store.setIsAdmin(isAdmin)
         } else {
-          // Document doesn't exist yet, set a fallback profile
+          // New user — no profile yet (will be created during onboarding)
           store.setProfile({
             uid: user.uid,
             email: user.email,
             displayName: user.displayName || 'Aspirant',
-            onboardingComplete: isAdmin,
-            isAdmin: isAdmin
+            photoURL: user.photoURL || null,
+            onboardingComplete: emailIsAdmin,
+            isAdmin: emailIsAdmin,
           })
-          store.setOnboardingComplete(isAdmin)
-          store.setIsAdmin(isAdmin)
+          store.setOnboardingComplete(emailIsAdmin)
+          store.setIsAdmin(emailIsAdmin)
         }
       } catch (err) {
-        console.warn('[Auth] Supabase profile loading failed, using offline fallback:', err.message)
-        // If Supabase is offline or fails, keep the user authenticated using cached/offline profile
+        console.warn('[Auth] Supabase profile load failed, using offline fallback:', err.message)
         const offlineProfile = store.profile || {
           uid: user.uid,
           email: user.email,
           displayName: user.displayName || 'Aspirant',
-          onboardingComplete: isAdmin,
-          isAdmin: isAdmin
+          onboardingComplete: emailIsAdmin,
+          isAdmin: emailIsAdmin,
         }
         store.setProfile(offlineProfile)
-        store.setOnboardingComplete(offlineProfile.onboardingComplete || isAdmin)
-        store.setIsAdmin(offlineProfile.isAdmin || isAdmin)
+        store.setOnboardingComplete(offlineProfile.onboardingComplete || emailIsAdmin)
+        store.setIsAdmin(offlineProfile.isAdmin || emailIsAdmin)
       }
     } else {
-      // Preserve local state if logged in as an offline/demo account
-      if (!store.user || !store.user.uid?.startsWith('demo_')) {
+      // Only logout if not a demo session (demo users have no Firebase user)
+      if (!store.user?.uid?.startsWith('demo_')) {
         store.logout()
       }
     }
   })
+
+  return _authObserverUnsubscribe
 }

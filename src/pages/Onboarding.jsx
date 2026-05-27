@@ -15,18 +15,23 @@ const STUDY_HOURS = ['1-2 hours','2-3 hours','3-4 hours','4-6 hours','6+ hours']
 
 export default function Onboarding() {
   const [step, setStep] = useState(0)
-  const [data, setData] = useState({
+  const { updateProfile, setOnboardingComplete, user, profile } = useUserStore()
+  const navigate = useNavigate()
+
+  const [data, setData] = useState(() => ({
     language: 'en', languageName: 'English',
-    state: '', exams: [], name: '',
+    state: '', exams: [],
+    // Pre-fill name from Google sign-in / existing profile if available
+    name: profile?.displayName || profile?.name || user?.displayName || '',
     education: '', targetYear: '2026',
     studyHours: '3-4 hours', examDate: '',
     primaryTarget: '', lakshyaSlogan: ''
-  })
+  }))
   const [photoFile, setPhotoFile] = useState(null)
-  const [photoPreviewUrl, setPhotoPreviewUrl] = useState('')
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState(() =>
+    profile?.photoURL && !profile.photoURL.startsWith('data:') ? profile.photoURL : ''
+  )
   const [uploading, setUploading] = useState(false)
-  const { updateProfile, setOnboardingComplete, user } = useUserStore()
-  const navigate = useNavigate()
 
   const handlePrimaryTargetChange = (targetId) => {
     let defaultSlogan = "I will dedicate myself to cracking my target exam and achieving my dream career."
@@ -78,14 +83,15 @@ export default function Onboarding() {
 
   const handleComplete = async () => {
     setUploading(true)
-    let finalPhotoUrl = user?.photoURL || ''
+    let finalPhotoUrl = profile?.photoURL || user?.photoURL || ''
 
-    // Upload to Supabase Storage (with Base64 fallback if storage blocks/fails)
+    // Upload profile photo to Supabase Storage if user selected one
     if (photoFile && user?.uid) {
+      const path = `profile_photos/${user.uid}_${Date.now()}`
       try {
-        finalPhotoUrl = await uploadToSupabase(photoFile, `demo_${user.uid}`)
+        finalPhotoUrl = await uploadToSupabase(photoFile, path)
       } catch (e) {
-        console.warn('Supabase Storage failed, trying Base64 conversion:', e)
+        console.warn('[Onboarding] Supabase Storage upload failed, using Base64 fallback:', e)
         try {
           const reader = new FileReader()
           finalPhotoUrl = await new Promise((resolve, reject) => {
@@ -94,57 +100,51 @@ export default function Onboarding() {
             reader.readAsDataURL(photoFile)
           })
         } catch (err) {
-          console.error('Base64 fallback failed:', err)
+          console.error('[Onboarding] Base64 fallback failed:', err)
         }
       }
     }
 
     const profileUpdates = {
       ...data,
+      uid: user?.uid,
+      email: user?.email || profile?.email || null,
+      phone: user?.phone || data.phone || profile?.phone || null,
       selectedLanguage: data.languageName,
       photoURL: finalPhotoUrl,
       onboardingComplete: true,
-      createdAt: new Date().toISOString(),
-      points: 0, streak: 0, rank: null,
-      subscription: createTrialSubscription() // Auto-activate 2-day free trial on signup
+      createdAt: profile?.createdAt || new Date().toISOString(),
+      points: profile?.points || 0,
+      streak: profile?.streak || 0,
+      subscription: profile?.subscription?.plan === 'paid'
+        ? profile.subscription  // preserve existing paid subscription
+        : createTrialSubscription(),
     }
 
-    // 1. Update local Zustand state
+    // 1. Update Zustand store immediately (user lands on dashboard)
     updateProfile(profileUpdates)
     setOnboardingComplete(true)
 
-    // Save demo profile in a separate, persistent localStorage catalog to survive logout
+    // 2. Persist demo session profiles across logout
     if (user?.uid?.startsWith('demo_')) {
       try {
-        const savedProfiles = localStorage.getItem('prepbridge_demo_profiles')
-        const profiles = savedProfiles ? JSON.parse(savedProfiles) : {}
-        profiles[user.uid] = { ...profileUpdates, uid: user.uid }
-        localStorage.setItem('prepbridge_demo_profiles', JSON.stringify(profiles))
+        const existing = localStorage.getItem('prepbridge_demo_profiles')
+        const map = existing ? JSON.parse(existing) : {}
+        map[user.uid] = profileUpdates
+        localStorage.setItem('prepbridge_demo_profiles', JSON.stringify(map))
       } catch (e) {
-        console.error('Failed to save to persistent demo profiles catalog:', e)
+        console.error('[Onboarding] Demo profile persist failed:', e)
       }
     }
 
-    // 2. Sync to Firebase Firestore live so administrators can access it (Non-blocking background sync)
-    if (user?.uid) {
+    // 3. Background sync to Supabase (non-blocking — UI already navigated)
+    if (user?.uid && !user.uid.startsWith('demo_')) {
       updateUserProfile(user.uid, profileUpdates)
-        .then(() => {
-          console.log('[Onboarding] Live Firestore sync complete.')
-        })
-        .catch((e) => {
-          console.error('[Onboarding] Live Firestore sync failed (ignoring for onboarding success):', e)
-        })
-
-      // Sync to Supabase Database (PostgreSQL) in parallel for dual-cloud backup
-      import('../services/supabaseService')
-        .then(({ syncProfileToSupabase }) => {
-          syncProfileToSupabase(user.uid, profileUpdates)
-        })
-        .catch(err => console.error('[Onboarding] Failed to import Supabase sync service:', err))
+        .catch(e => console.error('[Onboarding] Supabase sync failed:', e))
     }
 
     setUploading(false)
-    toast.success('Profile setup complete! Your 2-day free trial has started 🎉 Explore everything!', { duration: 5000 })
+    toast.success('Profile setup complete! Your 2-day free trial has started 🎉', { duration: 5000 })
     navigate('/app/dashboard')
   }
 
