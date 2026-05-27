@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useUserStore } from '../store/useStore'
 import { User, Lock, Globe, Bell, LogOut, Edit3, ChevronRight, Shield, Star, Target, BookOpen, Clock, Zap } from 'lucide-react'
 import { signOutUser } from '../firebase/auth'
@@ -15,6 +15,24 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState('profile')
   const [selectedPlan, setSelectedPlan] = useState('annual') // default: best value annual plan
   const sub = getSubscriptionStatus(profile?.subscription)
+  const [remaining, setRemaining] = useState('')
+  useEffect(() => {
+    if (sub.isTrial && sub.isActive) {
+      const update = () => {
+        const now = Date.now()
+        const end = new Date(sub.trialEndsAt).getTime()
+        const msLeft = Math.max(0, end - now)
+        const days = Math.floor(msLeft / (1000 * 60 * 60 * 24))
+        const hours = Math.floor((msLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        setRemaining(`${days}d ${hours}h`)
+      }
+      update()
+      const id = setInterval(update, 60 * 60 * 1000) // hourly
+      return () => clearInterval(id)
+    } else {
+      setRemaining('')
+    }
+  }, [sub])
 
   const handleLogout = async () => {
     await signOutUser()
