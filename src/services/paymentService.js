@@ -251,8 +251,9 @@ export async function initiatePremiumCheckout(user, profile, updateProfile, onCo
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              paymentId,
-              amount: plan.amountPaise,
+              razorpay_payment_id: paymentId,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: signature,
             }),
             credentials: 'include',
           });
