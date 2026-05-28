@@ -229,3 +229,35 @@ CREATE POLICY admin_all_payments ON public.payments
             WHERE id = auth.uid() AND role IN ('admin', 'super-admin')
         )
     );
+
+-- ─── 8. SECURE ENTERPRISE AUDITING & SYSTEM ACTION LOGGING ──────────
+CREATE TABLE IF NOT EXISTS public.audit_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    admin_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+    action_performed VARCHAR(255) NOT NULL,
+    target_id VARCHAR(100),
+    ip_address VARCHAR(45) NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_logs_admin ON public.audit_logs(admin_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created ON public.audit_logs(created_at);
+
+ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY admin_view_audit_logs ON public.audit_logs
+    FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM public.profiles 
+            WHERE id = auth.uid() AND role IN ('admin', 'super-admin')
+        )
+    );
+
+CREATE POLICY admin_insert_audit_logs ON public.audit_logs
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM public.profiles 
+            WHERE id = auth.uid() AND role IN ('admin', 'super-admin')
+        )
+    );
+

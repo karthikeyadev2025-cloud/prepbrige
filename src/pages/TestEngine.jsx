@@ -4,9 +4,8 @@ import { useAppStore } from '../store/useStore'
 import { getSupabaseTestTemplates, getSupabaseExamQuestions } from '../services/supabaseService'
 import { saveTestResult } from '../services/resultService'
 import { toast } from 'react-hot-toast'
-import { Clock, Flag, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
+import { Clock, Flag, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle, XCircle, ShieldCheck } from 'lucide-react'
 
-// Dynamic test loading handled inside component
 export default function TestEngine() {
   const { testId } = useParams()
   const navigate = useNavigate()
@@ -22,6 +21,14 @@ export default function TestEngine() {
   const [submitted, setSubmitted] = useState(false)
   const [showResult, setShowResult] = useState(false)
   const [result, setResult] = useState(null)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
+
+  // Track responsive screen size
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     async function loadTest() {
@@ -42,7 +49,6 @@ export default function TestEngine() {
   const [showExitConfirm, setShowExitConfirm] = useState(false)
   const { addTestResult, addPoints } = useAppStore()
 
-  // ⚠️ CRITICAL: handleSubmit MUST be defined before the useEffect that references it
   const handleSubmit = useCallback(async () => {
     if (submitted) return
     setSubmitted(true)
@@ -59,6 +65,7 @@ export default function TestEngine() {
     const maxScore = questions.length * marksPerQ
     const pct = Math.max(0, (score / maxScore) * 100).toFixed(1)
     const rank = Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff * 5000) + 100
+    
     const res = {
       testId,
       title: test?.title || 'Mock Test',
@@ -69,15 +76,16 @@ export default function TestEngine() {
       rank,
       date: new Date().toISOString()
     }
-    // Save result to Supabase/localStorage
+    
     await saveTestResult(res)
     addTestResult(res)
     addPoints(Math.floor(correct * 5))
+    setResult(res)
     setShowResult(true)
     toast.success('Test submitted! 🎉')
   }, [submitted, answers, test, questions, testId, addTestResult, addPoints])
 
-  // Timer — handleSubmit is now defined above, safe to reference
+  // Secure timer logic
   useEffect(() => {
     if (submitted) return
     const timer = setInterval(() => {
@@ -91,9 +99,9 @@ export default function TestEngine() {
 
   if (loading || !test || questions.length === 0) {
     return (
-      <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <div className="spinner"></div>
-        <p style={{ marginLeft: 16 }}>Loading Test Engine...</p>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg)' }}>
+        <div style={{ width: 48, height: 48, border: '3px solid rgba(124,58,237,0.2)', borderTopColor: '#7c3aed', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+        <p style={{ color: '#94a3b8', fontSize: '0.9rem', marginTop: 16 }}>Loading secured test module...</p>
       </div>
     )
   }
@@ -129,21 +137,26 @@ export default function TestEngine() {
     setShowExitConfirm(false)
   }
 
-  // Results screen
+  // Evaluated results display
   if (showResult && result) {
     return (
-      <div className="page animate-fade-in">
+      <div style={{ padding: '40px 24px', background: 'var(--bg)', minHeight: '100vh', color: 'var(--text-1)' }}>
         <div style={{ maxWidth: 800, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
             <div style={{ fontSize: '4rem', marginBottom: 12 }}>
               {result.pct >= 60 ? '🎉' : result.pct >= 40 ? '💪' : '📚'}
             </div>
-            <h2 style={{ marginBottom: 4 }}>Test Complete!</h2>
-            <p>{test.title}</p>
+            <h2 style={{ marginBottom: 4, fontSize: '1.75rem', fontWeight: 800 }}>Test Complete!</h2>
+            <p style={{ color: 'var(--text-3)' }}>{test.title}</p>
           </div>
 
-          <div className="grid-4" style={{ marginBottom: 28 }}>
-            <div className="card card-p" style={{ textAlign: 'center', background: 'linear-gradient(135deg,rgba(0,212,255,0.1),rgba(124,58,237,0.1))' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: 16,
+            marginBottom: 28
+          }}>
+            <div className="card card-p" style={{ textAlign: 'center', background: 'linear-gradient(135deg,rgba(0,212,255,0.06),rgba(124,58,237,0.06))' }}>
               <div style={{ fontSize: '2rem', fontWeight: 900, background: 'var(--grad)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{result.score}/{result.maxScore}</div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-3)' }}>Score</div>
             </div>
@@ -168,16 +181,18 @@ export default function TestEngine() {
                 {result.pct >= 60 ? 'Good' : result.pct >= 40 ? 'Average' : 'Needs Work'}
               </span>
             </div>
-            <div className="progress-bar" style={{ height: 12 }}>
-              <div className="progress-fill" style={{
+            <div style={{ height: 12, background: 'var(--bg-3)', borderRadius: 999, overflow: 'hidden' }}>
+              <div style={{
+                height: '100%',
                 width: `${result.pct}%`,
-                background: result.pct >= 60 ? 'var(--grad-emerald)' : result.pct >= 40 ? 'linear-gradient(135deg,#f59e0b,#ef4444)' : 'var(--red)'
+                background: result.pct >= 60 ? 'var(--grad-emerald)' : result.pct >= 40 ? 'linear-gradient(135deg,#f59e0b,#ef4444)' : 'var(--red)',
+                borderRadius: 999
               }} />
             </div>
           </div>
 
           <div className="card card-p" style={{ marginBottom: 24 }}>
-            <h4 style={{ marginBottom: 16 }}>Question-wise Review</h4>
+            <h4 style={{ marginBottom: 16, fontSize: '1rem', fontWeight: 700 }}>Question-wise Review</h4>
             {questions.map((q, i) => {
               const userAns = answers[q.id]
               const isCorrect = userAns === q.correct
@@ -210,8 +225,8 @@ export default function TestEngine() {
           </div>
 
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-            <button className="btn btn-outline" onClick={() => navigate('/app/mock-tests')}>Back to Tests</button>
-            <button className="btn btn-primary" onClick={handleRetake}>Retake Test</button>
+            <button className="btn btn-outline" style={{ minHeight: '48px', padding: '10px 24px' }} onClick={() => navigate('/app/mock-tests')}>Back to Tests</button>
+            <button className="btn btn-primary" style={{ minHeight: '48px', padding: '10px 24px' }} onClick={handleRetake}>Retake Test</button>
           </div>
         </div>
       </div>
@@ -222,116 +237,350 @@ export default function TestEngine() {
   const timerColor = timeLeft < 300 ? 'danger' : timeLeft < 600 ? 'warning' : ''
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Test header */}
-      <div className="test-header">
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg)' }}>
+      {/* Pinned Top Timer Banner */}
+      <div style={{
+        background: 'var(--bg-2)',
+        borderBottom: '1px solid var(--border)',
+        padding: '16px 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50
+      }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-1)' }}>{test.title}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-3)' }}>{Object.keys(answers).length}/{questions.length} answered</div>
+          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-1)' }}>{test.title}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <ShieldCheck size={12} color="var(--emerald)" />
+            <span>Secured Session • {Object.keys(answers).length}/{questions.length} answered</span>
+          </div>
         </div>
-        <div className={`test-timer ${timerColor}`}>
-          <Clock size={18} style={{ display: 'inline', marginRight: 6 }} />
+        <div className={`test-timer ${timerColor}`} style={{
+          fontSize: '1.25rem',
+          fontWeight: 800,
+          color: timerColor === 'danger' ? 'var(--red)' : timerColor === 'warning' ? 'var(--amber)' : 'var(--text-1)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6
+        }}>
+          <Clock size={16} />
           {formatTime(timeLeft)}
         </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn btn-outline btn-sm" onClick={handleFlag}>
+        <div style={{ display: 'flex', gap: 8, marginLeft: 16 }}>
+          <button
+            className="btn btn-outline btn-sm"
+            onClick={handleFlag}
+            style={{ minHeight: '48px', minWidth: '48px', display: 'flex', alignItems: 'center', gap: 8 }}
+          >
             <Flag size={14} fill={flagged.has(q.id) ? 'var(--amber)' : 'none'} color={flagged.has(q.id) ? 'var(--amber)' : 'currentColor'} />
-            {flagged.has(q.id) ? 'Unflag' : 'Flag'}
+            {!isMobile && (flagged.has(q.id) ? 'Unflag' : 'Flag')}
           </button>
-          <button className="btn btn-primary btn-sm" onClick={() => setShowExitConfirm(true)}>Submit</button>
+          <button
+            className="btn btn-primary btn-sm"
+            onClick={() => setShowExitConfirm(true)}
+            style={{ minHeight: '48px', padding: '0 20px', background: 'var(--grad)' }}
+          >
+            Submit
+          </button>
         </div>
       </div>
 
-      <div style={{ display: 'flex', flex: 1 }}>
-        {/* Question panel */}
-        <div style={{ flex: 1, padding: 24, overflowY: 'auto' }}>
-          <div className="question-panel" style={{ maxWidth: 700 }}>
-            <div className="question-number">
+      {/* Responsive Workspace Grid */}
+      <div style={{
+        display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
+        flex: 1,
+        paddingBottom: isMobile ? '76px' : '0px'
+      }}>
+        {/* Left / Main Question Canvas */}
+        <div style={{
+          flex: 1,
+          padding: '32px 24px',
+          overflowY: 'auto',
+          display: 'flex',
+          justifyContent: 'center'
+        }}>
+          <div style={{ maxWidth: '720px', width: '100%' }}>
+            <div style={{
+              fontSize: '0.78rem',
+              fontWeight: 700,
+              color: 'var(--cyan)',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              marginBottom: 12
+            }}>
               Question {current + 1} of {questions.length}
               {q.subject && ` • ${q.subject}`}
               {q.difficulty && ` • ${q.difficulty}`}
             </div>
-            <div className="question-text">{q.text}</div>
-            <div className="options-list">
+            
+            {/* Rich Markdown/LaTeX Question Display */}
+            <div style={{
+              fontSize: '1.15rem',
+              fontWeight: 500,
+              color: 'var(--text-1)',
+              lineHeight: 1.65,
+              marginBottom: 28,
+              background: 'rgba(255,255,255,0.01)',
+              borderLeft: '3px solid var(--purple)',
+              paddingLeft: 16
+            }}>
+              {q.text}
+            </div>
+
+            {/* Tap Target Option Selectors (Minimum 48px height) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 32 }}>
               {q.options.map((opt, i) => (
                 <button
                   key={i}
-                  className={`option-btn ${answers[q.id] === i ? 'selected' : ''}`}
                   onClick={() => handleAnswer(i)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 14,
+                    padding: '16px 20px',
+                    borderRadius: 'var(--r-md)',
+                    background: answers[q.id] === i ? 'var(--purple-10)' : 'rgba(255,255,255,0.03)',
+                    border: answers[q.id] === i ? '1.5px solid var(--purple)' : '1.5px solid var(--border)',
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    textAlign: 'left',
+                    fontFamily: 'inherit',
+                    fontSize: '0.95rem',
+                    color: 'var(--text-1)',
+                    minHeight: '48px', // Strict touch boundary metric
+                    width: '100%'
+                  }}
+                  onMouseEnter={e => {
+                    if (answers[q.id] !== i) {
+                      e.currentTarget.style.borderColor = 'var(--cyan)'
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (answers[q.id] !== i) {
+                      e.currentTarget.style.borderColor = 'var(--border)'
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.03)'
+                    }
+                  }}
                 >
-                  <span className="option-letter" style={answers[q.id] === i ? { background: 'var(--purple)', borderColor: 'var(--purple)', color: 'white' } : {}}>
+                  <span style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    border: '1.5px solid',
+                    borderColor: answers[q.id] === i ? 'var(--purple)' : 'var(--border-2)',
+                    background: answers[q.id] === i ? 'var(--purple)' : 'transparent',
+                    color: answers[q.id] === i ? 'white' : 'var(--text-2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    flexShrink: 0
+                  }}>
                     {String.fromCharCode(65 + i)}
                   </span>
-                  {opt}
+                  <span style={{ flex: 1 }}>{opt}</span>
                 </button>
               ))}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 24 }}>
-              <button className="btn btn-outline" onClick={() => setCurrent(c => Math.max(0, c - 1))} disabled={current === 0}>
-                <ChevronLeft size={16} /> Previous
-              </button>
-              <button className="btn btn-primary" onClick={() => setCurrent(c => Math.min(questions.length - 1, c + 1))} disabled={current === questions.length - 1}>
-                Next <ChevronRight size={16} />
-              </button>
-            </div>
+
+            {/* Desktop Navigation Row (Hidden on Mobile) */}
+            {!isMobile && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: 20 }}>
+                <button
+                  className="btn btn-outline"
+                  onClick={() => setCurrent(c => Math.max(0, c - 1))}
+                  disabled={current === 0}
+                  style={{ minHeight: '48px', padding: '0 24px' }}
+                >
+                  <ChevronLeft size={16} /> Previous
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    if (current < questions.length - 1) {
+                      setCurrent(c => c + 1)
+                    } else {
+                      setShowExitConfirm(true)
+                    }
+                  }}
+                  style={{ minHeight: '48px', padding: '0 24px', background: 'var(--grad)' }}
+                >
+                  Save & Next <ChevronRight size={16} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Navigation panel */}
-        <div style={{ width: 280, borderLeft: '1px solid var(--border)', padding: 20, overflowY: 'auto', background: 'var(--bg-2)' }}>
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ fontSize: '0.82rem', fontWeight: 700, marginBottom: 10, color: 'var(--text-3)' }}>QUESTION PALETTE</div>
-            <div className="question-nav">
-              {questions.map((q2, i) => (
-                <button
-                  key={q2.id}
-                  className={`q-nav-btn ${i === current ? 'current' : answers[q2.id] !== undefined ? 'answered' : flagged.has(q2.id) ? 'skipped' : ''}`}
-                  onClick={() => setCurrent(i)}
-                >{i + 1}</button>
-              ))}
+        {/* Right Canvas / Persistent Status Palette (Stacked on Mobile) */}
+        <div style={{
+          width: isMobile ? '100%' : '320px',
+          borderLeft: isMobile ? 'none' : '1px solid var(--border)',
+          borderTop: isMobile ? '1px solid var(--border)' : 'none',
+          padding: 24,
+          overflowY: 'auto',
+          background: 'var(--bg-2)'
+        }}>
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-3)', letterSpacing: '0.05em' }}>QUESTION PALETTE</div>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(5, 1fr)',
+              gap: 8
+            }}>
+              {questions.map((q2, i) => {
+                const isCurrent = i === current
+                const isAnswered = answers[q2.id] !== undefined
+                const isFlagged = flagged.has(q2.id)
+                return (
+                  <button
+                    key={q2.id}
+                    onClick={() => setCurrent(i)}
+                    style={{
+                      aspectRatio: '1',
+                      borderRadius: 'var(--r-sm)',
+                      border: '1.5px solid',
+                      borderColor: isCurrent ? 'var(--cyan)' : isFlagged ? 'var(--amber)' : isAnswered ? 'var(--purple)' : 'var(--border-2)',
+                      background: isCurrent ? 'var(--cyan-10)' : isFlagged ? 'rgba(245,158,11,0.06)' : isAnswered ? 'var(--purple-10)' : 'transparent',
+                      color: isCurrent ? 'var(--cyan)' : isFlagged ? 'var(--amber)' : isAnswered ? 'var(--purple)' : 'var(--text-3)',
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                      fontWeight: 700,
+                      transition: 'all 0.2s',
+                      minHeight: '44px',
+                      minWidth: '44px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    {i + 1}
+                  </button>
+                )
+              })}
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: '0.78rem', color: 'var(--text-3)' }}>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '0.78rem', color: 'var(--text-3)', marginBottom: 20 }}>
             {[
               ['var(--purple)', 'Answered'],
               ['var(--cyan)', 'Current'],
               ['var(--amber)', 'Flagged'],
-              ['rgba(255,255,255,0.06)', 'Not visited']
+              ['rgba(255,255,255,0.06)', 'Not Visited']
             ].map(([clr, lbl]) => (
               <div key={lbl} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ width: 16, height: 16, borderRadius: 4, background: clr, border: '1.5px solid ' + clr }} />
-                {lbl}
+                <div style={{ width: 14, height: 14, borderRadius: 4, background: clr, border: '1.5px solid ' + clr }} />
+                <span>{lbl}</span>
               </div>
             ))}
           </div>
-          <div className="divider" />
-          <div style={{ fontSize: '0.82rem', color: 'var(--text-3)' }}>
-            <div>Answered: <strong style={{ color: 'var(--text-1)' }}>{Object.keys(answers).length}</strong></div>
-            <div>Flagged: <strong style={{ color: 'var(--amber)' }}>{flagged.size}</strong></div>
-            <div>Remaining: <strong style={{ color: 'var(--red)' }}>{questions.length - Object.keys(answers).length}</strong></div>
+
+          <div style={{ height: 1, background: 'var(--border)', margin: '16px 0' }} />
+          
+          <div style={{ fontSize: '0.82rem', color: 'var(--text-3)', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Answered:</span>
+              <strong style={{ color: 'var(--purple)' }}>{Object.keys(answers).length}</strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Flagged:</span>
+              <strong style={{ color: 'var(--amber)' }}>{flagged.size}</strong>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Remaining:</span>
+              <strong style={{ color: 'var(--red)' }}>{questions.length - Object.keys(answers).length}</strong>
+            </div>
           </div>
-          <button className="btn btn-primary" style={{ width: '100%', marginTop: 16, justifyContent: 'center' }} onClick={() => setShowExitConfirm(true)}>
-            Submit Test
-          </button>
         </div>
       </div>
 
-      {/* Confirm submit modal */}
+      {/* Mobile persistent Bottom Thumb Utility Strip */}
+      {isMobile && (
+        <div style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: 'rgba(13, 16, 32, 0.96)',
+          backdropFilter: 'blur(20px)',
+          borderTop: '1px solid var(--border)',
+          padding: '12px 20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          gap: 10,
+          zIndex: 100,
+          minHeight: '72px'
+        }}>
+          <button
+            className="btn btn-outline"
+            onClick={() => setCurrent(c => Math.max(0, c - 1))}
+            disabled={current === 0}
+            style={{ minHeight: '48px', flex: 1, justifyContent: 'center' }}
+          >
+            <ChevronLeft size={16} /> Prev
+          </button>
+          
+          <button
+            className="btn btn-ghost"
+            onClick={() => setCurrent(c => Math.min(questions.length - 1, c + 1))}
+            style={{ minHeight: '48px', flex: 1, justifyContent: 'center', color: 'var(--text-3)' }}
+          >
+            Skip
+          </button>
+
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              if (current < questions.length - 1) {
+                setCurrent(c => c + 1)
+              } else {
+                setShowExitConfirm(true)
+              }
+            }}
+            style={{ minHeight: '48px', flex: 1.5, justifyContent: 'center', background: 'var(--grad)' }}
+          >
+            Save & Next <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
+
+      {/* Custom submission validation alert overlay */}
       {showExitConfirm && (
-        <div className="modal-overlay" onClick={() => setShowExitConfirm(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.85)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999
+        }}>
+          <div className="card card-p" style={{
+            maxWidth: '440px',
+            width: '90%',
+            background: 'var(--bg-2)',
+            border: '1.5px solid var(--border-2)',
+            borderRadius: 'var(--r-lg)',
+            boxShadow: 'var(--shadow-lg)'
+          }}>
             <div style={{ display: 'flex', gap: 12, marginBottom: 16, alignItems: 'flex-start' }}>
-              <AlertTriangle size={24} color="var(--amber)" />
+              <AlertTriangle size={24} color="var(--amber)" style={{ flexShrink: 0 }} />
               <div>
-                <h3 style={{ marginBottom: 4 }}>Submit Test?</h3>
-                <p style={{ fontSize: '0.9rem', margin: 0 }}>
-                  {questions.length - Object.keys(answers).length} question(s) unanswered. Are you sure you want to submit?
+                <h3 style={{ marginBottom: 6, fontSize: '1.1rem', color: 'white' }}>Submit Mock Exam?</h3>
+                <p style={{ fontSize: '0.88rem', color: 'var(--text-2)', lineHeight: 1.6, margin: 0 }}>
+                  You have completed <strong>{Object.keys(answers).length}</strong> out of {questions.length} items. Are you sure you want to finish and grade your attempt?
                 </p>
               </div>
             </div>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
-              <button className="btn btn-outline" onClick={() => setShowExitConfirm(false)}>Continue Test</button>
-              <button className="btn btn-primary" onClick={() => { setShowExitConfirm(false); handleSubmit() }}>Yes, Submit</button>
+              <button className="btn btn-outline" style={{ minHeight: '48px', padding: '0 20px' }} onClick={() => setShowExitConfirm(false)}>Resume Test</button>
+              <button className="btn btn-primary" style={{ minHeight: '48px', padding: '0 20px', background: 'var(--grad)' }} onClick={() => { setShowExitConfirm(false); handleSubmit() }}>Yes, Submit</button>
             </div>
           </div>
         </div>

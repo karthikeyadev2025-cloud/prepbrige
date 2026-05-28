@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useUserStore } from './store/useStore'
 import AppLayout from './components/layout/AppLayout'
+import ExamInsulationLayout from './components/layout/ExamInsulationLayout'
 import PWAInstallPrompt from './components/layout/PWAInstallPrompt'
 
 // Lazy load pages
@@ -126,7 +127,6 @@ export default function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="exams" element={<ExamHub />} />
             <Route path="mock-tests" element={<MockTest />} />
-            <Route path="test/:testId" element={<TestEngine />} />
             <Route path="current-affairs" element={<CurrentAffairs />} />
             <Route path="question-papers" element={<QuestionPapers />} />
             <Route path="ai-tutor" element={<AITutor />} />
@@ -136,6 +136,13 @@ export default function App() {
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="profile" element={<Profile />} />
+          </Route>
+
+          {/* Secures Exam Viewport (Insulated Protected Route) */}
+          <Route path="/app/test" element={
+            <ProtectedRoute><ExamInsulationLayout /></ProtectedRoute>
+          }>
+            <Route path=":testId" element={<TestEngine />} />
           </Route>
 
           {/* Admin (Protected + Admin) */}

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1074613140786",
+    "project_id": "prepbridge-85189",
+    "storage_bucket": "prepbridge-85189.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1074613140786:android:6092d00d86da43c8426b2b",
+        "android_client_info": {
+          "package_name": "in.prepbridge.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBphAmrAzMyHn4n4PQ0GQ9Ixj0xnWhVmZk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
