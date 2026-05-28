@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useUserStore } from '../store/useStore'
 import { Calendar, Target, CheckCircle, RefreshCw, Brain, Clock, Plus, Zap } from 'lucide-react'
 import { toast } from 'react-hot-toast'
-import { supabase } from '../services/supabaseService' // assuming exported
 
 export default function StudyPlanner() {
   const { profile } = useUserStore()
