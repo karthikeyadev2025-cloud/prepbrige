@@ -149,6 +149,34 @@ CREATE TABLE IF NOT EXISTS public.payments (
 
 CREATE INDEX IF NOT EXISTS idx_payments_user ON public.payments(user_id);
 
+-- ─── 7. CURRENT AFFAIRS & STUDY POINTS TABLE ──────────
+CREATE TYPE importance_level AS ENUM ('high', 'medium', 'low');
+
+CREATE TABLE IF NOT EXISTS public.current_affairs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255) NOT NULL,
+    summary TEXT NOT NULL,
+    category VARCHAR(100) NOT NULL,
+    source VARCHAR(150) NOT NULL,
+    importance importance_level NOT NULL DEFAULT 'medium',
+    article_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_ca_date ON public.current_affairs(article_date);
+
+CREATE TABLE IF NOT EXISTS public.study_points (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    exam_id VARCHAR(100) REFERENCES public.exams(id) ON DELETE CASCADE,
+    subject_id VARCHAR(100) REFERENCES public.subjects(id) ON DELETE CASCADE,
+    topic VARCHAR(255) NOT NULL,
+    points JSONB NOT NULL DEFAULT '[]'::jsonb,
+    tip TEXT,
+    mnemonic TEXT,
+    pyq TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- =====================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- =====================================================================

@@ -361,3 +361,219 @@ export async function getAllSupabaseProfiles() {
   return []
 }
 
+/**
+ * Fetches test templates for a specific exam from Supabase.
+ */
+export async function getSupabaseTestTemplates(examId) {
+  const { url: supabaseUrl, anonKey: supabaseAnonKey } = getSupabaseCredentials()
+  const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
+  
+  let dbUrl = `${cleanUrl}/rest/v1/test_templates?select=*`
+  if (examId) {
+    dbUrl += `&exam_id=eq.${examId}`
+  }
+
+  try {
+    const response = await fetch(dbUrl, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Accept': 'application/json'
+      }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      return data.map(t => ({
+        id: t.id,
+        title: t.title,
+        exam: t.exam_id,
+        totalQuestions: t.total_marks, // approximate for UI
+        duration: t.duration_minutes,
+        pattern: 'MCQ',
+        negativeMarking: -0.25,
+        marksPerQuestion: 1,
+        syllabus: ['General'],
+        attempts: 0,
+        avgScore: 0,
+        difficulty: 'medium'
+      }))
+    }
+  } catch (err) {
+  }
+
+  try {
+    const response = await fetch(dbUrl, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Accept': 'application/json'
+      }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      return data.map(t => ({
+        id: t.id,
+        title: t.title,
+        exam: t.exam_id,
+        totalQuestions: t.total_marks,
+        duration: t.duration_minutes,
+        pattern: 'MCQ',
+        negativeMarking: -0.25,
+        marksPerQuestion: 1,
+        syllabus: ['General'],
+        attempts: 0,
+        avgScore: 0,
+        difficulty: 'medium'
+      }))
+    }
+  } catch (err) {
+    console.error('[Supabase DB] getSupabaseTestTemplates failed:', err)
+  }
+  return []
+}
+
+/**
+ * Fetches the count of questions available for an exam.
+ */
+export async function getSupabaseQuestionsCount(examId) {
+  const { url: supabaseUrl, anonKey: supabaseAnonKey } = getSupabaseCredentials()
+  const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
+  let dbUrl = `${cleanUrl}/rest/v1/question_exam_mapping?select=question_id`
+  if (examId) {
+    dbUrl += `&exam_id=eq.${examId}`
+  }
+
+  try {
+    const response = await fetch(dbUrl, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Accept': 'application/json'
+      }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      return data.length
+    }
+  } catch (err) {
+    console.error('[Supabase DB] getSupabaseQuestionsCount failed:', err)
+  }
+  return 0
+}
+
+/**
+ * Fetches latest current affairs from Supabase.
+ */
+export async function getSupabaseCurrentAffairs() {
+  const { url: supabaseUrl, anonKey: supabaseAnonKey } = getSupabaseCredentials()
+  const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
+  const dbUrl = `${cleanUrl}/rest/v1/current_affairs?select=*&order=article_date.desc&limit=10`
+
+  try {
+    const response = await fetch(dbUrl, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Accept': 'application/json'
+      }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      return data.map(ca => ({
+        id: ca.id,
+        title: ca.title,
+        summary: ca.summary,
+        category: ca.category,
+        source: ca.source,
+        importance: ca.importance,
+        date: ca.article_date
+      }))
+    }
+  } catch (err) {
+    console.error('[Supabase DB] getSupabaseCurrentAffairs failed:', err)
+  }
+  return []
+}
+
+/**
+ * Fetches dynamic study points based on exam target.
+ */
+export async function getSupabaseStudyPoints(examId) {
+  const { url: supabaseUrl, anonKey: supabaseAnonKey } = getSupabaseCredentials()
+  const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
+  
+  let dbUrl = `${cleanUrl}/rest/v1/study_points?select=*`
+  if (examId) {
+    dbUrl += `&exam_id=eq.${examId}`
+  }
+
+  try {
+    const response = await fetch(dbUrl, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Accept': 'application/json'
+      }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      return data.reduce((acc, curr) => {
+        acc[curr.topic] = {
+          topic: curr.topic,
+          points: curr.points,
+          tip: curr.tip,
+          mnemonic: curr.mnemonic,
+          pyq: curr.pyq
+        }
+        return acc
+      }, {})
+    }
+  } catch (err) {
+    console.error('[Supabase DB] getSupabaseStudyPoints failed:', err)
+  }
+  return {}
+}
+
+/**
+ * Fetches a single random/daily question for the exam.
+ */
+export async function getSupabaseDailyQuiz(examId) {
+  const { url: supabaseUrl, anonKey: supabaseAnonKey } = getSupabaseCredentials()
+  const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
+  let dbUrl = `${cleanUrl}/rest/v1/question_exam_mapping?select=questions(*)&limit=1`
+  if (examId) {
+    dbUrl += `&exam_id=eq.${examId}`
+  }
+
+  try {
+    const response = await fetch(dbUrl, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Accept': 'application/json'
+      }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      if (data && data.length > 0 && data[0].questions) {
+        return {
+          id: data[0].questions.id,
+          text: data[0].questions.question_text,
+          options: (data[0].questions.options || []).map(o => o.text),
+          correct: data[0].questions.correct_option_id,
+          explanation: data[0].questions.explanation,
+          subject: data[0].questions.subject_id
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[Supabase DB] getSupabaseDailyQuiz failed:', err)
+  }
+  return null
+}

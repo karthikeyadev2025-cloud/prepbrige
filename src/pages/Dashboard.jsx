@@ -1,10 +1,14 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../store/useStore'
-import { DAILY_QUIZ_QUESTIONS, NEWSPAPER_TOPICS } from '../data/currentAffairs'
-import { MOCK_TESTS, QUESTION_BANK } from '../data/questions'
 import { COURSES } from './Courses'
-import { getAutoUpdatedCurrentAffairs } from '../services/currentAffairsService'
+import { 
+  getSupabaseTestTemplates, 
+  getSupabaseQuestionsCount, 
+  getSupabaseCurrentAffairs, 
+  getSupabaseStudyPoints,
+  getSupabaseDailyQuiz
+} from '../services/supabaseService'
 import { format } from 'date-fns'
 import { toast } from 'react-hot-toast'
 import {
@@ -136,119 +140,7 @@ const getSyllabusProgress = (target) => {
   return defaultSyllabus
 }
 
-const STUDY_POINTS_DB = {
-  "Indian Polity — Fundamental Rights": {
-    topic: "Indian Polity — Fundamental Rights (Articles 12-35)",
-    points: [
-      "Fundamental Rights are justiciable in nature, meaning individuals can move the Supreme Court under Article 32 directly for their enforcement.",
-      "Equality before Law (Article 14) and Equal Protection of Laws are core pillars of constitutional justice.",
-      "Right to Freedom (Article 19) guarantees 6 democratic freedoms including speech, assembly, and profession.",
-      "Right to Life and Personal Liberty (Article 21) includes the Right to Privacy, declared in the Puttaswamy case (2017).",
-      "Right to Education (Article 21A) was added by the 86th Amendment Act in 2002."
-    ],
-    tip: "Articles 20 & 21 cannot be suspended even during a National Emergency (Article 359). This is a highly frequent UPSC trap!",
-    mnemonic: "FRruits Are Sweet, We Need Rights (FR = Freedom, E = Equality, E = Exploitation, R = Religion, C = Culture, E = Education, C = Constitution).",
-    pyq: "Which Article in Part III of the Constitution can never be suspended during a National Emergency? (UPSC 2020) — Answer: Articles 20 & 21."
-  },
-  "Current Affairs — PIB & Hindu Daily Digest": {
-    topic: "Current Affairs — Space Technology & Banking Policies",
-    points: [
-      "NASA-ISRO Synthetic Aperture Radar (NISAR) is a dual-frequency L and S-band radar satellite to map Earth ecosystems.",
-      "RBI Monetary Policy Committee (MPC) raised the repo rate by 25 basis points to 6.75% to curb persistent core inflation.",
-      "UPI monthly transaction values hit an all-time record of ₹20 lakh crore in April 2026, signaling extremely high digital adoption.",
-      "Cabinet approved PM Awas Yojana Urban 2.0 to construct 1 crore affordable houses for the urban poor."
-    ],
-    tip: "Repo Rate is the rate at which RBI lends money to commercial banks. Increasing it makes loans costlier, lowering demand and cooling inflation.",
-    mnemonic: "NISAR stands for NASA-ISRO Synthetic Aperture Radar. Remember it is a joint project!",
-    pyq: "NISAR is a joint satellite venture between which space agencies? (SSC CGL 2025) — Answer: NASA & ISRO."
-  },
-  "AP History — Satavahana Dynastic Rule": {
-    topic: "APPSC Group-2 — Satavahana Dynasty & Rulers",
-    points: [
-      "The Satavahanas were the first major rulers of Andhra region with Dharanikota (Amaravati) and Pratishthan (Paithan) as capitals.",
-      "Gautamiputra Satakarni was the greatest ruler, declared as 'Eka Brahmana' and 'Trisamudra Toya Peeta Vahana' in the Nasik Prasasti.",
-      "Hala wrote the famous Prakrit romantic anthology 'Gatha Saptashati'.",
-      "They issued lead, potin, copper, and bronze coins extensively to support trade."
-    ],
-    tip: "The Nasik inscription was issued by Gautami Balasri, the mother of Gautamiputra Satakarni, highlighting his great conquests.",
-    mnemonic: "S-I-K -> Satavahana, Ikshvaku, Kakatiya (dynasties of Andhra region in chronological order).",
-    pyq: "Who was the author of the Prakrit text Gatha Saptashati? (APPSC Group-II) — Answer: King Hala."
-  },
-  "AP Bifurcation — AP Reorganisation Act 2014 Section 5": {
-    topic: "AP Reorganisation Act 2014 & Bifurcation Provisions",
-    points: [
-      "The Act bifurcated Andhra Pradesh into AP and Telangana on June 2, 2014 (Appointed Day).",
-      "Section 5 declares Hyderabad as the common capital for both states for a maximum of 10 years, after which it goes to Telangana.",
-      "Section 90 designates the Polavaram Irrigation Project as a national project funded entirely by the Central Government.",
-      "The Act consists of 108 sections, 12 schedules, and 12 parts."
-    ],
-    tip: "Ensure you remember Schedule 9 (State corporations) and Schedule 10 (Educational institutions) division issues, which are frequent APPSC topics.",
-    mnemonic: "108 Sections & 12 Schedules. Just think of 108 as the ambulance/emergency number for AP's political emergency!",
-    pyq: "Which section of the AP Reorganisation Act designates Polavaram as a national project? (APPSC Group-II) — Answer: Section 90."
-  },
-  "Telangana History — Asaf Jahi Dynasty Reforms": {
-    topic: "TGPSC Group-1 — Asaf Jahi Dynasty (Hyderabad State)",
-    points: [
-      "The Asaf Jahi Dynasty was founded by Nizam-ul-Mulk, Asaf Jah I in 1724 CE after defeating Mubariz Khan at the Battle of Shakar Kheda.",
-      "Salar Jung I (Prime Minister) introduced legendary administrative and land revenue reforms (Zilabandi system).",
-      "Mir Osman Ali Khan (7th Nizam) established Nizam Sagar Dam, Hyderabad High Court, and Osmania University (1918).",
-      "Operation Polo in September 1948 annexed Hyderabad into the Indian Union."
-    ],
-    tip: "Focus on the Battle of Shakar Kheda (1724) which marked the start of Nizam rule in Deccan. This is a favorite TGPSC prelims trap!",
-    mnemonic: "Salar Jung Reforms: Remember 'Salar' -> 'Zila' (Zilabandi administrative divisions reforms).",
-    pyq: "Who founded the Osmania University in Hyderabad in 1918? (TGPSC Group-I) — Answer: Mir Osman Ali Khan (7th Nizam)."
-  },
-  "Telangana Movement — 1969 Agitation & TJAC Formation": {
-    topic: "Telangana Separation Movement & Political Timeline",
-    points: [
-      "The 1969 Telangana Agitation started in Palvancha over Mulki Rules violations (local employment protections).",
-      "The Gentlemen's Agreement (1956) was violated, fueling the continuous demands for separation.",
-      "Telangana Joint Action Committee (TJAC) was formed in December 2009 with Prof. Kodandaram as chairman.",
-      "Agitations like Sagara Haram, Million March, and Chalo Assembly forced the Lok Sabha to pass the Bill in Feb 2014."
-    ],
-    tip: "Palvancha is the birth place of 1969 movement where student leader Ravindranath went on a hunger strike.",
-    mnemonic: "TJAC was formed in 2009. KCR went on a hunger strike in Nov 2009, leading to the historic December 9 statement.",
-    pyq: "Who was the student leader who went on a fast-unto-death in Palvancha in January 1969? (TGPSC) — Answer: Ravindranath."
-  },
-  "Regional Security — Women Safety Apps & SHE Teams": {
-    topic: "AP & TS Police SI/Constable — Women Safety & Security Initiatives",
-    points: [
-      "SHE Teams were established in Hyderabad in 2014 to combat eve-teasing and ensure safety in public places.",
-      "Disha mobile app in AP provides instant SOS alerts to nearby patrolling vans during emergencies.",
-      "Disha police stations and fast-track courts were setup to resolve crimes against women within 21 days.",
-      "Hawkeye App (TS Police) acts as a digital mobile companion for emergency alerts and citizen policing."
-    ],
-    tip: "SHE Teams consist of officers in plain clothes with concealed video cameras to catch harassers red-handed.",
-    mnemonic: "Disha app = AP (Andhra Pradesh), SHE Teams = TS (Telangana). Dual regional security measures.",
-    pyq: "In which year were the SHE Teams introduced in Telangana? (TS Police SI) — Answer: 2014."
-  },
-  "Educational Psychology — Jean Piaget Cognitive Stages": {
-    topic: "DSC SGT & SA — Piaget's Cognitive Development Theory",
-    points: [
-      "Stage 1: Sensorimotor (0-2 years) — Child learns through senses. Develops Object Permanence.",
-      "Stage 2: Preoperational (2-7 years) — Egocentric thinking, lack of conservation, symbolic play.",
-      "Stage 3: Concrete Operational (7-11 years) — Develops conservation of mass/volume, logical classification.",
-      "Stage 4: Formal Operational (11+ years) — Abstract thinking, hypothetical-deductive reasoning."
-    ],
-    tip: "Conservation means understanding that the quantity of a substance remains the same even when its shape or container changes. Children acquire this in Concrete Operational stage.",
-    mnemonic: "Smart People Cook Fish (S = Sensorimotor, P = Preoperational, C = Concrete, F = Formal).",
-    pyq: "At which stage of Piaget's theory does a child acquire object permanence? (AP DSC) — Answer: Sensorimotor stage."
-  },
-  "Pedagogy & Curriculum — NEP 2020 5+3+3+4 Structure": {
-    topic: "DSC Pedagogy — NEP 2020 Curriculum Reforms",
-    points: [
-      "Foundational Stage (5 years): Age 3 to 8. Includes Anganwadi/Pre-school (3y) + Class 1-2 (2y).",
-      "Preparatory Stage (3 years): Age 8 to 11. Includes Class 3 to 5. Experiential learning.",
-      "Middle Stage (3 years): Age 11 to 14. Includes Class 6 to 8. Coding, vocational crafts.",
-      "Secondary Stage (4 years): Age 14 to 18. Includes Class 9 to 12. Multidisciplinary options."
-    ],
-    tip: "NEP 2020 aims to achieve 100% Gross Enrolment Ratio (GER) in school education by 2030.",
-    mnemonic: "5+3+3+4. Just add the numbers: 5, 3, 3, 4. Replaces the 10+2 structure.",
-    pyq: "What is the structural curriculum framework recommended by NEP 2020? (TS DSC) — Answer: 5+3+3+4."
-  }
-}
-
-function AIRecommendation({ profile, exams, setActiveStudyPoint, updateSyllabusProgress }) {
+function AIRecommendation({ profile, exams, setActiveStudyPoint, updateSyllabusProgress, studyPointsDB }) {
   const navigate = useNavigate()
   const primaryTarget = profile?.primaryTarget || (exams && exams[0]) || 'ias'
   
@@ -356,8 +248,8 @@ function AIRecommendation({ profile, exams, setActiveStudyPoint, updateSyllabusP
             if (updateSyllabusProgress) {
               updateSyllabusProgress(primaryTarget, task.subject, 3)
             }
-            if (STUDY_POINTS_DB[key]) {
-              setActiveStudyPoint(STUDY_POINTS_DB[key]);
+            if (studyPointsDB && studyPointsDB[key]) {
+              setActiveStudyPoint(studyPointsDB[key]);
             } else {
               // Create dynamic entry if not present in static list
               setActiveStudyPoint({
@@ -429,9 +321,9 @@ function StreakCard({ streak }) {
   )
 }
 
-function QuickCurrentAffairs() {
+function QuickCurrentAffairs({ currentAffairs }) {
   const [active, setActive] = useState(0)
-  const top3 = getAutoUpdatedCurrentAffairs().slice(0, 3)
+  const top3 = (currentAffairs || []).slice(0, 3)
   return (
     <div className="card card-p">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
@@ -570,8 +462,7 @@ function TargetCourseMaterialsCard({ primaryTarget }) {
   )
 }
 
-function IndiaPrideMarqueeBanner() {
-  const prideItems = useMemo(() => NEWSPAPER_TOPICS.filter(item => item.isPrideMoment), [])
+function IndiaPrideMarqueeBanner({ prideItems }) {
   const [activeIndex, setActiveIndex] = useState(0)
 
   useEffect(() => {
@@ -879,72 +770,36 @@ export default function Dashboard() {
     incrementStreak()
   }
 
-  useEffect(() => {
-    const primaryTarget = profile?.primaryTarget || (profile?.exams && profile.exams[0]) || 'ias'
-    let bank = []
-    if (primaryTarget === 'ias' || primaryTarget === 'ips' || primaryTarget === 'upsc') {
-      if (QUESTION_BANK.upsc) {
-        Object.values(QUESTION_BANK.upsc).forEach(subjList => {
-          bank = bank.concat(subjList)
-        })
-      }
-    } else if (primaryTarget === 'ssc_cgl' || primaryTarget?.startsWith('ssc')) {
-      if (QUESTION_BANK.ssc_cgl) {
-        Object.values(QUESTION_BANK.ssc_cgl).forEach(subjList => {
-          bank = bank.concat(subjList)
-        })
-      }
-    } else if (primaryTarget?.includes('po') || primaryTarget?.includes('clerk') || primaryTarget?.includes('sbi') || primaryTarget?.includes('ibps') || primaryTarget === 'banking') {
-      if (QUESTION_BANK.ibps_po) {
-        Object.values(QUESTION_BANK.ibps_po).forEach(subjList => {
-          bank = bank.concat(subjList)
-        })
-      }
-    } else if (primaryTarget === 'appsc') {
-      if (QUESTION_BANK.appsc) {
-        Object.values(QUESTION_BANK.appsc).forEach(subjList => {
-          bank = bank.concat(subjList)
-        })
-      }
-    } else if (primaryTarget === 'tgpsc') {
-      if (QUESTION_BANK.tgpsc) {
-        Object.values(QUESTION_BANK.tgpsc).forEach(subjList => {
-          bank = bank.concat(subjList)
-        })
-      }
-    } else if (primaryTarget === 'ap_police') {
-      if (QUESTION_BANK.ap_police) {
-        Object.values(QUESTION_BANK.ap_police).forEach(subjList => {
-          bank = bank.concat(subjList)
-        })
-      }
-    } else if (primaryTarget === 'ts_police') {
-      if (QUESTION_BANK.ts_police) {
-        Object.values(QUESTION_BANK.ts_police).forEach(subjList => {
-          bank = bank.concat(subjList)
-        })
-      }
-    } else if (primaryTarget === 'ap_dsc_sgt' || primaryTarget === 'ap_dsc_sa') {
-      if (QUESTION_BANK.ap_dsc_sgt) {
-        Object.values(QUESTION_BANK.ap_dsc_sgt).forEach(subjList => {
-          bank = bank.concat(subjList)
-        })
-      }
-    } else if (primaryTarget === 'ts_dsc_sgt' || primaryTarget === 'ts_dsc_sa') {
-      if (QUESTION_BANK.ts_dsc_sgt) {
-        Object.values(QUESTION_BANK.ts_dsc_sgt).forEach(subjList => {
-          bank = bank.concat(subjList)
-        })
-      }
-    }
+  const [mockTests, setMockTests] = useState([])
+  const [questionBankCount, setQuestionBankCount] = useState(0)
+  const [currentAffairs, setCurrentAffairs] = useState([])
+  const [studyPointsDB, setStudyPointsDB] = useState({})
 
-    if (bank.length > 0) {
-      const dayIdx = new Date().getDate() % bank.length
-      setDailyQuiz(bank[dayIdx]) // eslint-disable-line react-hooks/set-state-in-effect
-    } else {
-      setDailyQuiz(DAILY_QUIZ_QUESTIONS[new Date().getDate() % DAILY_QUIZ_QUESTIONS.length])
+  // Load everything from Supabase based on primaryTarget
+  useEffect(() => {
+    async function loadData() {
+      // Load mock tests
+      const tests = await getSupabaseTestTemplates(primaryTarget)
+      setMockTests(tests)
+      
+      // Load total questions
+      const count = await getSupabaseQuestionsCount(primaryTarget)
+      setQuestionBankCount(count)
+      
+      // Load daily quiz
+      const quiz = await getSupabaseDailyQuiz(primaryTarget)
+      setDailyQuiz(quiz)
+      
+      // Load current affairs
+      const affairs = await getSupabaseCurrentAffairs()
+      setCurrentAffairs(affairs)
+      
+      // Load study points
+      const points = await getSupabaseStudyPoints(primaryTarget)
+      setStudyPointsDB(points)
     }
-  }, [profile])
+    loadData()
+  }, [primaryTarget])
 
   return (
     <div className="page animate-fade-in">
@@ -964,7 +819,7 @@ export default function Dashboard() {
       </div>
 
       {/* India Pride & Editorial Banner */}
-      <IndiaPrideMarqueeBanner />
+      <IndiaPrideMarqueeBanner prideItems={currentAffairs.filter(item => item.isPrideMoment || item.importance === 'high')} />
 
       {/* Mera Lakshya Vision Banner */}
       <LakshyaVisionBanner profile={profile} primaryTarget={primaryTarget} />
@@ -1062,7 +917,7 @@ export default function Dashboard() {
       {/* Main grid */}
       <div className="dashboard-layout-grid">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <AIRecommendation profile={profile} exams={profile?.exams || []} setActiveStudyPoint={setActiveStudyPoint} updateSyllabusProgress={updateSyllabusProgress} />
+          <AIRecommendation profile={profile} exams={profile?.exams || []} setActiveStudyPoint={setActiveStudyPoint} updateSyllabusProgress={updateSyllabusProgress} studyPointsDB={studyPointsDB} />
           
           {/* Target Course & Solved Materials */}
           <TargetCourseMaterialsCard primaryTarget={primaryTarget} />
@@ -1074,18 +929,8 @@ export default function Dashboard() {
               <Link to="/app/mock-tests" style={{ fontSize: '0.82rem', color: 'var(--cyan)' }}>View all</Link>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {MOCK_TESTS.filter(t => {
-                if (primaryTarget === 'ias' || primaryTarget === 'ips' || primaryTarget === 'upsc') {
-                  return t.exam === 'upsc'
-                }
-                return t.exam === primaryTarget
-              }).slice(0, 3).length > 0 ? (
-                MOCK_TESTS.filter(t => {
-                  if (primaryTarget === 'ias' || primaryTarget === 'ips' || primaryTarget === 'upsc') {
-                    return t.exam === 'upsc'
-                  }
-                  return t.exam === primaryTarget
-                }).slice(0, 3).map(test => (
+              {mockTests.slice(0, 3).length > 0 ? (
+                mockTests.slice(0, 3).map(test => (
                   <Link key={test.id} to={`/app/test/${test.id}`} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', textDecoration: 'none', transition: 'var(--t)' }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cyan)'; e.currentTarget.style.background = 'var(--cyan-10)' }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
@@ -1102,7 +947,7 @@ export default function Dashboard() {
                   </Link>
                 ))
               ) : (
-                MOCK_TESTS.slice(0, 3).map(test => (
+                mockTests.slice(0, 3).map(test => (
                   <Link key={test.id} to={`/app/test/${test.id}`} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', textDecoration: 'none', transition: 'var(--t)' }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cyan)'; e.currentTarget.style.background = 'var(--cyan-10)' }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
@@ -1127,7 +972,7 @@ export default function Dashboard() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <PortalAutoSync />
           <StreakCard streak={streak} />
-          <QuickCurrentAffairs />
+          <QuickCurrentAffairs currentAffairs={currentAffairs} />
 
           {/* Daily quiz */}
           {dailyQuiz && (
