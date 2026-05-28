@@ -376,12 +376,12 @@ export default function Landing() {
           </span>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <a href="#how-it-works" style={{ color: 'var(--text-3)', fontSize: '0.88rem', fontWeight: 500, textDecoration: 'none', padding: '6px 14px', transition: 'color 0.2s' }}
+          <a href="#how-it-works" style={{ color: 'var(--text-3)', fontSize: '0.88rem', fontWeight: 500, textDecoration: 'none', padding: '6px 14px', transition: 'color 0.2s', minHeight: '48px', display: 'inline-flex', alignItems: 'center' }}
             onMouseEnter={e => e.currentTarget.style.color = 'white'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-3)'}>How it works</a>
-          <Link to="/auth" style={{ color: 'var(--text-2)', fontSize: '0.88rem', fontWeight: 600, textDecoration: 'none', padding: '8px 18px', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', transition: 'all 0.2s' }}
+          <Link to="/auth" style={{ color: 'var(--text-2)', fontSize: '0.88rem', fontWeight: 600, textDecoration: 'none', padding: '8px 18px', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', transition: 'all 0.2s', minHeight: '48px', display: 'inline-flex', alignItems: 'center' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cyan)'; e.currentTarget.style.color = 'var(--cyan)' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-2)' }}>Login</Link>
-          <MagneticBtn to="/auth?signup=1" style={{ background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', color: 'white', fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none', padding: '9px 20px', borderRadius: 'var(--r-full)', boxShadow: '0 0 20px rgba(124,58,237,0.4)' }}>
+          <MagneticBtn to="/auth?signup=1" style={{ background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', color: 'white', fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none', padding: '9px 20px', borderRadius: 'var(--r-full)', boxShadow: '0 0 20px rgba(124,58,237,0.4)', minHeight: '48px', display: 'inline-flex', alignItems: 'center' }}>
             Start Free →
           </MagneticBtn>
         </div>

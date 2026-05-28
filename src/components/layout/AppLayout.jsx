@@ -135,8 +135,8 @@ export default function AppLayout({ isAdmin = false }) {
             </button>
           )}
           {collapsed && (
-            <button onClick={() => setCollapsed(false)} className="btn btn-ghost btn-icon" style={{ position: 'absolute', right: -12, top: 20, background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: '50%', width: 24, height: 24, padding: 0, zIndex: 10 }}>
-              <ChevronRight size={12} />
+            <button onClick={() => setCollapsed(false)} className="btn btn-ghost btn-icon" style={{ position: 'absolute', right: -24, top: 20, background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: '50%', width: 48, height: 48, padding: 0, zIndex: 10 }}>
+              <ChevronRight size={16} />
             </button>
           )}
         </div>
@@ -233,11 +233,11 @@ export default function AppLayout({ isAdmin = false }) {
               <Shield size={16} />
             </NavLink>
           )}
-          <NavLink to="/app/profile" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 12px 4px 4px', borderRadius: 'var(--r-full)', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.03)', textDecoration: 'none' }}>
-            <div className="user-avatar" style={{ width: 30, height: 30, fontSize: '0.78rem' }}>
+          <NavLink to="/app/profile" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 12px 4px 4px', borderRadius: 'var(--r-full)', border: '1px solid var(--border)', background: 'rgba(255,255,255,0.03)', textDecoration: 'none', minHeight: 48 }}>
+            <div className="user-avatar" style={{ width: 36, height: 36, fontSize: '0.85rem' }}>
               {profile?.name?.[0]?.toUpperCase() || 'U'}
             </div>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-1)', fontWeight: 600 }}>{profile?.name?.split(' ')[0] || 'User'}</span>
+            <span style={{ fontSize: '0.9rem', color: 'var(--text-1)', fontWeight: 600, paddingRight: 6 }}>{profile?.name?.split(' ')[0] || 'User'}</span>
           </NavLink>
         </div>
       </header>

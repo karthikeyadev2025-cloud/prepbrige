@@ -118,7 +118,8 @@ function restrictToRoles(allowedRoles = []) {
       });
     }
 
-    const userRole = req.profile.role || 'student';
+    // Resolve role dynamically from is_admin / isAdmin database state
+    const userRole = req.profile.isAdmin ? 'admin' : (req.profile.role || 'student');
 
     if (allowedRoles.includes(userRole)) {
       return next();
