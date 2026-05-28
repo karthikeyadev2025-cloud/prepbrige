@@ -104,129 +104,297 @@ export default function AdminDashboard() {
   }, [])
 
   return (
-    <div className="page animate-fade-in">
-      <div style={{ marginBottom: 28 }}>
+    <main className="page animate-fade-in" role="main" aria-label="Admin Dashboard">
+      <header style={{ marginBottom: 28 }}>
         <div className="label" style={{ marginBottom: 8 }}>Admin Panel</div>
         <h2 style={{ marginBottom: 4 }}>Platform Overview 📊</h2>
         <p style={{ margin: 0, color: 'var(--text-3)' }}>Real-time metrics and locked target distributions</p>
-      </div>
+      </header>
 
-      {/* Stats */}
-      <div className="grid-4" style={{ marginBottom: 28 }}>
+      {/* Stats Grid */}
+      <section className="stats-grid" style={{ marginBottom: 28 }}>
         {[
-          { icon: Users, label: 'Total Registrations', value: loading ? '...' : stats.totalUsers.toLocaleString(), trend: '+34%', color: 'var(--cyan)', bg: 'var(--cyan-10)' },
-          { icon: DollarSign, label: 'Razorpay Revenue', value: loading ? '...' : `₹${stats.totalRevenue.toLocaleString()}`, trend: '+28%', color: 'var(--emerald)', bg: 'var(--emerald-10)' },
-          { icon: Star, label: 'Paid Subscriptions', value: loading ? '...' : stats.paidUsers.toLocaleString(), trend: PRICING.monthly.badge, color: 'var(--purple)', bg: 'var(--purple-10)' },
-          { icon: Award, label: 'Max Study Streak', value: loading ? '...' : `🔥 ${stats.maxStreak} Days`, trend: 'streaks', color: 'var(--amber)', bg: 'var(--amber-10)' },
-        ].map(s => (
-          <div key={s.label} className="card card-p">
+          {
+            icon: Users,
+            label: 'Total Registrations',
+            value: loading ? '...' : stats.totalUsers.toLocaleString(),
+            trend: '+34%',
+            color: 'var(--cyan)',
+            bg: 'var(--cyan-10)',
+            'aria-label': `Total registrations: ${loading ? 'loading' : stats.totalUsers.toLocaleString()}`
+          },
+          {
+            icon: DollarSign,
+            label: 'Razorpay Revenue',
+            value: loading ? '...' : `₹${stats.totalRevenue.toLocaleString()}`,
+            trend: '+28%',
+            color: 'var(--emerald)',
+            bg: 'var(--emerald-10)',
+            'aria-label': `Total revenue: ₹${loading ? 'loading' : stats.totalRevenue.toLocaleString()}`
+          },
+          {
+            icon: Star,
+            label: 'Paid Subscriptions',
+            value: loading ? '...' : stats.paidUsers.toLocaleString(),
+            trend: PRICING.monthly.badge,
+            color: 'var(--purple)',
+            bg: 'var(--purple-10)',
+            'aria-label': `Paid subscriptions: ${loading ? 'loading' : stats.paidUsers.toLocaleString()}`
+          },
+          {
+            icon: Award,
+            label: 'Max Study Streak',
+            value: loading ? '...' : `🔥 ${stats.maxStreak} Days`,
+            trend: 'streaks',
+            color: 'var(--amber)',
+            bg: 'var(--amber-10)',
+            'aria-label': `Maximum study streak: ${loading ? 'loading' : stats.maxStreak} days`
+          },
+        ].map((stat, index) => (
+          <div key={stat.label} className="stat-card"
+               tabIndex={0}
+               role="article"
+               aria-labelledby={`stat-${index}-label`}
+               aria-describedby={`stat-${index}-desc`}
+               style={{
+                 outline: 'none',
+                 transition: 'all 0.2s ease',
+                 ':focus': {
+                   boxShadow: '0 0 0 3px rgba(0, 212, 255, 0.3)'
+                 }
+               }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 'var(--r-md)', background: s.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <s.icon size={20} color={s.color} />
+              <div style={{ width: 44, height: 44, borderRadius: 'var(--r-md)', background: stat.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <stat.icon size={20} color={stat.color} />
               </div>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: s.color === 'var(--emerald)' ? 'var(--emerald)' : 'var(--text-3)', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-full)', padding: '3px 8px' }}>{s.trend}</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: stat.color === 'var(--emerald)' ? 'var(--emerald)' : 'var(--text-3)', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-full)', padding: '3px 8px' }}>{stat.trend}</span>
             </div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 900 }}>{s.value}</div>
-            <div style={{ fontSize: '0.82rem', color: 'var(--text-3)' }}>{s.label}</div>
+            <div id={`stat-${index}-value`} style={{ fontSize: '1.8rem', fontWeight: 900 }}>{stat.value}</div>
+            <div id={`stat-${index}-label`} style={{ fontSize: '0.82rem', color: 'var(--text-3)' }}>{stat.label}</div>
+            <div id={`stat-${index}-desc`} style={{ fontSize: '0.7rem', color: 'var(--text-4)', marginTop: 4 }}>
+              {stat.label === 'Total Registrations' && 'Count of all users on platform'}
+              {stat.label === 'Razorpay Revenue' && 'Monthly revenue from paid subscriptions'}
+              {stat.label === 'Paid Subscriptions' && 'Users with active premium plans'}
+              {stat.label === 'Max Study Streak' && 'Longest consecutive usage streak'}
+            </div>
           </div>
         ))}
-      </div>
+      </section>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24, marginBottom: 24 }}>
-        {/* Growth chart */}
-        <div className="card card-p">
-          <h4 style={{ marginBottom: 20 }}>User & Mock Test Growth</h4>
+      {/* Charts Section */}
+      <section className="charts-section" style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24, marginBottom: 24 }}>
+        {/* Growth Chart */}
+        <article className="growth-chart" aria-labelledby="growth-chart-title">
+          <h3 id="growth-chart-title" style={{ marginBottom: 20 }}>User & Mock Test Growth</h3>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={MOCK_MONTHLY}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="month" tick={{ fill: 'var(--text-3)', fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: 'var(--text-3)', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 8, fontSize: '0.82rem' }} />
-              <Bar dataKey="users" fill="#7c3aed" radius={[4,4,0,0]} name="Aspirants" />
-              <Bar dataKey="tests" fill="#00d4ff" radius={[4,4,0,0]} name="Mocks Done" opacity={0.7} />
+              <Tooltip
+                contentStyle={{ background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 8, fontSize: '0.82rem' }}
+                labelFormatter={(label) => `Month: ${label}`}
+                formatter={(value, name) => [name === 'Aspirants' ? value.toLocaleString() : value, name === 'Aspirants' ? 'Users' : 'Tests']}
+              />
+              <Bar dataKey="users" fill="#7c3aed" radius={[4,4,0,0]} name="Aspirants" aria-label="User growth bar" />
+              <Bar dataKey="tests" fill="#00d4ff" radius={[4,4,0,0]} name="Mocks Done" opacity={0.7} aria-label="Mock test completion bar" />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </article>
 
-        {/* Locked Targets ratio */}
-        <div className="card card-p" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <h4 style={{ margin: 0, marginBottom: 12 }}>Lakshya locked Targets</h4>
+        {/* Locked Targets Chart */}
+        <article className="targets-chart" aria-labelledby="targets-chart-title">
+          <h3 id="targets-chart-title" style={{ margin: 0, marginBottom: 12 }}>Lakshya locked Targets</h3>
           <ResponsiveContainer width="100%" height={160}>
             <PieChart>
               <Pie data={stats.pieData} cx="50%" cy="50%" innerRadius={40} outerRadius={70} paddingAngle={3} dataKey="value">
-                {stats.pieData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)}
+                {stats.pieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
               </Pie>
-              <Tooltip contentStyle={{ background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 8, fontSize: '0.8rem' }} />
+              <Tooltip
+                contentStyle={{ background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 8, fontSize: '0.8rem' }}
+                formatter={(value, name) => [`${value}%`, name]}
+              />
             </PieChart>
           </ResponsiveContainer>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+          <div className="chart-legend" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
             {stats.pieData.map((e, i) => (
-              <div key={e.name} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.75rem', color: 'var(--text-3)' }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: COLORS[i % COLORS.length] }} />
+              <div key={e.name} className="legend-item" style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '0.75rem', color: 'var(--text-3)' }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: COLORS[i % COLORS.length] }} aria-hidden="true" />
                 <span>{e.name} ({e.value}%)</span>
               </div>
             ))}
           </div>
-        </div>
-      </div>
+        </article>
+      </section>
 
-      {/* Recent users */}
-      <div className="card card-p" style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-          <h4 style={{ margin: 0 }}>Recent Registrations (Lakshya Targets)</h4>
+      {/* Recent Users Table */}
+      <section className="recent-users" aria-labelledby="recent-users-title">
+        <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <h3 id="recent-users-title">Recent Registrations (Lakshya Targets)</h3>
           <Link to="/admin/users" style={{ fontSize: '0.82rem', color: 'var(--cyan)' }}>View All Users</Link>
-        </div>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+        </header>
+        <div className="table-container" style={{ overflowX: 'auto' }}>
+          <table role="table" aria-label="Recent user registrations" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+            <caption style={{ captionSide: 'top', marginBottom: 8, fontSize: '0.82rem', color: 'var(--text-3)' }}>
+              Most recent 5 user registrations showing aspirant name, state, primary target, study streak, and subscription tier
+            </caption>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-3)' }}>
-                {['Aspirant','State','Primary Locked Target','Streak','Tier Plan'].map(h => (
-                  <th key={h} style={{ textAlign: 'left', padding: '10px 12px', fontSize: '0.78rem', color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
+                {['Aspirant', 'State', 'Primary Locked Target', 'Streak', 'Tier Plan'].map((header, index) => (
+                  <th key={header} scope="col" style={{ textAlign: 'left', padding: '10px 12px', fontSize: '0.78rem', color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    {header}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {stats.recentUsers.map((u) => (
-                <tr key={u.name} style={{ borderBottom: '1px solid var(--border)' }}
-                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
-                  onMouseLeave={e => e.currentTarget.style.background = ''}
-                >
+              {stats.recentUsers.map((user) => (
+                <tr key={user.name} style={{ borderBottom: '1px solid var(--border)' }}>
                   <td style={{ padding: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.82rem', fontWeight: 700, color: 'white' }}>
-                        {(u?.name || "?")[0]}
+                        {(user?.name || "?")[0]}
                       </div>
-                      {u.name}
+                      <span>{user.name}</span>
                     </div>
                   </td>
-                  <td style={{ padding: '12px', color: 'var(--text-3)' }}>{u.state}</td>
-                  <td style={{ padding: '12px', fontWeight: 600, color: 'var(--cyan)' }}>🎯 {u.exam}</td>
-                  <td style={{ padding: '12px', color: 'var(--amber)' }}>🔥 {u.streak || 0}</td>
+                  <td style={{ padding: '12px', color: 'var(--text-3)' }}>{user.state}</td>
+                  <td style={{ padding: '12px', fontWeight: 600, color: 'var(--cyan)' }}>🎯 {user.exam}</td>
+                  <td style={{ padding: '12px', color: 'var(--amber)' }}>🔥 {user.streak || 0}</td>
                   <td style={{ padding: '12px' }}>
-                    <span className={`badge ${u.plan.includes('Paid') ? 'badge-purple' : 'badge-cyan'}`}>{u.plan}</span>
+                    <span className={`badge ${user.plan.includes('Paid') ? 'badge-purple' : 'badge-cyan'}`}>{user.plan}</span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      </section>
 
-      {/* Quick actions */}
-      <div className="grid-4">
-        {[
-          { to: '/admin/questions', icon: ClipboardList, label: 'Manage Questions', desc: '5L+ questions' },
-          { to: '/admin/users', icon: Users, label: 'Manage Users', desc: 'Active student logs' },
-          { to: '/admin/notifications', icon: Bell, label: 'Send Notification', desc: 'Broadcast to all' },
-          { to: '/admin/content', icon: BookOpen, label: 'Manage Content', desc: 'Courses & notes' },
-        ].map(a => (
-          <Link key={a.to} to={a.to} className="card card-p card-hover" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-start' }}>
-            <a.icon size={20} color="var(--cyan)" />
-            <div style={{ fontWeight: 600, fontSize: '0.92rem', color: 'white' }}>{a.label}</div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{a.desc}</div>
-          </Link>
-        ))}
-      </div>
-    </div>
+      {/* Quick Actions */}
+      <section className="quick-actions" aria-label="Quick admin actions" style={{ marginTop: 24 }}>
+        <div className="grid-4">
+          {[
+            {
+              to: '/admin/questions',
+              icon: ClipboardList,
+              label: 'Manage Questions',
+              desc: '5L+ questions',
+              'aria-label': 'Manage questions database'
+            },
+            {
+              to: '/admin/users',
+              icon: Users,
+              label: 'Manage Users',
+              desc: 'Active student logs',
+              'aria-label': 'Manage user accounts and logs'
+            },
+            {
+              to: '/admin/notifications',
+              icon: Bell,
+              label: 'Send Notification',
+              desc: 'Broadcast to all',
+              'aria-label': 'Send notifications to all users'
+            },
+            {
+              to: '/admin/content',
+              icon: BookOpen,
+              label: 'Manage Content',
+              desc: 'Courses & notes',
+              'aria-label': 'Manage learning content and courses'
+            },
+          ].map((action, index) => (
+            <Link
+              key={action.to}
+              to={action.to}
+              className="action-card"
+              tabIndex={0}
+              aria-label={action['aria-label']}
+              style={{
+                textDecoration: 'none',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+                alignItems: 'flex-start',
+                transition: 'all 0.2s ease',
+                ':focus': {
+                  boxShadow: '0 0 0 3px rgba(0, 212, 255, 0.3)'
+                }
+              }}
+            >
+              <action.icon size={20} color="var(--cyan)" />
+              <div style={{ fontWeight: 600, fontSize: '0.92rem', color: 'white' }}>{action.label}</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{action.desc}</div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <style jsx>{`
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: 16px;
+        }
+
+        .stat-card {
+          background: var(--bg-card);
+          border-radius: var(--r-lg);
+          padding: 20px;
+          border: 1px solid var(--border);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .stat-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card:focus {
+          outline: 3px solid rgba(0, 212, 255, 0.3);
+          outline-offset: 2px;
+        }
+
+        .growth-chart, .targets-chart, .recent-users, .quick-actions {
+          background: var(--bg-card);
+          border-radius: var(--r-lg);
+          padding: 20px;
+          border: 1px solid var(--border);
+        }
+
+        .action-card {
+          background: var(--bg-card);
+          border-radius: var(--r-lg);
+          padding: 20px;
+          border: 1px solid var(--border);
+          text-decoration: none;
+          color: inherit;
+        }
+
+        .action-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          background: var(--bg-2);
+        }
+
+        .action-card:focus {
+          outline: 3px solid rgba(0, 212, 255, 0.3);
+          outline-offset: 2px;
+        }
+
+        @media (max-width: 768px) {
+          .stats-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .charts-section {
+            grid-template-columns: 1fr;
+          }
+        }
+      `}</style>
+    </main>
   )
 }
