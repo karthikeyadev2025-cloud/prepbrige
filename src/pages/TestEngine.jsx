@@ -1,144 +1,52 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { MOCK_TESTS, QUESTION_BANK } from '../data/questions'
 import { useAppStore } from '../store/useStore'
+import { getSupabaseTestTemplates, getSupabaseExamQuestions } from '../services/supabaseService'
 import { saveTestResult } from '../services/resultService'
 import { toast } from 'react-hot-toast'
 import { Clock, Flag, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
 
-// Generate questions for a specific test — loads exam-specific question bank
-function generateQuestions(test) {
-  const examId = test?.exam || 'upsc'
-
-  // Build question pool from exam-specific question banks
-  let pool = []
-
-  if (examId === 'upsc' || examId === 'ias' || examId === 'ips') {
-    pool = [
-      ...((QUESTION_BANK.upsc?.history) || []),
-      ...((QUESTION_BANK.upsc?.polity) || []),
-    ]
-  } else if (examId === 'ssc_cgl' || examId.startsWith('ssc')) {
-    pool = [
-      ...((QUESTION_BANK.ssc_cgl?.maths) || []),
-      ...((QUESTION_BANK.ssc_cgl?.reasoning) || []),
-      ...((QUESTION_BANK.upsc?.polity) || []), // GK overlap
-    ]
-  } else if (examId === 'ibps_po' || examId === 'ibps_clerk' || examId === 'sbi_po' || examId === 'sbi_clerk' || examId.includes('ibps') || examId.includes('sbi') || examId.includes('rrb_po')) {
-    pool = [
-      ...((QUESTION_BANK.ibps_po?.english) || []),
-      ...((QUESTION_BANK.ibps_po?.banking_awareness) || []),
-      ...((QUESTION_BANK.ssc_cgl?.reasoning) || []),
-    ]
-  } else if (examId === 'rrb_ntpc' || examId === 'rrb_group_d' || examId === 'rrb_alp' || examId === 'rrb_je') {
-    pool = [
-      ...((QUESTION_BANK.ssc_cgl?.maths) || []),
-      ...((QUESTION_BANK.ssc_cgl?.reasoning) || []),
-      ...((QUESTION_BANK.upsc?.history) || []),
-    ]
-  } else if (examId === 'appsc') {
-    pool = [
-      ...((QUESTION_BANK.appsc?.history) || []),
-      ...((QUESTION_BANK.appsc?.polity) || []),
-      ...((QUESTION_BANK.upsc?.polity) || []),
-    ]
-  } else if (examId === 'tgpsc') {
-    pool = [
-      ...((QUESTION_BANK.tgpsc?.history) || []),
-      ...((QUESTION_BANK.tgpsc?.movement) || []),
-      ...((QUESTION_BANK.upsc?.polity) || []),
-    ]
-  } else if (examId === 'ap_police') {
-    pool = [
-      ...((QUESTION_BANK.ap_police?.general) || []),
-      ...((QUESTION_BANK.appsc?.history) || []),
-      ...((QUESTION_BANK.ssc_cgl?.reasoning) || []),
-    ]
-  } else if (examId === 'ts_police') {
-    pool = [
-      ...((QUESTION_BANK.ts_police?.general) || []),
-      ...((QUESTION_BANK.tgpsc?.history) || []),
-      ...((QUESTION_BANK.ssc_cgl?.reasoning) || []),
-    ]
-  } else if (examId === 'ap_dsc_sgt' || examId === 'ap_dsc_sa') {
-    pool = [
-      ...((QUESTION_BANK.ap_dsc_sgt?.pedagogy) || []),
-      ...((QUESTION_BANK.ts_dsc_sgt?.pedagogy) || []),
-      ...((QUESTION_BANK.upsc?.polity) || []),
-    ]
-  } else if (examId === 'ts_dsc_sgt' || examId === 'ts_dsc_sa') {
-    pool = [
-      ...((QUESTION_BANK.ts_dsc_sgt?.pedagogy) || []),
-      ...((QUESTION_BANK.ap_dsc_sgt?.pedagogy) || []),
-      ...((QUESTION_BANK.upsc?.polity) || []),
-    ]
-  } else if (examId === 'neet_ug' || examId === 'neet_pg') {
-    // NEET — use general GK as fallback (no medical questions in bank yet)
-    pool = [
-      ...((QUESTION_BANK.upsc?.history) || []),
-      ...((QUESTION_BANK.upsc?.polity) || []),
-    ]
-  } else {
-    // Generic fallback — all available questions
-    pool = [
-      ...((QUESTION_BANK.upsc?.history) || []),
-      ...((QUESTION_BANK.upsc?.polity) || []),
-      ...((QUESTION_BANK.ssc_cgl?.maths) || []),
-      ...((QUESTION_BANK.ssc_cgl?.reasoning) || []),
-      ...((QUESTION_BANK.ibps_po?.english) || []),
-      ...((QUESTION_BANK.ibps_po?.banking_awareness) || []),
-    ]
-  }
-
-  // Limit to 20 questions max for demo; fill with placeholders if needed
-  const total = Math.min(test.totalQuestions, 20)
-  const result = []
-  for (let i = 0; i < total; i++) {
-    if (pool[i]) {
-      result.push({ ...pool[i], num: i + 1 })
-    } else {
-      result.push({
-        id: `gen_${i}`,
-        num: i + 1,
-        text: `Sample Question ${i + 1}: Which of the following statements is correct?`,
-        options: [
-          'Statement A is correct',
-          'Statement B is correct',
-          'Both A and B are correct',
-          'Neither A nor B is correct'
-        ],
-        correct: Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff * 4),
-        explanation: 'This is a sample question. In the full platform, real exam-specific questions will appear here.',
-        subject: 'General Studies',
-        difficulty: 'medium'
-      })
-    }
-  }
-  return result
-}
-
+// Dynamic test loading handled inside component
 export default function TestEngine() {
   const { testId } = useParams()
   const navigate = useNavigate()
 
-  // Find test from all available tests (including localStorage-synced admin tests)
-  const localTests = (() => {
-    try {
-      const local = localStorage.getItem('prepbridge_auto_updated_tests')
-      return local ? JSON.parse(local) : []
-    } catch { return [] }
-  })()
-  const allTests = [...localTests, ...MOCK_TESTS]
-  const test = allTests.find(t => t.id === testId) || MOCK_TESTS[0]
+  const [test, setTest] = useState(null)
+  const [questions, setQuestions] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const [questions] = useState(() => generateQuestions(test))
   const [current, setCurrent] = useState(0)
   const [answers, setAnswers] = useState({})
   const [flagged, setFlagged] = useState(new Set())
-  const [timeLeft, setTimeLeft] = useState(test.duration * 60)
+  const [timeLeft, setTimeLeft] = useState(0)
   const [submitted, setSubmitted] = useState(false)
   const [showResult, setShowResult] = useState(false)
   const [result, setResult] = useState(null)
+
+  useEffect(() => {
+    async function loadTest() {
+      setLoading(true)
+      const allTests = await getSupabaseTestTemplates()
+      const t = allTests.find(t => t.id === testId) || allTests[0]
+      if (t) {
+        setTest(t)
+        setTimeLeft(t.duration * 60)
+        const qList = await getSupabaseExamQuestions(t.exam, Math.min(t.totalQuestions, 20))
+        setQuestions(qList)
+      }
+      setLoading(false)
+    }
+    loadTest()
+  }, [testId])
+
+  if (loading || !test || questions.length === 0) {
+    return (
+      <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <div className="spinner"></div>
+        <p style={{ marginLeft: 16 }}>Loading Test Engine...</p>
+      </div>
+    )
+  }
   const [showExitConfirm, setShowExitConfirm] = useState(false)
   const { addTestResult, addPoints } = useAppStore()
 

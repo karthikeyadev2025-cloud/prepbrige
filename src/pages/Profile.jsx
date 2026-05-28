@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { EXAM_CATEGORIES } from '../data/exams'
 import { toast } from 'react-hot-toast'
 import { initiatePremiumCheckout, PRICING, getSubscriptionStatus } from '../services/paymentService'
+import { getSupabaseQuestionsCount } from '../services/supabaseService'
 
 export default function Profile() {
   const { profile, user, updateProfile } = useUserStore()
@@ -14,6 +15,16 @@ export default function Profile() {
   const [name, setName] = useState(profile?.name || '')
   const [activeTab, setActiveTab] = useState('profile')
   const [selectedPlan, setSelectedPlan] = useState('annual') // default: best value annual plan
+  const [questionBankCount, setQuestionBankCount] = useState(0)
+
+  useEffect(() => {
+    async function fetchStats() {
+      const target = profile?.primaryTarget || (profile?.exams && profile.exams[0])
+      const count = await getSupabaseQuestionsCount(target)
+      setQuestionBankCount(count)
+    }
+    fetchStats()
+  }, [profile])
   const sub = getSubscriptionStatus(profile?.subscription)
   const [remaining, setRemaining] = useState('')
   useEffect(() => {
@@ -80,12 +91,12 @@ export default function Profile() {
   }
 
   const STATS = [
-    { label: 'Tests Taken', value: profile?.stats?.testsTaken || 12, icon: '📋', color: 'var(--purple)' },
-    { label: 'Avg Score', value: `${profile?.stats?.avgScore || 74}%`, icon: '🎯', color: 'var(--cyan)' },
-    { label: 'Day Streak', value: `${profile?.streak || 7}🔥`, icon: '🔥', color: 'var(--amber)' },
-    { label: 'Study Hours', value: `${profile?.stats?.hours || 48}h`, icon: '⏱️', color: 'var(--emerald)' },
-    { label: 'Questions', value: profile?.stats?.questions || 1240, icon: '❓', color: 'var(--red)' },
-    { label: 'Points', value: profile?.points || 1840, icon: '⭐', color: 'var(--amber)' },
+    { label: 'Tests Taken', value: profile?.stats?.testsTaken || 0, icon: '📋', color: 'var(--purple)' },
+    { label: 'Avg Score', value: `${profile?.stats?.avgScore || 0}%`, icon: '🎯', color: 'var(--cyan)' },
+    { label: 'Day Streak', value: `${profile?.streak || 0}🔥`, icon: '🔥', color: 'var(--amber)' },
+    { label: 'Study Hours', value: `${profile?.stats?.hours || 0}h`, icon: '⏱️', color: 'var(--emerald)' },
+    { label: 'Questions', value: profile?.stats?.questions || questionBankCount || 0, icon: '❓', color: 'var(--red)' },
+    { label: 'Points', value: profile?.points || 0, icon: '⭐', color: 'var(--amber)' },
   ]
 
   return (

@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate, NavLink } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../../store/useStore'
 import { signOutUser } from '../../firebase/auth'
 import { getSubscriptionStatus } from '../../services/paymentService'
-import { NEWSPAPER_TOPICS } from '../../data/currentAffairs'
+import { getSupabaseCurrentAffairs } from '../../services/supabaseService'
 import {
   LayoutDashboard, BookOpen, FileText, Newspaper, BrainCircuit,
   GraduationCap, Trophy, Bell, User, Settings, LogOut,
@@ -49,8 +49,15 @@ export default function AppLayout({ isAdmin = false }) {
   const items = isAdmin ? ADMIN_ITEMS : NAV_ITEMS
 
   // India Pride Ticker State
-  const prideItems = useMemo(() => (NEWSPAPER_TOPICS || []).filter(item => item.isPrideMoment), [])
   const [tickerIndex, setTickerIndex] = useState(0)
+
+  useEffect(() => {
+    async function fetchPrideItems() {
+      const affairs = await getSupabaseCurrentAffairs()
+      setPrideItems(affairs.filter(item => item.importance === 'high' || item.isPrideMoment))
+    }
+    fetchPrideItems()
+  }, [])
 
   useEffect(() => {
     if (prideItems.length === 0) return

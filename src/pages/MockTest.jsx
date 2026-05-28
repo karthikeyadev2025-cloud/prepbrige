@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { MOCK_TESTS } from '../data/questions'
+import { getSupabaseTestTemplates } from '../services/supabaseService'
 import { useNavigate } from 'react-router-dom'
 import { useUserStore } from '../store/useStore'
 import { EXAM_CATEGORIES } from '../data/exams'
@@ -53,20 +53,29 @@ export default function MockTest() {
   const [filter, setFilter] = useState(defaultFilter)
 
   // Sync all tests (admin-added + static)
-  const [tests, setTests] = useState(() => {
-    try {
-      const local = localStorage.getItem('prepbridge_auto_updated_tests')
-      const parsed = local ? JSON.parse(local) : []
-      return [...parsed, ...MOCK_TESTS]
-    } catch { return [...MOCK_TESTS] }
-  })
+  const [tests, setTests] = useState([])
 
   useEffect(() => {
-    const handleSync = () => {
+    async function fetchTests() {
+      const dbTests = await getSupabaseTestTemplates()
       try {
         const local = localStorage.getItem('prepbridge_auto_updated_tests')
         const parsed = local ? JSON.parse(local) : []
-        setTests([...parsed, ...MOCK_TESTS])
+        setTests([...parsed, ...dbTests])
+      } catch {
+        setTests(dbTests)
+      }
+    }
+    fetchTests()
+  }, [])
+
+  useEffect(() => {
+    const handleSync = async () => {
+      const dbTests = await getSupabaseTestTemplates()
+      try {
+        const local = localStorage.getItem('prepbridge_auto_updated_tests')
+        const parsed = local ? JSON.parse(local) : []
+        setTests([...parsed, ...dbTests])
       } catch { /* ignore */ }
     }
     window.addEventListener('prepbridge-portal-sync', handleSync)

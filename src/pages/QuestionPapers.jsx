@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { QUESTION_BANK } from '../data/questions'
+import { getSupabaseExamQuestions } from '../services/supabaseService'
 import { useUserStore } from '../store/useStore'
 import { EXAM_CATEGORIES } from '../data/exams'
 import { Search, Download, Eye, Star } from 'lucide-react'
@@ -63,6 +63,21 @@ export default function QuestionPapers() {
   const [yearFilter, setYearFilter] = useState('all')
   const [examFilter, setExamFilter] = useState(defaultExamFilter)
   const [previewId, setPreviewId] = useState(null)
+  const [previewQuestions, setPreviewQuestions] = useState({})
+
+  const handlePreviewClick = async (paper) => {
+    if (previewId === paper.id) {
+      setPreviewId(null)
+      return
+    }
+    setPreviewId(paper.id)
+    if (!previewQuestions[paper.id]) {
+      let examKey = paper.exam.toLowerCase().replace(' ', '_').replace('-', '_')
+      let qList = await getSupabaseExamQuestions(examKey, 2)
+      if (qList.length === 0) qList = await getSupabaseExamQuestions('upsc', 2)
+      setPreviewQuestions(prev => ({ ...prev, [paper.id]: qList }))
+    }
+  }
 
   const [papers, setPapers] = useState(() => {
     const local = localStorage.getItem('prepbridge_auto_updated_papers')
@@ -83,36 +98,12 @@ export default function QuestionPapers() {
   const handleDownload = (paper) => {
     toast.loading(`Compiling "${paper.title}" with PrepBridge watermark protection...`, { id: 'pyq-down' })
     
-    setTimeout(() => {
+    setTimeout(async () => {
       try {
-        // Extract some sample questions for this exam using smart routing fallback
-        const examKey = paper.exam.toLowerCase().replace(' ', '_').replace('-', '_');
-        let examData = QUESTION_BANK[examKey];
-        if (!examData) {
-          if (examKey.includes('sbi') || examKey.includes('ibps') || examKey.includes('bank') || examKey.includes('rrb')) {
-            examData = QUESTION_BANK.ibps_po;
-          } else if (examKey.includes('ap_') || examKey.includes('appsc')) {
-            examData = QUESTION_BANK.appsc;
-          } else if (examKey.includes('ts_') || examKey.includes('tgpsc')) {
-            examData = QUESTION_BANK.tgpsc;
-          } else if (examKey.includes('police')) {
-            examData = examKey.includes('ap') ? QUESTION_BANK.ap_police : QUESTION_BANK.ts_police;
-          } else if (examKey.includes('dsc') || examKey.includes('teach')) {
-            examData = examKey.includes('ap') ? QUESTION_BANK.ap_dsc_sgt : QUESTION_BANK.ts_dsc_sgt;
-          }
-        }
-        if (!examData) {
-          examData = QUESTION_BANK.upsc;
-        }
-        
-        let questionsList = [];
-        Object.keys(examData).forEach(sub => {
-          if (Array.isArray(examData[sub])) {
-            questionsList = [...questionsList, ...examData[sub]];
-          }
-        });
+        let examKey = paper.exam.toLowerCase().replace(' ', '_').replace('-', '_');
+        let questionsList = await getSupabaseExamQuestions(examKey, 15);
         if (questionsList.length === 0) {
-          questionsList = QUESTION_BANK.upsc.history;
+          questionsList = await getSupabaseExamQuestions('upsc', 15);
         }
         
         let questionsHtml = '';
@@ -342,7 +333,7 @@ export default function QuestionPapers() {
               <span style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>📥 {(paper.downloads/1000).toFixed(1)}K</span>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setPreviewId(previewId === paper.id ? null : paper.id)} className="btn btn-outline btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
+              <button onClick={() => handlePreviewClick(paper)} className="btn btn-outline btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
                 <Eye size={13} /> Preview
               </button>
               <button onClick={() => handleDownload(paper)} className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
@@ -352,35 +343,7 @@ export default function QuestionPapers() {
             {previewId === paper.id && (
               <div style={{ borderTop: '1px solid var(--border)', paddingTop: 12, fontSize: '0.8rem', color: 'var(--text-2)' }}>
                 <div style={{ fontWeight: 600, marginBottom: 8 }}>Sample Questions:</div>
-                {(() => {
-                  const examKey = paper.exam.toLowerCase().replace(' ', '_').replace('-', '_');
-                  let examData = QUESTION_BANK[examKey];
-                  if (!examData) {
-                    if (examKey.includes('sbi') || examKey.includes('ibps') || examKey.includes('bank') || examKey.includes('rrb')) {
-                      examData = QUESTION_BANK.ibps_po;
-                    } else if (examKey.includes('ap_') || examKey.includes('appsc')) {
-                      examData = QUESTION_BANK.appsc;
-                    } else if (examKey.includes('ts_') || examKey.includes('tgpsc')) {
-                      examData = QUESTION_BANK.tgpsc;
-                    } else if (examKey.includes('police')) {
-                      examData = examKey.includes('ap') ? QUESTION_BANK.ap_police : QUESTION_BANK.ts_police;
-                    } else if (examKey.includes('dsc') || examKey.includes('teach')) {
-                      examData = examKey.includes('ap') ? QUESTION_BANK.ap_dsc_sgt : QUESTION_BANK.ts_dsc_sgt;
-                    }
-                  }
-                  if (!examData) {
-                    examData = QUESTION_BANK.upsc;
-                  }
-                  
-                  let list = [];
-                  Object.values(examData).forEach(subjList => {
-                    if (Array.isArray(subjList)) {
-                      list = list.concat(subjList);
-                    }
-                  });
-                  if (list.length === 0) list = QUESTION_BANK.upsc.history;
-                  return list.slice(0, 2);
-                })().map((q,i) => (
+                {(previewQuestions[paper.id] || []).map((q,i) => (
                   <div key={i} style={{ marginBottom: 8, padding: '8px 10px', background: 'var(--bg-3)', borderRadius: 'var(--r-sm)' }}>
                     <div style={{ fontWeight: 500, marginBottom: 4 }}>Q{i+1}. {q.text}</div>
                     {q.options.map((o,j) => (
@@ -390,6 +353,7 @@ export default function QuestionPapers() {
                     ))}
                   </div>
                 ))}
+                {!previewQuestions[paper.id] && <div>Loading...</div>}
               </div>
             )}
           </div>

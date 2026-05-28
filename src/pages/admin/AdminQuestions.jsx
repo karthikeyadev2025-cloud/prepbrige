@@ -1,17 +1,21 @@
-import { useState } from 'react'
-import { QUESTION_BANK } from '../../data/questions'
+import { useState, useEffect } from 'react'
+import { getSupabaseExamQuestions } from '../../services/supabaseService'
 import { Plus, Upload, Search, Edit, Trash2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
-const allQ = Object.entries(QUESTION_BANK).flatMap(([exam, subjects]) =>
-  Object.entries(subjects).flatMap(([subject, qs]) => qs.map(q => ({ ...q, exam, subject })))
-)
-
 export default function AdminQuestions() {
-  const [questions, setQuestions] = useState(allQ)
+  const [questions, setQuestions] = useState([])
   const [search, setSearch] = useState('')
   const [showAdd, setShowAdd] = useState(false)
   const [form, setForm] = useState({ text: '', options: ['','','',''], correct: 0, explanation: '', subject: 'GK', difficulty: 'medium', exam: 'general' })
+
+  useEffect(() => {
+    async function fetchQuestions() {
+      const qList = await getSupabaseExamQuestions(null, 50)
+      setQuestions(qList)
+    }
+    fetchQuestions()
+  }, [])
 
   const filtered = questions.filter(q =>
     !search || q.text.toLowerCase().includes(search.toLowerCase())

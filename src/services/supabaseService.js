@@ -577,3 +577,41 @@ export async function getSupabaseDailyQuiz(examId) {
   }
   return null
 }
+
+/**
+ * Fetches multiple questions for a mock test.
+ */
+export async function getSupabaseExamQuestions(examId, limit = 20) {
+  const { url: supabaseUrl, anonKey: supabaseAnonKey } = getSupabaseCredentials()
+  const cleanUrl = supabaseUrl.trim().replace(/\/$/, '')
+  let dbUrl = `${cleanUrl}/rest/v1/question_exam_mapping?select=questions(*)&limit=${limit}`
+  if (examId) {
+    dbUrl += `&exam_id=eq.${examId}`
+  }
+
+  try {
+    const response = await fetch(dbUrl, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Accept': 'application/json'
+      }
+    })
+    if (response.ok) {
+      const data = await response.json()
+      return data.filter(d => d.questions).map((d, index) => ({
+        id: d.questions.id,
+        text: d.questions.question_text,
+        options: (d.questions.options || []).map(o => o.text),
+        correct: d.questions.correct_option_id,
+        explanation: d.questions.explanation,
+        subject: d.questions.subject_id,
+        num: index + 1
+      }))
+    }
+  } catch (err) {
+    console.error('[Supabase DB] getSupabaseExamQuestions failed:', err)
+  }
+  return []
+}
