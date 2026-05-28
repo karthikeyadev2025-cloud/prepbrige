@@ -73,8 +73,8 @@ function ParticleCanvas() {
 }
 
 // ─── Animated Counter ─────────────────────────────────────────────────────────
-function Counter({ target, suffix = '', prefix = '', duration = 2000 }) {
-  const [val, setVal] = useState(0)
+function Counter({ target, suffix = '', prefix = '', duration = 1800 }) {
+  const [val, setVal] = useState(() => Math.floor(target * 0.7)) // start at 70% — no flash
   const ref = useRef(null)
   const started = useRef(false)
 
@@ -82,17 +82,18 @@ function Counter({ target, suffix = '', prefix = '', duration = 2000 }) {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting && !started.current) {
         started.current = true
-        const start = Date.now()
+        const startVal = Math.floor(target * 0.7)
+        const startTime = Date.now()
         const tick = () => {
-          const elapsed = Date.now() - start
+          const elapsed = Date.now() - startTime
           const progress = Math.min(elapsed / duration, 1)
           const ease = 1 - Math.pow(1 - progress, 3)
-          setVal(Math.floor(ease * target))
+          setVal(Math.floor(startVal + ease * (target - startVal)))
           if (progress < 1) requestAnimationFrame(tick)
         }
         requestAnimationFrame(tick)
       }
-    }, { threshold: 0.3 })
+    }, { threshold: 0.1 })
     if (ref.current) observer.observe(ref.current)
     return () => observer.disconnect()
   }, [target, duration])
@@ -267,14 +268,14 @@ export default function HeroVideo() {
   }, [])
 
   const FLOATING_CARDS = [
-    { exam: 'IAS / IPS', icon: '🏛️', color: '124,58,237', delay: 0, x: 5, y: 18 },
-    { exam: 'SSC CGL', icon: '📋', color: '0,128,255', delay: 1, x: 78, y: 12 },
-    { exam: 'IBPS PO', icon: '🏦', color: '5,150,105', delay: 2, x: 82, y: 55 },
-    { exam: 'RRB NTPC', icon: '🚂', color: '220,38,38', delay: 0.5, x: 3, y: 68 },
-    { exam: 'NEET UG', icon: '⚕️', color: '220,38,38', delay: 1.5, x: 75, y: 80 },
-    { exam: 'JEE Mains', icon: '⚙️', color: '0,128,255', delay: 2.5, x: 10, y: 82 },
-    { exam: 'BPSC', icon: '🗺️', color: '8,145,178', delay: 1, x: 88, y: 32 },
-    { exam: 'CTET', icon: '📖', color: '217,119,6', delay: 3, x: 15, y: 40 },
+    { exam: 'IAS / IPS', icon: '🏛️', color: '124,58,237', delay: 0,   x: 2,  y: 16 },
+    { exam: 'SSC CGL',   icon: '📋', color: '0,128,255',   delay: 1,   x: 78, y: 10 },
+    { exam: 'IBPS PO',   icon: '🏦', color: '5,150,105',   delay: 2,   x: 80, y: 50 },
+    { exam: 'RRB NTPC',  icon: '🚂', color: '220,38,38',   delay: 0.5, x: 2,  y: 60 },
+    { exam: 'NEET UG',   icon: '⚕️', color: '220,38,38',   delay: 1.5, x: 76, y: 78 },
+    { exam: 'JEE Mains', icon: '⚙️', color: '0,128,255',   delay: 2.5, x: 2,  y: 82 },
+    { exam: 'BPSC',      icon: '🗺️', color: '8,145,178',   delay: 1,   x: 84, y: 30 },
+    { exam: 'CTET',      icon: '📖', color: '217,119,6',   delay: 3,   x: 2,  y: 38 },
   ]
 
   return (

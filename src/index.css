@@ -604,3 +604,28 @@ p { color: var(--text-2); line-height: 1.7; }
   .hero-stats-grid { gap: 8px !important; }
   .hero-stats-grid > div { padding: 12px 8px !important; }
 }
+
+/* ── Hero floating cards — only show on wide screens ── */
+@media (max-width: 1100px) {
+  /* Hide left-side cards that overlap text on mid-screens */
+  .floating-card:nth-child(even) { opacity: 0.4; }
+}
+@media (max-width: 900px) {
+  .floating-card { display: none !important; }
+}
+
+/* ── Landing page — full responsive polish ── */
+.hero-title { font-size: clamp(2rem, 7vw, 4.5rem) !important; }
+
+/* Testimonials grid */
+@media (max-width: 768px) {
+  .testimonials-grid { grid-template-columns: 1fr !important; }
+  .features-grid { grid-template-columns: 1fr !important; }
+  .pricing-grid { grid-template-columns: 1fr !important; }
+}
+
+/* Story section image */
+@media (max-width: 768px) {
+  .story-layout { flex-direction: column !important; }
+  .story-image { width: 100% !important; max-height: 260px; }
+}

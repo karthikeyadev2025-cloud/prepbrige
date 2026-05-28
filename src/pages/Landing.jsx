@@ -325,17 +325,18 @@ function MagneticBtn({ children, to, style = {}, href }) {
 }
 
 function AnimCounter({ target, prefix = '', suffix = '' }) {
-  const [val, setVal] = useState(0)
+  const [val, setVal] = useState(() => Math.floor(target * 0.7))
   const [ref, visible] = useScrollReveal(0.3)
   const started = useRef(false)
   useEffect(() => {
     if (!visible || started.current) return
     started.current = true
-    const dur = 1800, start = Date.now()
+    const startVal = Math.floor(target * 0.7)
+    const dur = 1400, start = Date.now()
     const tick = () => {
       const p = Math.min((Date.now() - start) / dur, 1)
       const ease = 1 - Math.pow(1 - p, 4)
-      setVal(Math.round(ease * target))
+      setVal(Math.round(startVal + ease * (target - startVal)))
       if (p < 1) requestAnimationFrame(tick)
     }
     requestAnimationFrame(tick)
