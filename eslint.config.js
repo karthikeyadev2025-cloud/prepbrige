@@ -21,5 +21,12 @@ export default defineConfig([
       },
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
+    rules: {
+      'no-unused-vars': 'warn',
+      'no-empty': 'warn',
+      'no-useless-assignment': 'warn',
+      'no-useless-escape': 'warn',
+      'react-hooks/exhaustive-deps': 'warn'
+    }
   },
 ])
