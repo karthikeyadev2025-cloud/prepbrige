@@ -11,7 +11,7 @@ CREATE TYPE user_role AS ENUM ('student', 'admin', 'super-admin');
 CREATE TYPE subscription_tier AS ENUM ('free', 'trial', 'paid');
 
 CREATE TABLE IF NOT EXISTS public.profiles (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id TEXT PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     phone VARCHAR(30) UNIQUE,
     display_name VARCHAR(150) NOT NULL DEFAULT 'Anonymous User',
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS public.test_templates (
     duration_minutes INT NOT NULL DEFAULT 60,
     total_marks INT NOT NULL DEFAULT 100,
     is_published BOOLEAN NOT NULL DEFAULT FALSE,
-    created_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+    created_by TEXT REFERENCES public.profiles(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -115,7 +115,7 @@ CREATE TYPE attempt_status AS ENUM ('ongoing', 'submitted', 'abandoned');
 
 CREATE TABLE IF NOT EXISTS public.user_test_attempts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+    user_id TEXT REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
     test_template_id UUID REFERENCES public.test_templates(id) ON DELETE CASCADE NOT NULL,
     started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     expected_expiry_at TIMESTAMPTZ NOT NULL, -- Sever-side defined limit: started_at + duration
@@ -136,7 +136,7 @@ CREATE INDEX IF NOT EXISTS idx_attempts_status ON public.user_test_attempts(stat
 -- ─── 6. PAYMENTS AND AUDITING TABLE ──────────
 CREATE TABLE IF NOT EXISTS public.payments (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+    user_id TEXT REFERENCES public.profiles(id) ON DELETE SET NULL,
     razorpay_order_id VARCHAR(100) UNIQUE NOT NULL,
     razorpay_payment_id VARCHAR(100) UNIQUE,
     amount_paise INT NOT NULL,
@@ -187,53 +187,53 @@ ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
 
 -- 1. Profiles Policies
 CREATE POLICY user_read_own_profile ON public.profiles
-    FOR SELECT USING (auth.uid() = id);
+    FOR SELECT USING (auth.uid()::text = id);
 
 CREATE POLICY user_update_own_profile ON public.profiles
-    FOR UPDATE USING (auth.uid() = id);
+    FOR UPDATE USING (auth.uid()::text = id);
 
 CREATE POLICY admin_all_profiles ON public.profiles
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.profiles 
-            WHERE id = auth.uid() AND role IN ('admin', 'super-admin')
+            WHERE id = auth.uid()::text AND role IN ('admin', 'super-admin')
         )
     );
 
 -- 2. Test Attempt Policies
 CREATE POLICY user_read_own_attempts ON public.user_test_attempts
-    FOR SELECT USING (auth.uid() = user_id);
+    FOR SELECT USING (auth.uid()::text = user_id);
 
 CREATE POLICY user_insert_own_attempts ON public.user_test_attempts
-    FOR INSERT WITH CHECK (auth.uid() = user_id);
+    FOR INSERT WITH CHECK (auth.uid()::text = user_id);
 
 CREATE POLICY user_update_own_ongoing_attempts ON public.user_test_attempts
-    FOR UPDATE USING (auth.uid() = user_id AND status = 'ongoing');
+    FOR UPDATE USING (auth.uid()::text = user_id AND status = 'ongoing');
 
 CREATE POLICY admin_all_attempts ON public.user_test_attempts
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.profiles 
-            WHERE id = auth.uid() AND role IN ('admin', 'super-admin')
+            WHERE id = auth.uid()::text AND role IN ('admin', 'super-admin')
         )
     );
 
 -- 3. Payments Policies
 CREATE POLICY user_read_own_payments ON public.payments
-    FOR SELECT USING (auth.uid() = user_id);
+    FOR SELECT USING (auth.uid()::text = user_id);
 
 CREATE POLICY admin_all_payments ON public.payments
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.profiles 
-            WHERE id = auth.uid() AND role IN ('admin', 'super-admin')
+            WHERE id = auth.uid()::text AND role IN ('admin', 'super-admin')
         )
     );
 
 -- ─── 8. SECURE ENTERPRISE AUDITING & SYSTEM ACTION LOGGING ──────────
 CREATE TABLE IF NOT EXISTS public.audit_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    admin_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+    admin_id TEXT REFERENCES public.profiles(id) ON DELETE SET NULL,
     action_performed VARCHAR(255) NOT NULL,
     target_id VARCHAR(100),
     ip_address VARCHAR(45) NOT NULL,
@@ -249,7 +249,7 @@ CREATE POLICY admin_view_audit_logs ON public.audit_logs
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.profiles 
-            WHERE id = auth.uid() AND role IN ('admin', 'super-admin')
+            WHERE id = auth.uid()::text AND role IN ('admin', 'super-admin')
         )
     );
 
@@ -257,7 +257,7 @@ CREATE POLICY admin_insert_audit_logs ON public.audit_logs
     FOR INSERT WITH CHECK (
         EXISTS (
             SELECT 1 FROM public.profiles 
-            WHERE id = auth.uid() AND role IN ('admin', 'super-admin')
+            WHERE id = auth.uid()::text AND role IN ('admin', 'super-admin')
         )
     );
 
