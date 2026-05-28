@@ -16,7 +16,7 @@ export default function RevisionHub() {
     if (bookmarks && bookmarks.length > 0) {
       // Shuffle the bookmarks to create a fresh deck
       const shuffled = [...bookmarks].sort(() => 0.5 - Math.random())
-      setDeck(shuffled)
+      setDeck(shuffled) // eslint-disable-line react-hooks/set-state-in-effect
     }
   }, [bookmarks])
 

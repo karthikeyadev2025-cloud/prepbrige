@@ -42,7 +42,7 @@ export default function Profile() {
       const id = setInterval(update, 60 * 60 * 1000) // hourly
       return () => clearInterval(id)
     } else {
-      setRemaining('')
+      setRemaining('') // eslint-disable-line react-hooks/set-state-in-effect
     }
   }, [sub])
 

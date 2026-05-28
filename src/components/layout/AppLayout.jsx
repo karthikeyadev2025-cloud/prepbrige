@@ -8,7 +8,7 @@ import {
   LayoutDashboard, BookOpen, FileText, Newspaper, BrainCircuit,
   GraduationCap, Trophy, Bell, User, Settings, LogOut,
   ChevronLeft, ChevronRight, Search, Menu, Zap, Shield,
-  ClipboardList, Users, Palette
+  ClipboardList, Users, Palette, Layers
 } from 'lucide-react'
 
 const NAV_ITEMS = [
@@ -51,6 +51,7 @@ export default function AppLayout({ isAdmin = false }) {
   const items = isAdmin ? ADMIN_ITEMS : NAV_ITEMS
 
   // India Pride Ticker State
+  const [prideItems, setPrideItems] = useState([])
   const [tickerIndex, setTickerIndex] = useState(0)
 
   useEffect(() => {

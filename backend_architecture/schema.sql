@@ -7,9 +7,9 @@
 -- This table is isolated from frontend mutation.
 -- RLS policies will ensure ONLY the service_role key (server-side) can modify it.
 CREATE TABLE IF NOT EXISTS public.user_roles (
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+    user_id VARCHAR(255) PRIMARY KEY, -- Firebase UID
     role VARCHAR(20) NOT NULL DEFAULT 'student' CHECK (role IN ('student', 'admin', 'super_admin')),
-    granted_by UUID REFERENCES auth.users(id),
+    granted_by VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -21,7 +21,7 @@ CREATE POLICY "Allow server-side access only" ON public.user_roles FOR ALL USING
 -- Immutable ledger for all administrative actions
 CREATE TABLE IF NOT EXISTS public.audit_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    admin_id UUID REFERENCES auth.users(id) NOT NULL,
+    admin_id VARCHAR(255) NOT NULL, -- Firebase UID of the admin
     action_performed VARCHAR(100) NOT NULL,
     target_id VARCHAR(255), -- User ID, Question ID, etc.
     ip_address INET,
@@ -62,7 +62,7 @@ CREATE TYPE quiz_status AS ENUM ('active', 'submitted', 'terminated');
 
 CREATE TABLE IF NOT EXISTS public.quiz_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES auth.users(id) NOT NULL,
+    user_id VARCHAR(255) NOT NULL, -- Firebase UID
     exam_target VARCHAR(50) NOT NULL,
     start_time TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     duration_allotted_sec INT NOT NULL,
@@ -74,9 +74,11 @@ CREATE TABLE IF NOT EXISTS public.quiz_sessions (
 );
 
 -- Users can read their own sessions, Server controls mutations
+-- NOTE: In a hybrid architecture (Firebase Auth + Supabase DB), 
+-- you cannot use auth.uid() directly unless you pass the Firebase token as a custom JWT claim to Supabase.
+-- For standard REST API access, you should verify via your Vercel backend rather than relying purely on Supabase RLS.
 ALTER TABLE public.quiz_sessions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users view own sessions" ON public.quiz_sessions FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Server creates and evaluates" ON public.quiz_sessions FOR ALL USING (false);
+CREATE POLICY "Server controls all access" ON public.quiz_sessions FOR ALL USING (false);
 
 -- =================================================================================
 -- INITIALIZATION FUNCTION

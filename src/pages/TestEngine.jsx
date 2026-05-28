@@ -39,14 +39,6 @@ export default function TestEngine() {
     loadTest()
   }, [testId])
 
-  if (loading || !test || questions.length === 0) {
-    return (
-      <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-        <div className="spinner"></div>
-        <p style={{ marginLeft: 16 }}>Loading Test Engine...</p>
-      </div>
-    )
-  }
   const [showExitConfirm, setShowExitConfirm] = useState(false)
   const { addTestResult, addPoints } = useAppStore()
 
@@ -69,7 +61,7 @@ export default function TestEngine() {
     const rank = Math.floor(crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff * 5000) + 100
     const res = {
       testId,
-      title: test.title,
+      title: test?.title || 'Mock Test',
       correct, wrong, skipped,
       score: Math.max(0, score).toFixed(1),
       maxScore,
@@ -96,6 +88,15 @@ export default function TestEngine() {
     }, 1000)
     return () => clearInterval(timer)
   }, [submitted, handleSubmit])
+
+  if (loading || !test || questions.length === 0) {
+    return (
+      <div className="page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <div className="spinner"></div>
+        <p style={{ marginLeft: 16 }}>Loading Test Engine...</p>
+      </div>
+    )
+  }
 
   const formatTime = (s) => {
     const m = Math.floor(s / 60)
