@@ -246,6 +246,32 @@ export default function AppLayout({ isAdmin = false }) {
       <main className={`main-content ${collapsed ? 'sidebar-collapsed' : ''}`} style={{ paddingTop: prideItems.length > 0 ? 'calc(var(--topbar-h, 64px) + 32px)' : undefined }}>
         <Outlet />
       </main>
+
+      {/* Bottom Navigation (Mobile Native UX) */}
+      {!isAdmin && (
+        <nav className="bottom-nav">
+          <NavLink to="/app/dashboard" className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+            <LayoutDashboard size={22} />
+            <span>Home</span>
+          </NavLink>
+          <NavLink to="/app/exams" className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+            <BookOpen size={22} />
+            <span>Exams</span>
+          </NavLink>
+          <NavLink to="/app/mock-tests" className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+            <ClipboardList size={22} />
+            <span>Mocks</span>
+          </NavLink>
+          <NavLink to="/app/planner" className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+            <Zap size={22} />
+            <span>Planner</span>
+          </NavLink>
+          <NavLink to="/app/profile" className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
+            <User size={22} />
+            <span>Profile</span>
+          </NavLink>
+        </nav>
+      )}
     </div>
   )
 }
