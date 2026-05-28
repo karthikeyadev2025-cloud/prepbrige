@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { MOCK_TESTS, QUESTION_BANK } from '../data/questions'
 import { useAppStore } from '../store/useStore'
+import { saveTestResult } from '../services/resultService'
 import { toast } from 'react-hot-toast'
 import { Clock, Flag, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
 
@@ -142,7 +143,7 @@ export default function TestEngine() {
   const { addTestResult, addPoints } = useAppStore()
 
   // ⚠️ CRITICAL: handleSubmit MUST be defined before the useEffect that references it
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (submitted) return
     setSubmitted(true)
     let correct = 0, wrong = 0, skipped = 0
@@ -168,7 +169,8 @@ export default function TestEngine() {
       rank,
       date: new Date().toISOString()
     }
-    setResult(res)
+    // Save result to Supabase/localStorage
+    await saveTestResult(res)
     addTestResult(res)
     addPoints(Math.floor(correct * 5))
     setShowResult(true)

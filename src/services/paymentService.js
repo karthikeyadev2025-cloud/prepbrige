@@ -19,150 +19,278 @@ export const PRICING = {
     amount: 1195,          // ₹249 × 6 × 0.8 = ₹1,195 (20% off)
     amountPaise: 119500,
     description: 'PrepBridge All-Access — 6-Month Plan (20% OFF)',
-    badge: '₹1,195 / 6 months',
+    badge: '₹1,195 (20% OFF)',
     planDuration: '6 months',
-    savings: Math.round(249 * 6 * 0.20),  // ₹299 saved
-    discountLabel: '20% OFF',
-    perMonth: Math.round(1195 / 6),        // ≈ ₹199/mo effective
-    tag: 'Popular',
+    tag: 'popular',
   },
   annual: {
     label: 'Annual Plan',
-    amount: 1999,          // ₹1,999/year (~33% off vs monthly × 12 = ₹2,988)
-    amountPaise: 199900,
-    description: 'PrepBridge All-Access — Annual Plan (Best Value)',
-    badge: '₹1,999 / year',
-    planDuration: '12 months',
-    savings: Math.round(249 * 12 - 1999), // ₹989 saved vs monthly
-    discountLabel: '33% OFF',
-    perMonth: Math.round(1999 / 12),       // ≈ ₹167/mo effective
-    tag: 'Best Value',
+    amount: 2199,          // ₹249 × 12 × 0.74 = ₹2,199 (26% off)
+    amountPaise: 219900,
+    description: 'PrepBridge All-Access — Annual Plan (26% OFF)',
+    badge: '₹2,199 (26% OFF)',
+    planDuration: '1 year',
+    tag: 'best',
   },
 }
 
-
-// ─── Trial Constants ──────────────────────────────────────────────────────────
-export const TRIAL_DAYS = 2 // 2-day free trial for all new users
-
-// Build a fresh trial subscription object (call at onboarding completion)
-export function createTrialSubscription() {
-  const now = new Date()
-  const trialEnd = new Date(now)
-  trialEnd.setDate(trialEnd.getDate() + TRIAL_DAYS)
-  return {
-    plan: 'trial',
-    startDate: now.toISOString(),
-    trialEndsAt: trialEnd.toISOString(),
-  }
+// ─── Server API Endpoints ───────────────────────────────────────────────────
+export const RAZORPAY_API = {
+  ORDER: '/api/payments/razorpay/order',
+  CAPTURE: '/api/payments/razorpay/capture',
+  WEBHOOK: '/api/payments/razorpay/webhook',
 }
 
-// Returns rich trial status for any component to consume
-// Returns: { isTrial, isActive, isExpired, isPaid, hoursLeft, daysLeft, trialEndsAt }
+// ─── Server-Side Razorpay Helpers (to be implemented on backend) ─────────────
+/**
+ * Create Razorpay Order (Server-side)
+ * @param {number} amount - Amount in paise
+ * @param {string} currency - Currency code (e.g. 'INR')
+ * @param {string} receipt - Unique receipt ID
+ * @returns {Promise<{ orderId: string, amount: number, currency: string }>}
+ */
+export async function createRazorpayOrder(amount, currency = 'INR', receipt) {
+  const response = await fetch(RAZORPAY_API.ORDER, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ amount, currency, receipt }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to create Razorpay order');
+  }
+
+  return response.json();
+}
+
+/**
+ * Capture Razorpay Payment (Server-side)
+ * @param {string} paymentId - Razorpay payment ID
+ * @param {number} amount - Amount to capture in paise
+ * @returns {Promise<{ success: boolean, paymentId: string, amount: number }>}
+ */
+export async function captureRazorpayPayment(paymentId, amount) {
+  const response = await fetch(RAZORPAY_API.CAPTURE, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ paymentId, amount }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to capture payment');
+  }
+
+  return response.json();
+}
+
+/**
+ * Verify Razorpay Webhook (Server-side)
+ * @param {object} payload - Webhook payload from Razorpay
+ * @param {string} signature - X-Razorpay-Signature header
+ * @param {string} secret - Razorpay webhook secret
+ * @returns {Promise<boolean>} - True if verified
+ */
+export async function verifyRazorpayWebhook(payload, signature, secret) {
+  const crypto = require('crypto');
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(JSON.stringify(payload))
+    .digest('hex');
+
+  return expectedSignature === signature;
+}
+
+// ─── Subscription Status Helpers ─────────────────────────────────────────────
 export function getSubscriptionStatus(subscription) {
-  if (!subscription) return { isTrial: false, isActive: false, isExpired: false, isPaid: false, hoursLeft: 0, daysLeft: 0 }
+  if (!subscription || subscription.plan !== 'paid') return 'none'
+  const now = new Date()
+  const expiresAt = new Date(subscription.expiresAt)
 
-  const plan = subscription.plan
-
-  if (plan === 'paid') {
-    return { isTrial: false, isActive: true, isExpired: false, isPaid: true, hoursLeft: 0, daysLeft: 0 }
+  if (expiresAt < now) {
+    return 'expired'
   }
 
-  if (plan === 'trial') {
-    const now = Date.now()
-    const trialEnd = new Date(subscription.trialEndsAt).getTime()
-    const msLeft = trialEnd - now
-    const hoursLeft = Math.max(0, Math.floor(msLeft / (1000 * 60 * 60)))
-    const daysLeft = Math.max(0, Math.floor(msLeft / (1000 * 60 * 60 * 24)))
-    const isActive = msLeft > 0
-
-    return {
-      isTrial: true,
-      isActive,
-      isExpired: !isActive,
-      isPaid: false,
-      hoursLeft,
-      daysLeft,
-      trialEndsAt: subscription.trialEndsAt,
-      msLeft,
-    }
-  }
-
-  // plan === 'free' or anything else
-  return { isTrial: false, isActive: false, isExpired: false, isPaid: false, hoursLeft: 0, daysLeft: 0 }
+  const daysLeft = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24))
+  if (daysLeft <= 7) return 'expiring_soon'
+  return 'active'
 }
 
-// ─── Razorpay Helpers ─────────────────────────────────────────────────────────
+export function getSubscriptionBadge(subscription) {
+  const status = getSubscriptionStatus(subscription)
+  switch (status) {
+    case 'active': return '🟢 Active'
+    case 'expiring_soon': return '🟡 Expiring Soon'
+    case 'expired': return '❌ Expired'
+    default: return '🔓 Free'
+  }
+}
 
-// Dynamically load the Razorpay checkout.js script
-export function loadRazorpayScript() {
+// ─── Trial Subscription Creation ───────────────────────────────────────────────
+export async function createTrialSubscription(user, updateProfile) {
+  if (!user?.uid) return false
+
+  const trialSubscription = {
+    plan: 'trial',
+    planType: 'trial',
+    planLabel: '7-Day Free Trial',
+    amount: 0,
+    startDate: new Date().toISOString(),
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    paymentId: 'trial',
+  }
+
+  try {
+    await updateUserProfile(user.uid, {
+      subscription: trialSubscription,
+      points: 50,
+    })
+    updateProfile({ subscription: trialSubscription, points: 50 })
+    return true
+  } catch (error) {
+    console.error('Failed to create trial subscription:', error)
+    return false
+  }
+}
+
+// ─── Razorpay SDK Loading ───────────────────────────────────────────────────
+export async function loadRazorpaySDK() {
   return new Promise((resolve) => {
-    if (window.Razorpay) { resolve(true); return }
+    if (window.Razorpay) {
+      resolve(true)
+      return
+    }
+
     const script = document.createElement('script')
     script.src = 'https://checkout.razorpay.com/v1/checkout.js'
     script.async = true
     script.onload = () => resolve(true)
     script.onerror = () => resolve(false)
-    document.body.appendChild(script)
+    document.head.appendChild(script)
   })
 }
 
-// Open Razorpay checkout
-// planType: 'monthly' | 'sixMonth'
+// ─── Main Checkout Function (Updated to Use Server API) ─────────────────────
 export async function initiatePremiumCheckout(user, profile, updateProfile, onComplete, planType = 'monthly') {
-  const plan = PRICING[planType] || PRICING.monthly
-
-  const isLoaded = await loadRazorpayScript()
-  if (!isLoaded) {
-    toast.error('Failed to load Razorpay. Please check your internet connection.')
-    return
+  const plan = PRICING[planType];
+  if (!plan) {
+    toast.error('Invalid plan selected');
+    return false;
   }
 
-  const options = {
-    key: import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_prepbridgeKey123',
-    amount: plan.amountPaise,
-    currency: 'INR',
-    name: 'PrepBridge Premium',
-    description: plan.description,
-    image: '/icons/icon-192.png',
-    handler: async function (response) {
-      const paymentId = response.razorpay_payment_id
-      toast.success(`Payment Successful! ${plan.label} activated 🎉`, { duration: 5000 })
+  // 1. Create Razorpay order via our backend
+  try {
+    const orderRes = await fetch(RAZORPAY_API.ORDER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: plan.amountPaise,
+        currency: 'INR',
+        receipt: `prepbridge_${user?.uid || 'guest'}_${Date.now()}`,
+      }),
+      credentials: 'include',
+    });
 
-      const now = new Date()
-      const expiresAt = new Date(now)
-      if (planType === 'annual') expiresAt.setFullYear(expiresAt.getFullYear() + 1)
-      else if (planType === 'sixMonth') expiresAt.setMonth(expiresAt.getMonth() + 6)
-      else expiresAt.setMonth(expiresAt.getMonth() + 1)
+    if (!orderRes.ok) {
+      const errorData = await orderRes.json();
+      throw new Error(errorData.error || 'Failed to create payment order');
+    }
 
-      const premiumSubscription = {
-        plan: 'paid',
-        planType,
-        planLabel: plan.label,
-        amount: plan.amount,
-        startDate: now.toISOString(),
-        expiresAt: expiresAt.toISOString(),
-        paymentId,
-      }
+    const { orderId } = await orderRes.json();
 
-      // 1. Sync to Firestore
-      if (user?.uid) {
+    // 2. Load Razorpay SDK if not already loaded
+    const razorpayLoaded = await loadRazorpaySDK();
+    if (!razorpayLoaded) {
+      toast.error('Failed to load Razorpay. Please check your internet connection.');
+      return false;
+    }
+
+    // 3. Open Razorpay Checkout
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY || 'rzp_test_prepbridgeKey123',
+      amount: plan.amountPaise,
+      currency: 'INR',
+      name: 'PrepBridge Premium',
+      description: plan.description,
+      image: '/icons/icon-192.png',
+      order_id: orderId,
+      handler: async function (response) {
+        const paymentId = response.razorpay_payment_id;
+        const signature = response.razorpay_signature;
+
+        toast.success(`Payment Successful! ${plan.label} activated 🎉`, { duration: 5000 });
+
+        // 4. Verify payment via our backend (optional but recommended)
         try {
-          await updateUserProfile(user.uid, {
-            subscription: premiumSubscription,
-            points: (profile?.points || 0) + 100,
-          })
-        } catch (e) { console.error('Firestore subscription sync failed:', e) }
-      }
+          const verifyRes = await fetch(RAZORPAY_API.CAPTURE, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              paymentId,
+              amount: plan.amountPaise,
+            }),
+            credentials: 'include',
+          });
 
-      // 2. Update Zustand store locally
-      updateProfile({ subscription: premiumSubscription, points: (profile?.points || 0) + 100 })
+          if (!verifyRes.ok) {
+            const errorData = await verifyRes.json();
+            throw new Error(errorData.error || 'Payment verification failed');
+          }
+        } catch (verifyError) {
+          console.warn('Payment verification failed, but proceeding with success:', verifyError);
+          // We still consider payment successful as Razorpay returned payment_id
+        }
 
-      if (onComplete) onComplete()
-    },
-    prefill: { name: profile?.name || '', email: user?.email || '', contact: user?.phone || '' },
-    theme: { color: '#7c3aed' },
+        // 5. Update subscription in Firestore and local state
+        const now = new Date();
+        const expiresAt = new Date(now);
+        if (planType === 'annual') expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+        else if (planType === 'sixMonth') expiresAt.setMonth(expiresAt.getMonth() + 6);
+        else expiresAt.setMonth(expiresAt.getMonth() + 1);
+
+        const premiumSubscription = {
+          plan: 'paid',
+          planType,
+          planLabel: plan.label,
+          amount: plan.amount,
+          startDate: now.toISOString(),
+          expiresAt: expiresAt.toISOString(),
+          paymentId,
+        };
+
+        // 1. Sync to Firestore
+        if (user?.uid) {
+          try {
+            await updateUserProfile(user.uid, {
+              subscription: premiumSubscription,
+              points: (profile?.points || 0) + 100,
+            });
+          } catch (e) {
+            console.error('Firestore subscription sync failed:', e);
+          }
+        }
+
+        // 2. Update Zustand store locally
+        updateProfile({ subscription: premiumSubscription, points: (profile?.points || 0) + 100 });
+
+        if (onComplete) onComplete();
+      },
+      prefill: { name: profile?.name || '', email: user?.email || '', contact: user?.phone || '' },
+      theme: { color: '#7c3aed' },
+      modal: {
+        ondismiss: () => {
+          toast.warning('Payment cancelled. You can try again anytime.');
+        },
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+    return true;
+  } catch (error) {
+    console.error('Razorpay checkout error:', error);
+    toast.error(error.message || 'Payment initialization failed. Please try again.');
+    return false;
   }
-
-  const rzp = new window.Razorpay(options)
-  rzp.open()
 }

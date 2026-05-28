@@ -195,6 +195,9 @@ export default function MockTest() {
                   </span>
                 )}
               </div>
+              <div style={{ fontSize: '0.82rem', color: 'var(--text-2)' }}>
+                {test.syllabus?.slice(0, 3).map(s => s).join(', ')}{test.syllabus?.length > 3 && '...'}
+              </div>
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: '0.78rem', color: 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 4 }}>
                   <Clock size={12} /> {test.duration} mins

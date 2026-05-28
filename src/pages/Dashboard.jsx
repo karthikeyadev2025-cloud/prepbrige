@@ -49,7 +49,8 @@ const getSyllabusProgress = (target) => {
     try {
       return JSON.parse(savedProgress)
     } catch (e) {
-      console.error('Failed to parse syllabus progress:', e)
+      console.warn('Failed to parse syllabus progress, using default:', e)
+      // corrupted data; fall through to defaultSyllabus below
     }
   }
 
@@ -757,7 +758,7 @@ function PortalAutoSync() {
         const updated = list.map(s => ({ ...s, pct: Math.min(100, s.pct + 5) }))
         localStorage.setItem(`prepbridge_syllabus_progress_${primaryTarget}`, JSON.stringify(updated))
       } catch (e) {
-        console.error('Failed to sync syllabus progress boost:', e)
+        console.warn('Syllabus boost sync failed:', e)
       }
       
       toast.success('PrepBridge Portal Synced & Optimized Successfully! 🔄✨', { duration: 4000 })
@@ -851,7 +852,7 @@ export default function Dashboard() {
       localStorage.setItem(`prepbridge_syllabus_progress_${target}`, JSON.stringify(updated))
       setSyllabusList(updated)
     } catch (e) {
-      console.error('Failed to update syllabus progress:', e)
+      console.warn('Failed to update syllabus progress:', e)
     }
   }
 
@@ -873,7 +874,7 @@ export default function Dashboard() {
       // Dynamic syllabus increment!
       updateSyllabusProgress(primaryTarget, dailyQuiz.subject || 'General', 4)
     } else {
-      toast.error('Incorrect. Review the concept explanation below to strengthen your understanding!')
+      toast.error('Incorrect. Review the explanation below.')
     }
     incrementStreak()
   }
