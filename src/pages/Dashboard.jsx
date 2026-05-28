@@ -772,7 +772,6 @@ export default function Dashboard() {
   }
 
   const [mockTests, setMockTests] = useState([])
-  const [questionBankCount, setQuestionBankCount] = useState(0)
   const [currentAffairs, setCurrentAffairs] = useState([])
   const [studyPointsDB, setStudyPointsDB] = useState({})
 
@@ -785,7 +784,6 @@ export default function Dashboard() {
       
       // Load total questions
       const count = await getSupabaseQuestionsCount(primaryTarget)
-      setQuestionBankCount(count)
       
       // Load daily quiz
       const quiz = await getSupabaseDailyQuiz(primaryTarget)

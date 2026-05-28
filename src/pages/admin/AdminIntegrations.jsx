@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Settings, CreditCard, Shield, Mail, Key, Phone, CloudLightning, Save, HelpCircle, Eye, EyeOff, Smartphone } from 'lucide-react'
+import { Settings, CreditCard, Shield, Key, Phone, CloudLightning, Save, HelpCircle, Eye, EyeOff, Smartphone } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { getSupabaseSettings, saveSupabaseSettings } from '../../services/supabaseService'
 

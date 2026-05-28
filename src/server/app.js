@@ -58,7 +58,7 @@ app.get('/api/admin/audit-logs', authenticateUser, restrictToRoles(['admin', 'su
 });
 
 // Global Error handling boundary
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error('[Global Crash Boundary] Caught unhandled route exception:', err.message);
   
   const status = err.status || 500;

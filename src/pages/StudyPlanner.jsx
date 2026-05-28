@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useUserStore } from '../store/useStore'
-import { Calendar, Target, CheckCircle, RefreshCw, Brain, Clock, Plus, Zap } from 'lucide-react'
+import { Target, CheckCircle, RefreshCw, Brain, Clock, Plus, Zap } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 export default function StudyPlanner() {
@@ -19,7 +19,7 @@ export default function StudyPlanner() {
         if (localPlan) {
           setPlan(JSON.parse(localPlan))
         }
-      } catch (err) { console.error(err) }
+      } catch { /* ignore */ }
     }
     loadPlan()
   }, [profile])

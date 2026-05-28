@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, Shield, Ban, Eye, Download } from 'lucide-react'
+import { Search, Shield, Ban, Eye } from 'lucide-react'
 import { getAllSupabaseProfiles, upsertSupabaseProfile } from '../../services/supabaseService'
 import { PRICING } from '../../services/paymentService'
 import { toast } from 'react-hot-toast'

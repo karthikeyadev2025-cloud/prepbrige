@@ -21,12 +21,6 @@ const incrementQueryCount = () => {
   return count
 }
 const getQueryCount = () => parseInt(localStorage.getItem(getTodayKey()) || '0', 10)
-const isFreeTierLimitReached = (subscription) => {
-  const sub = getSubscriptionStatus(subscription)
-  return !sub.isPaid && getQueryCount() >= 5
-}
-
-// Exam-specific suggested questions based on primaryTarget
 const EXAM_SUGGESTIONS = {
   default: [
     'Explain Fundamental Rights in simple words',

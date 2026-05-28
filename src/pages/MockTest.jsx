@@ -92,12 +92,6 @@ export default function MockTest() {
     )
   }, [tests, filter])
 
-  // Tests relevant to user's selected exams (for "For You" section)
-  const forYouTests = useMemo(() => {
-    if (userExams.length === 0) return []
-    return tests.filter(t => userExams.includes(t.exam) || userExams.some(e => t.exam?.startsWith(e) || e?.startsWith(t.exam)))
-  }, [tests, userExams])
-
   return (
     <div className="page animate-fade-in">
       <div className="page-header">

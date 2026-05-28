@@ -7,7 +7,7 @@
 // Load dotenv only when running standalone node server
 try {
   require('dotenv').config();
-} catch (e) {
+} catch {
   // Ignored in serverless/production containers where env is injected natively
 }
 

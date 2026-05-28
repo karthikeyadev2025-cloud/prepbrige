@@ -27,7 +27,7 @@ export default function Profile() {
     fetchStats()
   }, [profile])
   const sub = getSubscriptionStatus(profile?.subscription)
-  const [remaining, setRemaining] = useState('')
+  const [remaining, setRemaining] = useState("")
   useEffect(() => {
     if (sub.isTrial && sub.isActive) {
       const update = () => {

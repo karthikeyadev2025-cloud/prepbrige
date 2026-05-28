@@ -242,7 +242,7 @@ export default function AdminDashboard() {
             </caption>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-3)' }}>
-                {['Aspirant', 'State', 'Primary Locked Target', 'Streak', 'Tier Plan'].map((header, index) => (
+                {['Aspirant', 'State', 'Primary Locked Target', 'Streak', 'Tier Plan'].map((header) => (
                   <th key={header} scope="col" style={{ textAlign: 'left', padding: '10px 12px', fontSize: '0.78rem', color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                     {header}
                   </th>

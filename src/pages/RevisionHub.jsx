@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useUserStore, useAppStore } from '../store/useStore'
-import { Brain, Layers, RefreshCw, CheckCircle, XCircle, ArrowRight } from 'lucide-react'
+import { Layers, RefreshCw, CheckCircle, XCircle, ArrowRight } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 export default function RevisionHub() {
@@ -12,11 +12,11 @@ export default function RevisionHub() {
 
   // Initialize deck from bookmarks
   useEffect(() => {
-    // We expect bookmarks to be an array of objects: { id, type, question, answer, topic }
     if (bookmarks && bookmarks.length > 0) {
-      // Shuffle the bookmarks to create a fresh deck
       const shuffled = [...bookmarks].sort(() => 0.5 - Math.random())
-      setDeck(shuffled) // eslint-disable-line react-hooks/set-state-in-effect
+      setDeck(shuffled)
+    } else {
+      setDeck([])
     }
   }, [bookmarks])
 
