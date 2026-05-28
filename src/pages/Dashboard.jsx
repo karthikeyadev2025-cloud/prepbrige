@@ -17,6 +17,7 @@ import {
   Clock, Zap, Trophy, Calendar, ArrowRight, Play, Timer, RefreshCw, X, Brain
 } from 'lucide-react'
 import { getSubscriptionStatus } from '../services/paymentService'
+import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
 
 function StatCard({ icon, label, value, trend, color, bg }) {
   return (
@@ -1017,6 +1018,72 @@ export default function Dashboard() {
                 <span style={{ fontSize: '0.78rem', fontWeight: 700, color: e.days < 10 ? 'var(--red)' : e.days < 30 ? 'var(--amber)' : 'var(--emerald)' }}>{e.days}d left</span>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+      {/* Anomaly-Free Performance Analytics & Trajectory Tracker */}
+      <div className="grid-2" style={{ marginBottom: 28, gap: 20 }}>
+        {/* Score Trajectory Line Chart */}
+        <div className="card card-p" style={{ minHeight: '340px', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <TrendingUp size={18} color="var(--cyan)" /> Performance Trajectory
+            </h4>
+            <span style={{ fontSize: '0.72rem', background: 'var(--cyan-10)', color: 'var(--cyan)', padding: '3px 8px', borderRadius: 'var(--r-full)', fontWeight: 700 }}>AI Predicted: AIR 840</span>
+          </div>
+          <div style={{ flex: 1, width: '100%', height: '240px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={[
+                { name: 'Mock 1', score: 62, avg: 58 },
+                { name: 'Mock 2', score: 68, avg: 60 },
+                { name: 'Mock 3', score: 75, avg: 62 },
+                { name: 'Mock 4', score: 71, avg: 61 },
+                { name: 'Mock 5', score: 84, avg: 64 }
+              ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis dataKey="name" stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} />
+                <YAxis stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} domain={[0, 100]} />
+                <Tooltip contentStyle={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', color: 'var(--text-1)' }} />
+                <Legend style={{ fontSize: '0.8rem' }} />
+                <Line name="My Score" type="monotone" dataKey="score" stroke="var(--cyan)" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                <Line name="Batch Avg" type="monotone" dataKey="avg" stroke="var(--purple)" strokeWidth={2} strokeDasharray="4 4" dot={{ r: 3 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Subject Accuracy Rates Bar Chart */}
+        <div className="card card-p" style={{ minHeight: '340px', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Target size={18} color="var(--purple)" /> Subject Accuracy Rates
+            </h4>
+            <span style={{ fontSize: '0.72rem', background: 'var(--purple-10)', color: 'var(--purple)', padding: '3px 8px', borderRadius: 'var(--r-full)', fontWeight: 700 }}>Polity Dominance</span>
+          </div>
+          <div style={{ flex: 1, width: '100%', height: '240px' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={[
+                { subject: 'Polity', accuracy: 82 },
+                { subject: 'History', accuracy: 65 },
+                { subject: 'Economy', accuracy: 78 },
+                { subject: 'Geography', accuracy: 70 },
+                { subject: 'Science', accuracy: 60 }
+              ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis dataKey="subject" stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} />
+                <YAxis stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} domain={[0, 100]} />
+                <Tooltip contentStyle={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', color: 'var(--text-1)' }} />
+                <Bar name="Accuracy %" dataKey="accuracy" fill="url(#accuracyGrad)" radius={[4, 4, 0, 0]}>
+                  {/* Gradient fill integration */}
+                  <defs>
+                    <linearGradient id="accuracyGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--purple)" stopOpacity={0.85} />
+                      <stop offset="100%" stopColor="var(--cyan)" stopOpacity={0.35} />
+                    </linearGradient>
+                  </defs>
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>

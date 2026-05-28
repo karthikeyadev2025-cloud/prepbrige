@@ -6,16 +6,16 @@ import { toast } from 'react-hot-toast'
 
 const MOCK_USERS = [
   { id:1, name:'Arjun Sharma', email:'arjun@gmail.com', phone:'+91 9876543210', state:'Rajasthan', exams:['UPSC','SSC CGL'], joined:'2025-01-15', plan:'paid', status:'active', streak:45, tests:23 },
-  { id:2, name:'Priya Nair', email:'priya.nair@gmail.com', phone:'+91 9812345678', state:'Kerala', exams:['IBPS PO','SBI PO'], joined:'2025-02-10', plan:'paid', status:'active', streak:38, tests:31 },
+  { id:2, name:'Priya Nair', email:'priya.nair@gmail.com', phone:'+91 9812345678', state:'Kerala', exams:['IBPS PO','SBI PO'], joined:'2025-02-10', plan:'paid', status:'testing', streak:38, tests:31 },
   { id:3, name:'Ravi Kumar', email:'ravi.kumar@yahoo.com', phone:'+91 9988776655', state:'Bihar', exams:['SSC CGL','RRB NTPC'], joined:'2025-01-20', plan:'free', status:'active', streak:52, tests:18 },
-  { id:4, name:'Anita Patel', email:'anita.patel@gmail.com', phone:'+91 9765432109', state:'Gujarat', exams:['UPSC','GPSC'], joined:'2025-03-05', plan:'paid', status:'active', streak:29, tests:15 },
+  { id:4, name:'Anita Patel', email:'anita.patel@gmail.com', phone:'+91 9765432109', state:'Gujarat', exams:['UPSC','GPSC'], joined:'2025-03-05', plan:'paid', status:'testing', streak:29, tests:15 },
   { id:5, name:'Suresh Rao', email:'suresh.rao@hotmail.com', phone:'+91 9345678901', state:'Karnataka', exams:['RRB NTPC','KPSC'], joined:'2025-02-28', plan:'free', status:'inactive', streak:0, tests:7 },
   { id:6, name:'Kavya Singh', email:'kavya.singh@gmail.com', phone:'+91 9654321098', state:'UP', exams:['CTET','UPPSC'], joined:'2025-04-01', plan:'paid', status:'active', streak:33, tests:28 },
   { id:7, name:'Deepa Reddy', email:'deepa.reddy@gmail.com', phone:'+91 9543210987', state:'Telangana', exams:['SBI PO','IBPS Clerk'], joined:'2025-01-08', plan:'paid', status:'active', streak:48, tests:42 },
   { id:8, name:'Mohit Jain', email:'mohit.jain@gmail.com', phone:'+91 9432109876', state:'MP', exams:['SSC CGL','MPPSC'], joined:'2025-03-20', plan:'free', status:'suspended', streak:0, tests:5 },
 ]
 
-const STATUS_COLORS = { active:'var(--emerald)', inactive:'var(--amber)', suspended:'var(--red)' }
+const STATUS_COLORS = { active:'var(--emerald)', inactive:'var(--amber)', suspended:'var(--red)', testing:'var(--purple)' }
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([])
@@ -23,6 +23,7 @@ export default function AdminUsers() {
   const [planFilter, setPlanFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
   const [selectedUser, setSelectedUser] = useState(null)
+  const [selectedUserIds, setSelectedUserIds] = useState(new Set())
 
   // 1. Fetch live users from Supabase Database profiles table
   useEffect(() => {
@@ -81,6 +82,37 @@ export default function AdminUsers() {
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, plan: nextPlan } : u))
       toast.success(`Mock local user plan updated to ${nextPlan === 'paid' ? `Paid (${PRICING.monthly.badge})` : 'Free'}!`)
     }
+  }
+
+  const toggleSelectUser = (id) => {
+    setSelectedUserIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const toggleSelectAll = () => {
+    if (selectedUserIds.size === filtered.length && filtered.length > 0) {
+      setSelectedUserIds(new Set())
+    } else {
+      setSelectedUserIds(new Set(filtered.map(u => u.id)))
+    }
+  }
+
+  const handleMassSuspend = () => {
+    if (selectedUserIds.size === 0) return
+    setUsers(prev => prev.map(u => selectedUserIds.has(u.id) ? { ...u, status: 'suspended' } : u))
+    setSelectedUserIds(new Set())
+    toast.success('Selected users suspended successfully! 🚫')
+  }
+
+  const handleMassActivate = () => {
+    if (selectedUserIds.size === 0) return
+    setUsers(prev => prev.map(u => selectedUserIds.has(u.id) ? { ...u, status: 'active' } : u))
+    setSelectedUserIds(new Set())
+    toast.success('Selected users activated successfully! 🟢')
   }
 
   const filtered = users.filter(u => {
@@ -174,6 +206,24 @@ export default function AdminUsers() {
 
       {/* Users Table */}
       <section className="users-table-section" aria-label="Users table">
+        {selectedUserIds.size > 0 && (
+          <div className="card card-p" style={{ padding: '12px 18px', marginBottom: 14, background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', animation: 'fadeIn 0.2s ease' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-1)' }}>
+              Selected <strong>{selectedUserIds.size}</strong> user(s)
+            </span>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={handleMassActivate} className="btn btn-emerald btn-sm" style={{ padding: '6px 14px', fontSize: '0.78rem', minHeight: '32px' }}>
+                🟢 Activate Selected
+              </button>
+              <button onClick={handleMassSuspend} className="btn btn-outline btn-sm" style={{ padding: '6px 14px', fontSize: '0.78rem', minHeight: '32px', color: 'var(--red)', borderColor: 'rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.05)' }}>
+                🚫 Suspend Selected
+              </button>
+              <button onClick={() => setSelectedUserIds(new Set())} className="btn btn-ghost btn-sm" style={{ padding: '6px 14px', fontSize: '0.78rem', minHeight: '32px', color: 'var(--text-3)' }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
         <div className="card" style={{ overflow: 'hidden' }}>
           <div className="table-container" style={{ overflowX: 'auto' }}>
             <table role="table" aria-label="User accounts list">
@@ -182,6 +232,15 @@ export default function AdminUsers() {
               </caption>
               <thead>
                 <tr style={{ background: 'var(--bg-3)', borderBottom: '1px solid var(--border)' }}>
+                  <th scope="col" style={{ padding: '12px 16px', width: '48px', textAlign: 'center' }}>
+                    <input
+                      type="checkbox"
+                      style={{ cursor: 'pointer', minHeight: '20px', minWidth: '20px' }}
+                      checked={selectedUserIds.size === filtered.length && filtered.length > 0}
+                      onChange={toggleSelectAll}
+                      aria-label="Select all users"
+                    />
+                  </th>
                   {['User', 'State', 'Primary Target', 'Slogan Tagline', 'Exams', 'Joined', 'Plan'].map((header, index) => (
                     <th key={header} scope="col" style={{ padding: '12px 16px', textAlign: 'left', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-3)', whiteSpace: 'nowrap' }}>
                       {header}
@@ -196,7 +255,16 @@ export default function AdminUsers() {
               </thead>
               <tbody>
                 {filtered.map(user => (
-                  <tr key={user.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}>
+                  <tr key={user.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s', background: selectedUserIds.has(user.id) ? 'rgba(0,212,255,0.03)' : undefined }}>
+                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                      <input
+                        type="checkbox"
+                        style={{ cursor: 'pointer', minHeight: '20px', minWidth: '20px' }}
+                        checked={selectedUserIds.has(user.id)}
+                        onChange={() => toggleSelectUser(user.id)}
+                        aria-label={`Select ${user.name}`}
+                      />
+                    </td>
                     <td style={{ padding: '12px 16px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         {user.photoURL ? (
