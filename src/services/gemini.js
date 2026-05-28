@@ -253,10 +253,11 @@ Competitive teaching exams place huge emphasis on child development theories, le
 }
 
 export async function askGemini(userMessage, chatHistory = [], language = 'en', examContext = [], base64Image = null, mimeType = 'image/jpeg') {
-  // Throw a specific, identifiable error so the UI can show a clear setup message
+  // Use a fallback-friendly error when VITE_GEMINI_API_KEY is not defined
   if (!GEMINI_API_KEY) {
-    const err = new Error('NO_API_KEY')
-    err.message = 'NO_API_KEY'
+    console.warn('[Gemini] VITE_GEMINI_API_KEY is not defined. Using local offline fallback.')
+    const err = new Error('NO_API_KEY_FALLBACK')
+    err.message = 'NO_API_KEY_FALLBACK'
     throw err
   }
 

@@ -1,46 +1,69 @@
-import { supabase } from './supabaseService'
-import { toast } from 'react-hot-toast'
+// Result Service — PrepBridge
+// Saves test results to Supabase REST API with localStorage fallback
+
+function getSupabaseCredentials() {
+  let url = import.meta.env.VITE_SUPABASE_URL || ''
+  let anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+  try {
+    const local = localStorage.getItem('prepbridge_admin_settings')
+    if (local) {
+      const data = JSON.parse(local)
+      if (data.supabaseUrl) url = data.supabaseUrl
+      if (data.supabaseAnonKey) anonKey = data.supabaseAnonKey
+    }
+  } catch { /* ignore */ }
+  return { url: url.trim().replace(/\/$/, ''), anonKey }
+}
 
 // Save test result to Supabase or localStorage
 export const saveTestResult = async (result) => {
   try {
-    // Try to store in Supabase first
-    const { data, error } = await supabase
-      .from('test_results')
-      .insert([{
-        user_id: supabase.auth.user()?.id,
-        test_id: result.testId,
-        title: result.title,
-        score: parseFloat(result.score),
-        max_score: result.maxScore,
-        percentage: parseFloat(result.pct),
-        correct: result.correct,
-        wrong: result.wrong,
-        skipped: result.skipped,
-        date: result.date
-      }])
-      .select()
+    const { url, anonKey } = getSupabaseCredentials()
 
-    if (error) throw error
+    if (!url || !anonKey || anonKey.length < 20) {
+      throw new Error('Supabase not configured')
+    }
 
-    // Fallback to localStorage if Supabase fails
-    let localResults = JSON.parse(localStorage.getItem('prepbridge_test_results') || '[]')
-    localResults.push({
-      ...result,
-      id: data[0]?.id || Date.now().toString() // Use Supabase ID if available
+    const payload = {
+      test_id: result.testId,
+      title: result.title,
+      score: parseFloat(result.score),
+      max_score: result.maxScore,
+      percentage: parseFloat(result.pct),
+      correct: result.correct,
+      wrong: result.wrong,
+      skipped: result.skipped,
+      date: result.date
+    }
+
+    const response = await fetch(`${url}/rest/v1/test_results`, {
+      method: 'POST',
+      headers: {
+        'apikey': anonKey,
+        'Authorization': `Bearer ${anonKey}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(payload)
     })
+
+    if (!response.ok) throw new Error(`Supabase error: ${response.status}`)
+
+    const data = await response.json()
+    const newResult = { ...result, id: data[0]?.id || Date.now().toString() }
+
+    // Also save locally
+    const localResults = JSON.parse(localStorage.getItem('prepbridge_test_results') || '[]')
+    localResults.push(newResult)
     localStorage.setItem('prepbridge_test_results', JSON.stringify(localResults))
 
-    return data[0]
+    return newResult
   } catch (error) {
     console.warn('Supabase save failed, using localStorage:', error.message)
 
     // Fallback to localStorage
-    let localResults = JSON.parse(localStorage.getItem('prepbridge_test_results') || '[]')
-    const newResult = {
-      ...result,
-      id: Date.now().toString()
-    }
+    const localResults = JSON.parse(localStorage.getItem('prepbridge_test_results') || '[]')
+    const newResult = { ...result, id: Date.now().toString() }
     localResults.push(newResult)
     localStorage.setItem('prepbridge_test_results', JSON.stringify(localResults))
 
@@ -51,17 +74,26 @@ export const saveTestResult = async (result) => {
 // Get user's test results
 export const getUserResults = async () => {
   try {
-    const { data, error } = await supabase
-      .from('test_results')
-      .select('*')
-      .order('date', { ascending: false })
+    const { url, anonKey } = getSupabaseCredentials()
 
-    if (error) throw error
+    if (!url || !anonKey || anonKey.length < 20) {
+      throw new Error('Supabase not configured')
+    }
 
-    return data
+    const response = await fetch(`${url}/rest/v1/test_results?order=date.desc`, {
+      method: 'GET',
+      headers: {
+        'apikey': anonKey,
+        'Authorization': `Bearer ${anonKey}`,
+        'Accept': 'application/json'
+      }
+    })
+
+    if (!response.ok) throw new Error(`Supabase error: ${response.status}`)
+
+    return await response.json()
   } catch (error) {
     console.warn('Failed to fetch Supabase results, using localStorage:', error.message)
-
     // Fallback to localStorage
     return JSON.parse(localStorage.getItem('prepbridge_test_results') || '[]')
   }

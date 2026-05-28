@@ -13,6 +13,8 @@ export const PRICING = {
     badge: '₹249/mo',
     planDuration: '1 month',
     tag: null,
+    perMonth: '249',
+    savings: 0,
   },
   sixMonth: {
     label: '6-Month Plan',
@@ -22,15 +24,19 @@ export const PRICING = {
     badge: '₹1,195 (20% OFF)',
     planDuration: '6 months',
     tag: 'popular',
+    perMonth: '199',
+    savings: 299,
   },
   annual: {
     label: 'Annual Plan',
-    amount: 2199,          // ₹249 × 12 × 0.74 = ₹2,199 (26% off)
-    amountPaise: 219900,
-    description: 'PrepBridge All-Access — Annual Plan (26% OFF)',
-    badge: '₹2,199 (26% OFF)',
+    amount: 1999,          // ₹249 × 12 × 0.74 ≈ ₹1,999 (33% off)
+    amountPaise: 199900,
+    description: 'PrepBridge All-Access — Annual Plan (33% OFF)',
+    badge: '₹1,999 (33% OFF)',
     planDuration: '1 year',
     tag: 'best',
+    perMonth: '167',
+    savings: 989,
   },
 }
 
@@ -86,45 +92,63 @@ export async function captureRazorpayPayment(paymentId, amount) {
 }
 
 /**
- * Verify Razorpay Webhook (Server-side)
- * @param {object} payload - Webhook payload from Razorpay
- * @param {string} signature - X-Razorpay-Signature header
- * @param {string} secret - Razorpay webhook secret
- * @returns {Promise<boolean>} - True if verified
+ * Verify Razorpay Webhook — SERVER-SIDE ONLY
+ * This function must only be called from Node.js backend (src/server/).
+ * Do NOT call this from the browser/frontend — it relies on Node crypto.
+ * @returns {boolean} Always returns false in browser context for safety.
  */
-export async function verifyRazorpayWebhook(payload, signature, secret) {
-  const crypto = require('crypto');
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(JSON.stringify(payload))
-    .digest('hex');
-
-  return expectedSignature === signature;
+export function verifyRazorpayWebhook(_payload, _signature, _secret) {
+  // NOTE: Actual verification happens in src/server/api/payments/razorpay/webhook.js
+  // on the server side using Node's built-in crypto module.
+  console.warn('[paymentService] verifyRazorpayWebhook should only be called server-side.')
+  return false
 }
 
 // ─── Subscription Status Helpers ─────────────────────────────────────────────
+/**
+ * Returns a rich subscription status object from a subscription record.
+ * @param {object|null} subscription - The subscription object from the user profile
+ * @returns {{ isPaid: boolean, isTrial: boolean, isActive: boolean, isExpired: boolean, daysLeft: number, hoursLeft: number, trialEndsAt: string|null }}
+ */
 export function getSubscriptionStatus(subscription) {
-  if (!subscription || subscription.plan !== 'paid') return 'none'
-  const now = new Date()
-  const expiresAt = new Date(subscription.expiresAt)
-
-  if (expiresAt < now) {
-    return 'expired'
+  if (!subscription) {
+    return { isPaid: false, isTrial: false, isActive: false, isExpired: false, daysLeft: 0, hoursLeft: 0, trialEndsAt: null }
   }
 
-  const daysLeft = Math.ceil((expiresAt - now) / (1000 * 60 * 60 * 24))
-  if (daysLeft <= 7) return 'expiring_soon'
-  return 'active'
+  const now = new Date()
+  const isPaid = subscription.plan === 'paid'
+  const isTrial = subscription.plan === 'trial'
+
+  if (!isPaid && !isTrial) {
+    return { isPaid: false, isTrial: false, isActive: false, isExpired: false, daysLeft: 0, hoursLeft: 0, trialEndsAt: null }
+  }
+
+  const expiresAt = subscription.expiresAt ? new Date(subscription.expiresAt) : null
+  const isExpired = expiresAt ? expiresAt < now : false
+  const isActive = !isExpired
+
+  const msLeft = expiresAt ? Math.max(0, expiresAt - now) : 0
+  const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24))
+  const hoursLeft = Math.floor(msLeft / (1000 * 60 * 60))
+
+  return {
+    isPaid,
+    isTrial,
+    isActive,
+    isExpired,
+    daysLeft,
+    hoursLeft,
+    trialEndsAt: expiresAt ? expiresAt.toISOString() : null
+  }
 }
 
 export function getSubscriptionBadge(subscription) {
   const status = getSubscriptionStatus(subscription)
-  switch (status) {
-    case 'active': return '🟢 Active'
-    case 'expiring_soon': return '🟡 Expiring Soon'
-    case 'expired': return '❌ Expired'
-    default: return '🔓 Free'
-  }
+  if (status.isPaid && status.isActive) return '🟢 Active'
+  if (status.isPaid && status.isExpired) return '❌ Expired'
+  if (status.isTrial && status.isActive) return '🌟 Trial'
+  if (status.isTrial && status.isExpired) return '⏰ Trial Ended'
+  return '🔓 Free'
 }
 
 // ─── Trial Subscription Creation ───────────────────────────────────────────────
