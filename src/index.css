@@ -539,30 +539,68 @@ p { color: var(--text-2); line-height: 1.7; }
   .grid-3 { grid-template-columns: repeat(2, 1fr); }
   .grid-4 { grid-template-columns: 1fr; }
   .page { padding: 16px; }
-  .mobile-only-inline {
-    display: inline-block !important;
-  }
+  .mobile-only-inline { display: inline-block !important; }
   .leaderboard-row-grid {
     grid-template-columns: 60px 1fr 70px;
     gap: 8px;
   }
   .leaderboard-row-grid > div:nth-child(4),
-  .leaderboard-row-grid > div:nth-child(5) {
-    display: none !important;
+  .leaderboard-row-grid > div:nth-child(5) { display: none !important; }
+  .plans-selector-grid { grid-template-columns: 1fr; gap: 14px; }
+
+  /* ── Landing page mobile fixes ── */
+  .nav-how-it-works { display: none !important; }
+
+  /* Hero stats: 2x2 grid on mobile */
+  .hero-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    max-width: 100% !important;
   }
-  .plans-selector-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
+
+  /* CTA buttons: full width stack on mobile */
+  .hero-cta-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 0 0 !important;
   }
+  .hero-cta-primary, .hero-cta-secondary {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+    font-size: 0.95rem !important;
+    padding: 14px 20px !important;
+  }
+
+  /* Landing page section padding */
+  .landing-section { padding: 60px 16px !important; }
+
+  /* Floating exam cards: hide on mobile (they overflow) */
+  .floating-card { display: none !important; }
+
+  /* App download section: stack vertically */
+  .app-download-flex {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+  }
+  .app-download-flex .badge-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    width: 100% !important;
+  }
+
+  /* Auth page: hide right panel */
+  .auth-right { display: none !important; }
 }
 
 @media (max-width: 480px) {
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
-  .leaderboard-row-grid {
-    grid-template-columns: 50px 1fr;
-    gap: 6px;
-  }
-  .leaderboard-row-grid > div:nth-child(3) {
-    display: none !important;
-  }
+  .leaderboard-row-grid { grid-template-columns: 50px 1fr; gap: 6px; }
+  .leaderboard-row-grid > div:nth-child(3) { display: none !important; }
+
+  /* Very small phones */
+  .hero-stats-grid { gap: 8px !important; }
+  .hero-stats-grid > div { padding: 12px 8px !important; }
 }

@@ -55,7 +55,7 @@ function AppDownloadSection() {
 
   return (
     <section ref={ref} style={{
-      padding: '90px 24px',
+      padding: 'clamp(40px,7vw,90px) clamp(16px,4vw,24px)',
       background: 'linear-gradient(135deg, rgba(124,58,237,0.1) 0%, rgba(0,212,255,0.06) 50%, rgba(16,185,129,0.08) 100%)',
       borderTop: '1px solid rgba(255,255,255,0.05)',
       borderBottom: '1px solid rgba(255,255,255,0.05)',
@@ -366,29 +366,31 @@ export default function Landing() {
       <div style={{ position: 'fixed', top: 0, left: 0, height: 3, width: `${scrollProgress}%`, background: 'linear-gradient(90deg,#7c3aed,#00d4ff,#10b981)', zIndex: 9999, transition: 'width 0.1s', boxShadow: '0 0 10px rgba(124,58,237,0.8)' }} />
 
       {/* ── Navbar ── */}
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, padding: '14px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(8,9,15,0.85)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', borderRadius: 9, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(124,58,237,0.5)', animation: 'logoPulse 3s ease-in-out infinite' }}>
-            <Zap size={18} color="white" />
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(8,9,15,0.92)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+          <div style={{ width: 32, height: 32, background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(124,58,237,0.5)', animation: 'logoPulse 3s ease-in-out infinite', flexShrink: 0 }}>
+            <Zap size={16} color="white" />
           </div>
-          <span style={{ fontSize: '1.35rem', fontWeight: 800, letterSpacing: '-0.02em' }}>
+          <span style={{ fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>
             Prep<span style={{ background: 'linear-gradient(90deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bridge</span>
           </span>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <a href="#how-it-works" style={{ color: 'var(--text-3)', fontSize: '0.88rem', fontWeight: 500, textDecoration: 'none', padding: '6px 14px', transition: 'color 0.2s', minHeight: '48px', display: 'inline-flex', alignItems: 'center' }}
+        {/* Nav actions — compact on mobile */}
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexShrink: 0 }}>
+          <a href="#how-it-works" className="nav-how-it-works" style={{ color: 'var(--text-3)', fontSize: '0.85rem', fontWeight: 500, textDecoration: 'none', padding: '6px 10px', transition: 'color 0.2s', whiteSpace: 'nowrap' }}
             onMouseEnter={e => e.currentTarget.style.color = 'white'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-3)'}>How it works</a>
-          <Link to="/auth" style={{ color: 'var(--text-2)', fontSize: '0.88rem', fontWeight: 600, textDecoration: 'none', padding: '8px 18px', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', transition: 'all 0.2s', minHeight: '48px', display: 'inline-flex', alignItems: 'center' }}
+          <Link to="/auth" style={{ color: 'var(--text-2)', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', padding: '7px 14px', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', transition: 'all 0.2s', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cyan)'; e.currentTarget.style.color = 'var(--cyan)' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-2)' }}>Login</Link>
-          <MagneticBtn to="/auth?signup=1" style={{ background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', color: 'white', fontWeight: 700, fontSize: '0.88rem', textDecoration: 'none', padding: '9px 20px', borderRadius: 'var(--r-full)', boxShadow: '0 0 20px rgba(124,58,237,0.4)', minHeight: '48px', display: 'inline-flex', alignItems: 'center' }}>
+          <Link to="/auth?signup=1" style={{ background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', color: 'white', fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none', padding: '8px 16px', borderRadius: 'var(--r-full)', boxShadow: '0 0 16px rgba(124,58,237,0.4)', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
             Start Free →
-          </MagneticBtn>
+          </Link>
         </div>
       </nav>
 
       {/* ── HERO ── */}
-      <div style={{ paddingTop: 64, position: 'relative' }}>
+      <div style={{ paddingTop: 56, position: 'relative' }}>
         {/* Parallax orbs driven by mouse */}
         <div style={{ position: 'absolute', top: '8%', left: '12%', width: 500, height: 500, background: 'radial-gradient(circle,rgba(124,58,237,0.22),transparent 70%)', borderRadius: '50%', filter: 'blur(80px)', transform: `translate(${mouse.x * 0.4}px, ${mouse.y * 0.4}px)`, transition: 'transform 0.1s', pointerEvents: 'none', zIndex: 0 }} />
         <div style={{ position: 'absolute', bottom: '5%', right: '8%', width: 380, height: 380, background: 'radial-gradient(circle,rgba(0,212,255,0.18),transparent 70%)', borderRadius: '50%', filter: 'blur(70px)', transform: `translate(${mouse.x * -0.3}px, ${mouse.y * -0.3}px)`, transition: 'transform 0.1s', pointerEvents: 'none', zIndex: 0 }} />
@@ -420,7 +422,7 @@ export default function Landing() {
 
 
       {/* ── FEATURES ── */}
-      <section id="features" style={{ padding: '100px 24px', maxWidth: 1100, margin: '0 auto' }}>
+      <section id="features" style={{ padding: 'clamp(48px,8vw,100px) clamp(16px,4vw,24px)', maxWidth: 1100, margin: '0 auto' }}>
         <RevealDiv style={{ textAlign: 'center', marginBottom: 60 }}>
           <div style={{ display: 'inline-block', background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.25)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--purple)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Platform Features</div>
           <h2>Everything to <span style={{ background: 'linear-gradient(90deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>crack any exam</span></h2>
@@ -442,7 +444,7 @@ export default function Landing() {
       </section>
 
       {/* ── STATS BAND ── */}
-      <section style={{ padding: '60px 24px', background: 'linear-gradient(135deg,rgba(124,58,237,0.08),rgba(0,212,255,0.05))', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+      <section style={{ padding: 'clamp(32px,5vw,60px) clamp(16px,4vw,24px)', background: 'linear-gradient(135deg,rgba(124,58,237,0.08),rgba(0,212,255,0.05))', borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <div style={{ maxWidth: 900, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 32, textAlign: 'center' }}>
           {[
             { val: 500000, suffix: '+', label: 'Questions', color: '#00d4ff', prefix: '' },
@@ -464,7 +466,7 @@ export default function Landing() {
 
 
       {/* ── TYPEWRITER BANNER ── */}
-      <section style={{ padding: '80px 24px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: 'clamp(40px,6vw,80px) clamp(16px,4vw,24px)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(ellipse at 50% 50%,rgba(124,58,237,0.08) 0%,transparent 70%)', pointerEvents: 'none' }} />
         <RevealDiv>
           <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--cyan)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 20 }}>Preparing for</div>
@@ -478,7 +480,7 @@ export default function Landing() {
       </section>
 
       {/* ── TESTIMONIALS ── */}
-      <section style={{ padding: '80px 24px', background: 'var(--bg-2)', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: 'clamp(40px,6vw,80px) clamp(16px,4vw,24px)', background: 'var(--bg-2)', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', bottom: '-5%', right: '-5%', width: 500, height: 500, background: 'var(--cyan)', borderRadius: '50%', filter: 'blur(120px)', opacity: 0.05 }} />
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <RevealDiv style={{ textAlign: 'center', marginBottom: 56 }}>
@@ -511,7 +513,7 @@ export default function Landing() {
       </section>
 
       {/* ── PRICING ── */}
-      <section style={{ padding: '100px 24px', background: 'var(--bg)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+      <section style={{ padding: 'clamp(48px,8vw,100px) clamp(16px,4vw,24px)', background: 'var(--bg)', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: 700, height: 500, background: 'radial-gradient(ellipse,rgba(124,58,237,0.1),transparent 70%)', pointerEvents: 'none', animation: 'blobPulse 8s ease-in-out infinite' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <RevealDiv>

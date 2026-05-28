@@ -292,7 +292,7 @@ export default function HeroVideo() {
       {FLOATING_CARDS.map((c, i) => <FloatingCard key={i} {...c} />)}
 
       {/* Center content */}
-      <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '0 24px', maxWidth: 860, width: '100%' }}>
+      <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '0 16px', maxWidth: 860, width: '100%' }}>
 
         {/* Live badge */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 'var(--r-full)', padding: '8px 18px', marginBottom: 28, fontSize: '0.82rem', fontWeight: 600, color: '#10b981' }}>
@@ -309,23 +309,23 @@ export default function HeroVideo() {
         </p>
 
         {/* CTA buttons */}
-        <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 52, animation: 'heroSlideIn 0.8s ease 0.3s both' }}>
-          <a href="/auth?signup=1" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '16px 32px', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', borderRadius: 'var(--r-full)', fontWeight: 800, fontSize: '1.05rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 40px rgba(124,58,237,0.5)', transition: 'transform 0.2s,box-shadow 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.boxShadow = '0 0 60px rgba(124,58,237,0.7)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 40px rgba(124,58,237,0.5)' }}
+        <div className="hero-cta-row" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 40, animation: 'heroSlideIn 0.8s ease 0.3s both', width: '100%', padding: '0 8px' }}>
+          <a href="/auth?signup=1" className="hero-cta-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '15px 28px', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', borderRadius: 'var(--r-full)', fontWeight: 800, fontSize: '1rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 40px rgba(124,58,237,0.5)', transition: 'transform 0.2s,box-shadow 0.2s', flex: '1 1 auto', justifyContent: 'center', minWidth: 200, maxWidth: 340 }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)' }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
             ⚡ Start Preparing Free →
           </a>
-          <a href="#features" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '16px 28px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 'var(--r-full)', fontWeight: 700, fontSize: '1rem', color: 'white', textDecoration: 'none', backdropFilter: 'blur(10px)', transition: 'all 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(0,212,255,0.4)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)' }}
+          <a href="#features" className="hero-cta-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '15px 24px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 'var(--r-full)', fontWeight: 700, fontSize: '1rem', color: 'white', textDecoration: 'none', backdropFilter: 'blur(10px)', transition: 'all 0.2s', flex: '1 1 auto', justifyContent: 'center', minWidth: 180, maxWidth: 280 }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
           >
             🎬 Watch How It Works
           </a>
         </div>
 
         {/* Animated stats */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, maxWidth: 680, margin: '0 auto 48px', animation: 'heroSlideIn 0.8s ease 0.4s both' }}>
+        <div className="hero-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, maxWidth: 680, margin: '0 auto 40px', animation: 'heroSlideIn 0.8s ease 0.4s both', width: '100%' }}>
           {[
             { value: 500000, suffix: '+', label: 'Questions', color: '#00d4ff', prefix: '' },
             { value: 200, suffix: '+', label: 'Exams Covered', color: '#7c3aed', prefix: '' },
