@@ -1,8 +1,8 @@
 // Gemini AI Service — PrepBridge AI Tutor
-// Uses Google Gemini 2.0 Flash for real-time tutoring
+// Uses Google Gemini 2.5 Flash for real-time tutoring
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent'
+const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'
 
 const SYSTEM_PROMPT = `You are K² (K-square) AI, an expert proprietary competitive exam doubt solver and tutor for Indian competitive exam aspirants.
 You help students preparing for UPSC (IAS/IPS), SSC CGL, IBPS PO, SBI PO, RRB NTPC, NEET, JEE, and all other Indian government exams.
