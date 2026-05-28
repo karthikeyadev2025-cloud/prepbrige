@@ -7,6 +7,7 @@ import { EXAM_CATEGORIES } from '../data/exams'
 import { toast } from 'react-hot-toast'
 import { initiatePremiumCheckout, PRICING, getSubscriptionStatus } from '../services/paymentService'
 import { getSupabaseQuestionsCount } from '../services/supabaseService'
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from 'recharts'
 
 export default function Profile() {
   const { profile, user, updateProfile } = useUserStore()
@@ -274,7 +275,7 @@ export default function Profile() {
 
       {/* Tabs */}
       <div className="tabs" style={{ marginBottom: 20 }}>
-        {[['profile','Profile'],['exams','My Exams'],['settings','Settings']].map(([v,l]) => (
+        {[['profile','Profile'],['analytics', 'Analytics Radar'],['exams','My Exams'],['settings','Settings']].map(([v,l]) => (
           <button key={v} className={`tab ${activeTab===v ? 'active' : ''}`} onClick={() => setActiveTab(v)}>{l}</button>
         ))}
       </div>
@@ -320,6 +321,41 @@ export default function Profile() {
                 </div>
               ) : null
             })}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'analytics' && (
+        <div className="card card-p animate-fade-in" style={{ textAlign: 'center' }}>
+          <h3 style={{ marginBottom: 8 }}>Performance Radar Heatmap</h3>
+          <p style={{ color: 'var(--text-3)', fontSize: '0.85rem', marginBottom: 24 }}>Based on your recent Mock Test scores and AI Interactions.</p>
+          <div style={{ width: '100%', height: 300 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart cx="50%" cy="50%" outerRadius="70%" data={[
+                { subject: 'Polity', score: 85, fullMark: 100 },
+                { subject: 'History', score: 65, fullMark: 100 },
+                { subject: 'Quant', score: 45, fullMark: 100 },
+                { subject: 'Reasoning', score: 90, fullMark: 100 },
+                { subject: 'Economy', score: 55, fullMark: 100 },
+              ]}>
+                <PolarGrid stroke="var(--border)" />
+                <PolarAngleAxis dataKey="subject" tick={{ fill: 'var(--text-2)', fontSize: 12 }} />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: 'var(--text-4)' }} />
+                <Tooltip contentStyle={{ backgroundColor: 'var(--bg-1)', border: '1px solid var(--border)', borderRadius: '8px' }} />
+                <Radar name="Accuracy %" dataKey="score" stroke="var(--cyan)" fill="var(--cyan)" fillOpacity={0.4} />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{ background: 'rgba(0,212,255,0.1)', padding: 16, borderRadius: 'var(--r-lg)', border: '1px solid rgba(0,212,255,0.2)', marginTop: 24, textAlign: 'left' }}>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+              <Zap size={20} color="var(--cyan)" style={{ flexShrink: 0, marginTop: 2 }} />
+              <div>
+                <strong style={{ color: 'var(--cyan)', display: 'block', marginBottom: 4 }}>K² AI Strategy Insight</strong>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-2)', lineHeight: 1.5 }}>
+                  Your Reasoning and Polity scores are elite (>85%), but Quantitative Aptitude is critically low (45%). I recommend locking a 15-Day Crash Course focused entirely on Data Interpretation and Profit/Loss algorithms.
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       )}

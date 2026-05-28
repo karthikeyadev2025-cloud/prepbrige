@@ -16,6 +16,8 @@ const TestEngine = lazy(() => import('./pages/TestEngine'))
 const CurrentAffairs = lazy(() => import('./pages/CurrentAffairs'))
 const QuestionPapers = lazy(() => import('./pages/QuestionPapers'))
 const AITutor = lazy(() => import('./pages/AITutor'))
+const StudyPlanner = lazy(() => import('./pages/StudyPlanner'))
+const RevisionHub = lazy(() => import('./pages/RevisionHub'))
 const Courses = lazy(() => import('./pages/Courses'))
 const Leaderboard = lazy(() => import('./pages/Leaderboard'))
 const Notifications = lazy(() => import('./pages/Notifications'))
@@ -128,6 +130,8 @@ export default function App() {
             <Route path="current-affairs" element={<CurrentAffairs />} />
             <Route path="question-papers" element={<QuestionPapers />} />
             <Route path="ai-tutor" element={<AITutor />} />
+            <Route path="planner" element={<StudyPlanner />} />
+            <Route path="revision" element={<RevisionHub />} />
             <Route path="courses" element={<Courses />} />
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="notifications" element={<Notifications />} />
