@@ -19,13 +19,17 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     state VARCHAR(100) DEFAULT 'N/A',
     education VARCHAR(150) DEFAULT 'N/A',
     study_hours VARCHAR(50) DEFAULT '3-4 hours',
-    role user_role NOT NULL DEFAULT 'student',
-    subscription_plan subscription_tier NOT NULL DEFAULT 'free',
-    subscription_expires_at TIMESTAMPTZ,
-    points INT NOT NULL DEFAULT 0,
-    streak INT NOT NULL DEFAULT 0,
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+    onboarding_complete BOOLEAN NOT NULL DEFAULT FALSE,
+    plan VARCHAR(50) NOT NULL DEFAULT 'free',
+    status VARCHAR(50) NOT NULL DEFAULT 'active',
+    exams JSONB NOT NULL DEFAULT '[]'::jsonb,
+    primary_target VARCHAR(100),
+    lakshya_slogan VARCHAR(255),
+    selected_language VARCHAR(50) DEFAULT 'English',
     fcm_token TEXT,
     push_notifications_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    push_subscription_date TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     last_active TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -196,7 +200,7 @@ CREATE POLICY admin_all_profiles ON public.profiles
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.profiles 
-            WHERE id = auth.uid()::text AND role IN ('admin', 'super-admin')
+            WHERE id = auth.uid()::text AND is_admin = TRUE
         )
     );
 
@@ -214,7 +218,7 @@ CREATE POLICY admin_all_attempts ON public.user_test_attempts
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.profiles 
-            WHERE id = auth.uid()::text AND role IN ('admin', 'super-admin')
+            WHERE id = auth.uid()::text AND is_admin = TRUE
         )
     );
 
@@ -226,7 +230,7 @@ CREATE POLICY admin_all_payments ON public.payments
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.profiles 
-            WHERE id = auth.uid()::text AND role IN ('admin', 'super-admin')
+            WHERE id = auth.uid()::text AND is_admin = TRUE
         )
     );
 
@@ -249,7 +253,7 @@ CREATE POLICY admin_view_audit_logs ON public.audit_logs
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.profiles 
-            WHERE id = auth.uid()::text AND role IN ('admin', 'super-admin')
+            WHERE id = auth.uid()::text AND is_admin = TRUE
         )
     );
 
@@ -257,7 +261,7 @@ CREATE POLICY admin_insert_audit_logs ON public.audit_logs
     FOR INSERT WITH CHECK (
         EXISTS (
             SELECT 1 FROM public.profiles 
-            WHERE id = auth.uid()::text AND role IN ('admin', 'super-admin')
+            WHERE id = auth.uid()::text AND is_admin = TRUE
         )
     );
 
