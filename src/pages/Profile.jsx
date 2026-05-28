@@ -352,7 +352,7 @@ export default function Profile() {
               <div>
                 <strong style={{ color: 'var(--cyan)', display: 'block', marginBottom: 4 }}>K² AI Strategy Insight</strong>
                 <span style={{ fontSize: '0.85rem', color: 'var(--text-2)', lineHeight: 1.5 }}>
-                  Your Reasoning and Polity scores are elite (>85%), but Quantitative Aptitude is critically low (45%). I recommend locking a 15-Day Crash Course focused entirely on Data Interpretation and Profit/Loss algorithms.
+                  Your Reasoning and Polity scores are elite (&gt;85%), but Quantitative Aptitude is critically low (45%). I recommend locking a 15-Day Crash Course focused entirely on Data Interpretation and Profit/Loss algorithms.
                 </span>
               </div>
             </div>
