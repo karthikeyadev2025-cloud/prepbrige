@@ -31,6 +31,8 @@ function getSupabaseCredentials(overrideBucket = false) {
  * @param {string} path - Target path in the bucket (e.g. 'profile_photos/user123')
  * @returns {Promise<string>} - The public, accessible CDN URL of the uploaded asset
  */
+import { apiClient } from '../api/client';
+
 export async function uploadToSupabase(file, path) {
   const { url: supabaseUrl, anonKey: supabaseAnonKey, bucket: supabaseBucket } = getSupabaseCredentials(true)
 
