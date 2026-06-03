@@ -1,0 +1,37 @@
+/* Responsive utilities */
+:root {
+  --bp-xl: 1200px;
+  --bp-lg: 1024px;
+  --bp-md: 640px;
+  --bp-sm: 480px;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-responsive {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (max-width: var(--bp-xl)) {
+  .grid-responsive { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: var(--bp-lg)) {
+  .grid-responsive { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: var(--bp-md)) {
+  .grid-responsive { grid-template-columns: 1fr; }
+}
+@media (max-width: var(--bp-sm)) {
+  .grid-responsive { grid-template-columns: 1fr; }
+}
