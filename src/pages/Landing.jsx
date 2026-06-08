@@ -148,7 +148,7 @@ function AppDownloadSection() {
                   {[
                     { label: 'Daily Quiz', sub: '+10 pts', color: '#10b981' },
                     { label: 'AI Tutor', sub: 'Ask K²', color: '#6366f1' },
-                    { label: 'Mock Test', sub: 'Active session', color: '#00d4ff' },
+                    { label: 'Mock Test', sub: 'Active session', color: '#10b981' },
                   ].map((c, i) => (
                     <div key={i} style={{ background: `${c.color}0c`, border: `1px solid ${c.color}22`, borderRadius: 12, padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'white' }}>{c.label}</span>
@@ -893,6 +893,8 @@ export default function Landing() {
   const { i18n, t } = useTranslation()
   const [langMenuOpen, setLangMenuOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [chatLang, setChatLang] = useState('hi')
+  const [billingCycle, setBillingCycle] = useState('monthly')
 
   const activeLangObj = ALL_LANGUAGES.find(l => l.code === i18n.language) || ALL_LANGUAGES[0]
 
@@ -1114,62 +1116,229 @@ export default function Landing() {
 
         {/* Bento grid layout */}
         <div className="bento-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-          {bentoFeatures.map((f, i) => {
-            const isLarge = f.layoutClass === 'bento-large-card'
-            return (
-              <RevealDiv key={i} delay={i * 0.06} direction="scale" style={{ gridColumn: isLarge ? 'span 2' : 'span 1' }} className={f.layoutClass}>
-                <TiltCard style={{ padding: '30px', background: 'rgba(10, 11, 18, 0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24, height: '100%', cursor: 'default', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 14 }}>
-                  <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, background: `radial-gradient(circle,rgba(255,255,255,0.015),transparent 70%)`, borderRadius: '50%', pointerEvents: 'none' }} />
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {f.icon}
-                    </div>
-                    <span style={{ fontSize: '0.68rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 8, padding: '4px 10px', color: 'white', fontWeight: 800 }}>
-                      {f.badge}
-                    </span>
+          
+          {/* Card 1 (col-span-2): AI Tutor Chat Simulator */}
+          <RevealDiv direction="scale" style={{ gridColumn: 'span 2' }}>
+            <TiltCard style={{ padding: '30px', background: 'rgba(10, 11, 18, 0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24, height: '100%', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 12, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <MessageSquare size={18} color="#6366f1" />
                   </div>
-
-                  <div style={{ flex: 1, marginTop: 8 }}>
-                    <h3 style={{ marginBottom: 8, fontSize: '1.05rem', color: 'white', fontWeight: 800, lineHeight: 1.4 }}>{f.title}</h3>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-2)', lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
+                  <div>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'white', margin: 0 }}>24/7 AI tutor in 22 regional Indian languages</h3>
+                    <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-3)', fontWeight: 600, marginTop: 1 }}>Translates complex syllabus topics instantly</span>
                   </div>
+                </div>
+                
+                {/* Language switcher tabs */}
+                <div style={{ display: 'flex', gap: 4, background: 'rgba(255,255,255,0.02)', padding: 3, borderRadius: 8, border: '1px solid rgba(255,255,255,0.04)' }}>
+                  {[
+                    { code: 'hi', label: 'Hindi' },
+                    { code: 'te', label: 'Telugu' },
+                    { code: 'ta', label: 'Tamil' },
+                    { code: 'bn', label: 'Bengali' }
+                  ].map(l => (
+                    <button
+                      key={l.code}
+                      onClick={() => setChatLang(l.code)}
+                      style={{
+                        padding: '4px 10px',
+                        background: chatLang === l.code ? '#6366f1' : 'transparent',
+                        color: chatLang === l.code ? 'white' : 'var(--text-3)',
+                        border: 'none',
+                        borderRadius: 6,
+                        fontSize: '0.7rem',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        minHeight: 28
+                      }}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                  {/* Interactive bento visualizations */}
-                  {i === 0 && (
-                    <div className="bento-chat-preview" style={{ background: 'rgba(255,255,255,0.008)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 16, padding: 12, marginTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', alignSelf: 'flex-end', background: 'rgba(255,255,255,0.03)', padding: '5px 10px', borderRadius: '10px 10px 0 10px' }}>What is the main role of writ Article 32?</div>
-                      <div style={{ fontSize: '0.72rem', color: '#818cf8', alignSelf: 'flex-start', background: 'rgba(99,102,241,0.08)', padding: '6px 12px', borderRadius: '10px 10px 10px 0', border: '1px solid rgba(99,102,241,0.15)', maxWidth: '90%', lineHeight: 1.4 }}>
-                        <strong>K² AI:</strong> Article 32 permits citizens to petition the Supreme Court for writ remedies to safeguard fundamental freedoms.
-                      </div>
+              {/* Chat Simulator Area */}
+              <div style={{ flex: 1, background: 'rgba(255,255,255,0.008)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 18, padding: 18, display: 'flex', flexDirection: 'column', gap: 12, minHeight: 180, justifyContent: 'center' }}>
+                <div style={{ alignSelf: 'flex-end', background: 'rgba(255,255,255,0.03)', padding: '8px 14px', borderRadius: '12px 12px 0 12px', fontSize: '0.78rem', color: 'rgba(255,255,255,0.95)', maxWidth: '85%' }}>
+                  {chatLang === 'hi' ? 'Article 21 क्या है?' :
+                   chatLang === 'te' ? 'ఆర్టికల్ 21 అంటే ఏమిటి?' :
+                   chatLang === 'ta' ? 'விதி 21 என்றால் என்ன?' :
+                   'আর্টিকেল ২১ কী?'}
+                </div>
+                
+                <div style={{ alignSelf: 'flex-start', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', padding: '10px 16px', borderRadius: '12px 12px 12px 0', fontSize: '0.78rem', color: '#a5b4fc', maxWidth: '85%', lineHeight: 1.5 }}>
+                  <div style={{ fontWeight: 800, color: '#6366f1', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Sparkles size={12} /> K² AI Tutor
+                  </div>
+                  {chatLang === 'hi' ? 'भारतीय संविधान का अनुच्छेद 21 जीवन और व्यक्तिगत स्वतंत्रता के अधिकार की गारंटी देता है। यह किसी भी नागरिक को कानून द्वारा स्थापित प्रक्रिया के बिना जीवन से वंचित करने से रोकता है।' :
+                   chatLang === 'te' ? 'భారత రాజ్యాంగంలోని ఆర్టికల్ 21 జీవించే హక్కు మరియు వ్యక్తిగత స్వేచ్ఛకు హామీ ఇస్తుంది. చట్టం ద్వారా నిర్దేశించబడిన విధానం ప్రకారం తప్ప ఏ వ్యక్తి స్వేచ్ఛను హరించలేరు.' :
+                   chatLang === 'ta' ? 'இந்திய அரசியலமைப்பின் விதி 21 உயிர் வாழும் உரிமை மற்றும் தனிநபர் சுதந்திரத்திற்கு உத்தரவாதம் அளிக்கிறது. சட்டபூர்வமான நடைமுறை இல்லாமல் ஒருவரின் உயிரை பறிக்க முடியாது.' :
+                   'ভারতীয় সংবিধানে ধারা ২১ জীবন ও ব্যক্তিগত স্বাধীনতার অধিকারের নিশ্চয়তা দেয়। আইনসম্মত পদ্ধতি ব্যতীত কোনো ব্যক্তির জীবন হরণ করা যাবে না।'}
+                </div>
+              </div>
+            </TiltCard>
+          </RevealDiv>
+
+          {/* Card 2 (col-span-1): PeakPredict AI Weightage Analysis */}
+          <RevealDiv direction="scale" style={{ gridColumn: 'span 1' }}>
+            <TiltCard style={{ padding: '30px', background: 'rgba(10, 11, 18, 0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24, height: '100%', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <BarChart2 size={18} color="#10b981" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'white', margin: 0 }}>AI Weightage</h3>
+                  <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-3)', fontWeight: 600, marginTop: 1 }}>PeakPredict syllabus telemetry</span>
+                </div>
+              </div>
+              
+              {/* Telemetry vector/bars */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10, justifyContent: 'center', background: 'rgba(255,255,255,0.005)', padding: 12, borderRadius: 16, border: '1px solid rgba(255,255,255,0.02)' }}>
+                {[
+                  { topic: 'Amendments', freq: '84%', color: '#10b981' },
+                  { topic: 'Fundamental Rights', freq: '79%', color: '#6366f1' },
+                  { topic: 'Directive Principles', freq: '42%', color: 'var(--text-3)' }
+                ].map((item, idx) => (
+                  <div key={idx}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 700, color: 'white', marginBottom: 4 }}>
+                      <span>{item.topic}</span>
+                      <span style={{ color: item.color }}>{item.freq}</span>
                     </div>
-                  )}
-
-                  {i === 1 && (
-                    <div className="bento-chart-preview" style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      <div style={{ height: 6, background: 'rgba(255,255,255,0.04)', borderRadius: 3, overflow: 'hidden' }}>
-                        <div style={{ width: '84%', height: '100%', background: '#10b981' }} />
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.62rem', color: 'var(--text-3)', fontWeight: 700 }}>
-                        <span>Topic Amendments</span><span>84% weightage</span>
-                      </div>
+                    <div style={{ width: '100%', height: 6, background: 'rgba(255,255,255,0.03)', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ width: item.freq, height: '100%', background: item.color, borderRadius: 3 }} />
                     </div>
-                  )}
+                  </div>
+                ))}
+              </div>
+            </TiltCard>
+          </RevealDiv>
 
-                  {i === 4 && (
-                    <div className="bento-notification-preview" style={{ background: 'rgba(255,255,255,0.008)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 16, padding: 10, marginTop: 12, display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span className="dot-live" style={{ background: '#00d4ff' }} />
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '0.7rem', fontWeight: 800, color: 'white' }}>UPSC Civils 2026 update</div>
-                        <div style={{ fontSize: '0.62rem', color: 'var(--text-3)' }}>1,056 vacancies released. Mapped to catalog.</div>
-                      </div>
+          {/* Card 3 (col-span-1): Secured PYQ Solver Engine */}
+          <RevealDiv direction="scale" style={{ gridColumn: 'span 1' }}>
+            <TiltCard style={{ padding: '30px', background: 'rgba(10, 11, 18, 0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24, height: '100%', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Shield size={18} color="#ef4444" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'white', margin: 0 }}>Secured PYQ Engine</h3>
+                  <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-3)', fontWeight: 600, marginTop: 1 }}>Simulates official board laws</span>
+                </div>
+              </div>
+
+              {/* Simulated solver telemetry widget */}
+              <div style={{ flex: 1, background: 'rgba(239,68,68,0.03)', border: '1px solid rgba(239,68,68,0.1)', borderRadius: 16, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.68rem', color: '#ef4444', fontWeight: 800 }}>UPSC CSE MOCK</span>
+                  <span style={{ fontSize: '0.72rem', color: 'white', fontWeight: 800 }}>⏱️ 02:14:59</span>
+                </div>
+                <div style={{ width: '100%', height: 1, background: 'rgba(239,68,68,0.1)' }} />
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)', lineHeight: 1.3 }}>
+                  Negative marking applies: <span style={{ color: '#ef4444', fontWeight: 700 }}>-0.33</span> per wrong choice.
+                </div>
+                <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+                  {['A', 'B', 'C', 'D'].map(o => (
+                    <div key={o} style={{ flex: 1, aspectRatio: 1, background: o === 'C' ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.02)', border: o === 'C' ? '1.5px solid #6366f1' : '1px solid rgba(255,255,255,0.04)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, color: o === 'C' ? 'white' : 'var(--text-3)' }}>
+                      {o}
                     </div>
-                  )}
+                  ))}
+                </div>
+              </div>
+            </TiltCard>
+          </RevealDiv>
 
-                </TiltCard>
-              </RevealDiv>
-            )
-          })}
+          {/* Card 4 (col-span-1): Zero-Lag Offline PWA support */}
+          <RevealDiv direction="scale" style={{ gridColumn: 'span 1' }}>
+            <TiltCard style={{ padding: '30px', background: 'rgba(10, 11, 18, 0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24, height: '100%', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Signal size={18} color="#f59e0b" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'white', margin: 0 }}>Offline Support</h3>
+                  <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-3)', fontWeight: 600, marginTop: 1 }}>Robust PWA for slow networks</span>
+                </div>
+              </div>
+
+              {/* Offline Sync Widget */}
+              <div style={{ flex: 1, background: 'rgba(245,158,11,0.03)', border: '1px solid rgba(245,158,11,0.1)', borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 8px #f59e0b', animation: 'storyBlink 1.5s infinite' }} />
+                <div style={{ flex: 1 }}>
+                  <span style={{ display: 'block', fontSize: '0.75rem', color: 'white', fontWeight: 800 }}>Offline Mode Active</span>
+                  <span style={{ display: 'block', fontSize: '0.62rem', color: 'var(--text-3)', fontWeight: 600, marginTop: 2 }}>42.5 MB pre-cached logs</span>
+                </div>
+              </div>
+            </TiltCard>
+          </RevealDiv>
+
+          {/* Card 5 (col-span-2): Vacancies & Admit notifications */}
+          <RevealDiv direction="scale" style={{ gridColumn: 'span 2' }}>
+            <TiltCard style={{ padding: '30px', background: 'rgba(10, 11, 18, 0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24, height: '100%', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(0,212,255,0.08)', border: '1px solid rgba(0,212,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Bell size={18} color="#00d4ff" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'white', margin: 0 }}>Vacancies &amp; Push Alerts</h3>
+                  <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-3)', fontWeight: 600, marginTop: 1 }}>Match notifications with your chosen track</span>
+                </div>
+              </div>
+
+              {/* Visual notification dashboard preview */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8, background: 'rgba(255,255,255,0.005)', padding: 12, borderRadius: 16, border: '1px solid rgba(255,255,255,0.02)' }}>
+                {[
+                  { title: 'UPSC Civil Services 2026 update', desc: '1,056 vacancies released officially. Mapped to your catalog.', time: '2m ago' },
+                  { title: 'SSC CGL Admit Cards out', desc: 'Download server links active. Mock simulator updated.', time: '1h ago' }
+                ].map((n, idx) => (
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, background: 'rgba(255,255,255,0.01)', border: '1px solid rgba(255,255,255,0.02)', padding: '10px 14px', borderRadius: 12 }}>
+                    <div>
+                      <span style={{ display: 'block', fontSize: '0.78rem', color: 'white', fontWeight: 800 }}>{n.title}</span>
+                      <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-3)', marginTop: 2 }}>{n.desc}</span>
+                    </div>
+                    <span style={{ fontSize: '0.62rem', color: 'var(--text-4)', fontWeight: 700, flexShrink: 0 }}>{n.time}</span>
+                  </div>
+                ))}
+              </div>
+            </TiltCard>
+          </RevealDiv>
+
+          {/* Card 6 (col-span-1): All India Rank Percentiles */}
+          <RevealDiv direction="scale" style={{ gridColumn: 'span 1' }}>
+            <TiltCard style={{ padding: '30px', background: 'rgba(10, 11, 18, 0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24, height: '100%', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(168,85,247,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Users size={18} color="#a855f7" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'white', margin: 0 }}>All India Rankings</h3>
+                  <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-3)', fontWeight: 600, marginTop: 1 }}>National mock test percentiles</span>
+                </div>
+              </div>
+
+              {/* Circular SVG Gauge visualization */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                <svg width="100" height="60" viewBox="0 0 100 60">
+                  <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" strokeLinecap="round" />
+                  <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#purpleGrad)" strokeWidth="8" strokeDasharray="125" strokeDashoffset="12" strokeLinecap="round" />
+                  <defs>
+                    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#6366f1" />
+                      <stop offset="100%" stopColor="#a855f7" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div style={{ position: 'absolute', bottom: 10, textAlign: 'center' }}>
+                  <span style={{ display: 'block', fontSize: '1.25rem', fontWeight: 900, color: 'white', lineHeight: 1 }}>99.8%</span>
+                  <span style={{ display: 'block', fontSize: '0.6rem', color: '#a855f7', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', marginTop: 2 }}>Top 0.2% Nationally</span>
+                </div>
+              </div>
+            </TiltCard>
+          </RevealDiv>
+
         </div>
       </section>
 
@@ -1224,7 +1393,48 @@ export default function Landing() {
           <RevealDiv>
             <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 800, color: '#10b981', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Simple Pricing</div>
             <h2 style={{ marginBottom: 8, fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: 'white' }}>{t('landing.pricing.title', 'One plan. All exams. Try free.')}</h2>
-            <p style={{ marginBottom: 44, color: 'var(--text-3)', fontSize: '0.92rem', fontWeight: 600 }}>{t('landing.pricing.desc', '2-day free trial for all new students. No credit card required. Cancel anytime.')}</p>
+            <p style={{ marginBottom: 24, color: 'var(--text-3)', fontSize: '0.92rem', fontWeight: 600 }}>{t('landing.pricing.desc', '2-day free trial for all new students. No credit card required. Cancel anytime.')}</p>
+            
+            {/* Billing Switcher Toggle */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: 'rgba(255,255,255,0.02)', padding: '4px 6px', borderRadius: 999, border: '1px solid rgba(255,255,255,0.05)', marginBottom: 40 }}>
+              <button
+                onClick={() => setBillingCycle('monthly')}
+                style={{
+                  padding: '8px 18px',
+                  background: billingCycle === 'monthly' ? '#10b981' : 'transparent',
+                  color: billingCycle === 'monthly' ? 'white' : 'var(--text-3)',
+                  border: 'none',
+                  borderRadius: 999,
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  transition: 'all 0.25s',
+                  minHeight: 32
+                }}
+              >
+                Monthly Billing
+              </button>
+              <button
+                onClick={() => setBillingCycle('annual')}
+                style={{
+                  padding: '8px 18px',
+                  background: billingCycle === 'annual' ? '#10b981' : 'transparent',
+                  color: billingCycle === 'annual' ? 'white' : 'var(--text-3)',
+                  border: 'none',
+                  borderRadius: 999,
+                  fontSize: '0.82rem',
+                  fontWeight: 800,
+                  cursor: 'pointer',
+                  transition: 'all 0.25s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  minHeight: 32
+                }}
+              >
+                Annual Billing <span style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', fontSize: '0.62rem', fontWeight: 900, padding: '2px 6px', borderRadius: 6 }}>SAVE 20%</span>
+              </button>
+            </div>
           </RevealDiv>
 
           <RevealDiv delay={0.08} direction="scale">
@@ -1238,7 +1448,7 @@ export default function Landing() {
                   {[
                     { label: 'Monthly', price: '₹249', sub: '/month', tag: null, discount: 'Free in Beta', border: 'rgba(16,185,129,0.25)', glow: 'rgba(16,185,129,0.03)' },
                     { label: '6 Months', price: '₹1,195', sub: '≈₹199/mo', tag: 'Popular', discount: 'Free in Beta', border: 'rgba(99,102,241,0.25)', glow: 'rgba(99,102,241,0.03)' },
-                    { label: 'Annual', price: '₹1,999', sub: '≈₹167/mo', tag: 'Best Value', discount: 'Free in Beta', border: 'rgba(245,158,11,0.25)', glow: 'rgba(245,158,11,0.04)' },
+                    { label: 'Annual', price: billingCycle === 'annual' ? '₹1,999' : '₹2,388', sub: billingCycle === 'annual' ? '≈₹167/mo' : '≈₹199/mo', tag: 'Best Value', discount: 'Free in Beta', border: 'rgba(245,158,11,0.25)', glow: 'rgba(245,158,11,0.04)' },
                   ].map((p, i) => (
                     <div key={i} style={{
                       background: p.glow, border: `1px solid ${p.border}`,
@@ -1376,5 +1586,5 @@ const EXAMS_MARQUEE = [
 const TESTIMONIALS = [
   { name: 'Ramesh Kumar', state: 'Bihar', exam: 'IAS Rank 23 — UPSC 2024', text: 'PrepBridge made full-length UPSC syllabi accessible in native Hindi. K² explanations helped me resolve core doubts without expensive coaching fees.', avatar: 'R', color: '#6366f1' },
   { name: 'Priya Nair', state: 'Kerala', exam: 'SSC CGL AIR 4 — 2024', text: 'The PeakPredict syllabus highlights were outstanding. Highly accurate topic predictions allowed me to distribute my study cycles extremely efficiently.', avatar: 'P', color: '#10b981' },
-  { name: 'Suresh Patel', state: 'Gujarat', exam: 'RRB NTPC AIR 11 — 2024', text: 'I completed my mocks in Gujarati. The native translation engine feels absolute. Live timed sections prepared me perfectly.', avatar: 'S', color: '#00d4ff' },
+  { name: 'Suresh Patel', state: 'Gujarat', exam: 'RRB NTPC AIR 11 — 2024', text: 'I completed my mocks in Gujarati. The native translation engine feels absolute. Live timed sections prepared me perfectly.', avatar: 'S', color: '#10b981' },
 ]

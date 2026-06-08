@@ -1,268 +1,358 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
+import { CheckCircle2, TrendingUp, Landmark, ShieldAlert, Award, ArrowRight } from 'lucide-react'
 
-const STORY = [
+const MILESTONES = [
   {
-    id: 1,
-    img: 'https://images.pexels.com/photos/1181472/pexels-photo-1181472.jpeg?auto=compress&cs=tinysrgb&w=800',
-    chapter: 'Chapter 1',
-    headline: 'The Struggle Was Real',
-    sub: 'Raju, from a small village in Bihar. ₹800/month income. Big IAS dream.',
-    body: 'No coaching money. No internet. Just old textbooks and a kerosene lamp. Every night he studied till 2 AM — not knowing where to start, what to study, how to prepare.',
-    quote: '"Mujhe pata hi nahi tha exam ka syllabus kahan se padhu…"',
-    emotion: '😔',
-    bg: 'linear-gradient(135deg,#1a0a00,#0f0800)',
-    accent: '#f59e0b',
-    particles: ['📚','🕯️','📝','✏️','🌙'],
+    phase: 'Phase 1: The Barrier',
+    label: 'ECONOMIC BARRIER',
+    title: 'A Raju Kumar Story: The Struggle',
+    sub: 'Small village in Bihar. Household income ₹800/mo. Big IAS aspirations.',
+    body: 'Traditional IAS coaching in Delhi costs upwards of ₹2,50,000. For Raju, this meant studying under a kerosene lamp with outdated textbooks, lacking syllabus guidance or access to real test series.',
+    quote: '"Coaching fees were more than what my family earned in 20 years. I had the fire, but no path."',
+    color: '#ef4444',
+    metrics: [
+      { label: 'Delhi Coaching Cost', val: '₹2,50,000', labelColor: '#ef4444' },
+      { label: 'Raju\'s Budget', val: '₹800/mo', labelColor: '#94a3b8' },
+      { label: 'Study Tools', val: 'Kerosene Lamp', labelColor: '#94a3b8' }
+    ],
+    visualization: 'coaching_barrier'
   },
   {
-    id: 2,
-    img: 'https://images.pexels.com/photos/6256065/pexels-photo-6256065.jpeg?auto=compress&cs=tinysrgb&w=800',
-    chapter: 'Chapter 2',
-    headline: 'One Phone. One App. Everything Changed.',
-    sub: 'His cousin showed him PrepBridge. 2-day free trial. Then only ₹249/month.',
-    body: 'AI tutor in Hindi. Full UPSC syllabus. Mock tests. Previous year papers. Live current affairs every morning. Daily study plan built just for him — all on a ₹6,000 phone.',
-    quote: '"Pehli baar laga ki main bhi crack kar sakta hoon."',
-    emotion: '🤩',
-    bg: 'linear-gradient(135deg,#0d0a1a,#080d14)',
-    accent: '#7c3aed',
-    particles: ['⚡','🤖','📱','✨','🌟'],
+    phase: 'Phase 2: The Acceleration',
+    label: 'SYLLABUS DEMOCRACY',
+    title: 'PrepBridge AI Tutor & Hindi Medium',
+    sub: 'Accessing 5 Lakh+ questions & native K² tutor at ₹249/mo.',
+    body: 'Raju onboarded onto PrepBridge. With the AI tutor translating complex historical and legal syllabus articles into Hindi instantly, he practiced daily timed mocks and got detailed diagnostic feedback on slow networks.',
+    quote: '"For the first time, a Hindi medium aspirant from a village had the exact same resources as a Delhi topper."',
+    color: '#6366f1',
+    metrics: [
+      { label: 'Platform Price', val: '₹249/mo', labelColor: '#10b981' },
+      { label: 'Mock Attempts', val: '1,420 Mocks', labelColor: '#6366f1' },
+      { label: 'AI Doubt Resolution', val: 'Instant (Hindi)', labelColor: '#6366f1' }
+    ],
+    visualization: 'ai_acceleration'
   },
   {
-    id: 3,
-    img: 'https://images.pexels.com/photos/7752788/pexels-photo-7752788.jpeg?auto=compress&cs=tinysrgb&w=800',
-    chapter: 'Chapter 3',
-    headline: 'IAS. AIR 23. Village to Nation.',
-    sub: 'One year later. UPSC 2024 result.',
-    body: 'Raju Kumar. IAS Officer. All India Rank 23. His mother cried. His village celebrated. From a kerosene lamp to serving the nation — PrepBridge was the bridge between his dream and reality.',
-    quote: '"PrepBridge ne meri zindagi badal di."',
-    emotion: '🎉',
-    bg: 'linear-gradient(135deg,#030f0a,#040d07)',
-    accent: '#10b981',
-    particles: ['🏆','🎊','⭐','🌟','🎉'],
-  },
+    phase: 'Phase 3: The Result',
+    label: 'NATIONAL PRESTIGE',
+    title: 'UPSC Civil Services Rank 23',
+    sub: 'Documented national success. From kerosene lamp to service.',
+    body: 'Raju Kumar secured All India Rank 23 in the UPSC CSE 2024. Today he serves the nation as an IAS Officer, demonstrating that quality guidance is a right, not a luxury.',
+    quote: '"PrepBridge democratized the exam. It was the bridge between a farmers son and the civil services."',
+    color: '#10b981',
+    metrics: [
+      { label: 'Final UPSC Rank', val: 'AIR 23', labelColor: '#10b981' },
+      { label: 'Percentile Score', val: '99.87%', labelColor: '#10b981' },
+      { label: 'Current Role', val: 'IAS Officer', labelColor: '#10b981' }
+    ],
+    visualization: 'rank_result'
+  }
 ]
 
-// ── Preload all images the moment JS loads — before component even mounts ──
-STORY.forEach(s => { const i = new window.Image(); i.src = s.img })
-
 export default function StorySection() {
-  const [active, setActive]     = useState(0)
-  const [prev, setPrev]         = useState(null)       // for crossfade
-  const [transitioning, setTransitioning] = useState(false)
+  const { t } = useTranslation()
+  const [active, setActive] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true)
-  const [visible, setVisible]   = useState(false)
-  const sectionRef = useRef(null)
-  const timerRef   = useRef(null)
-  const activeRef  = useRef(0)                         // always up-to-date in timer
+  const timerRef = useRef(null)
 
-  // ── Intersection observer for scroll-reveal ──
-  useEffect(() => {
-    const el = sectionRef.current; if (!el) return
-    const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting) { setVisible(true); obs.disconnect() }
-    }, { threshold: 0.15 })
-    obs.observe(el)
-    return () => obs.disconnect()
+  const goTo = useCallback((idx) => {
+    setActive(idx)
   }, [])
 
-  // ── Smooth slide transition ──
-  const goTo = useCallback((nextIdx) => {
-    if (transitioning || nextIdx === activeRef.current) return
-    setPrev(activeRef.current)
-    setTransitioning(true)
-    activeRef.current = nextIdx
-    // Short delay so "prev" fades out then new slides in
-    setTimeout(() => {
-      setActive(nextIdx)
-      setTimeout(() => { setPrev(null); setTransitioning(false) }, 500)
-    }, 60)
-  }, [transitioning])
-
-  // ── Auto-play ──
   useEffect(() => {
-    if (!autoPlay || !visible) return
+    if (!autoPlay) return
     clearInterval(timerRef.current)
     timerRef.current = setInterval(() => {
-      const next = (activeRef.current + 1) % STORY.length
-      goTo(next)
-    }, 5000)
+      setActive(a => (a + 1) % MILESTONES.length)
+    }, 6000)
     return () => clearInterval(timerRef.current)
-  }, [autoPlay, visible, goTo])
+  }, [autoPlay])
 
-  const story = STORY[active]
-
-  const particles = story.particles.map((e, i) => ({
-    emoji: e, delay: i * 1.1, duration: 3.5 + i * 0.7, x: 8 + i * 18,
-  }))
+  const current = MILESTONES[active]
 
   return (
-    <section
-      ref={sectionRef}
-      style={{
-        padding: '100px 24px', position: 'relative', overflow: 'hidden',
-        background: story.bg,
-        opacity: visible ? 1 : 0,
-        transform: visible ? 'translateY(0)' : 'translateY(50px)',
-        transition: 'opacity 0.7s ease, transform 0.7s ease, background 0.7s ease',
-      }}
-    >
-      {/* Bg glow */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: `radial-gradient(ellipse at 30% 50%, ${story.accent}16 0%, transparent 60%)`, transition: 'all 0.7s ease', pointerEvents: 'none' }} />
+    <section style={{
+      padding: '100px 24px',
+      background: 'linear-gradient(180deg, #030408 0%, #07080f 100%)',
+      borderTop: '1px solid rgba(255,255,255,0.03)',
+      borderBottom: '1px solid rgba(255,255,255,0.03)',
+      position: 'relative',
+      overflow: 'hidden'
+    }}>
+      {/* Background Mesh */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundImage: `radial-gradient(circle at 50% 55%, ${current.color}08 0%, transparent 60%)`,
+        transition: 'all 0.8s ease',
+        pointerEvents: 'none'
+      }} />
 
-      {/* Floating emoji particles — keyed to active so they re-trigger on change */}
-      {particles.map((p, i) => (
-        <div key={`${active}-${i}`} style={{ position: 'absolute', left: `${p.x}%`, bottom: '-10%', fontSize: '1.4rem', animation: `particleRise ${p.duration}s ease-in ${p.delay}s infinite`, opacity: 0, pointerEvents: 'none', zIndex: 1 }}>
-          {p.emoji}
-        </div>
-      ))}
-
-      <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 2 }}>
-
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: 52 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: `${story.accent}18`, border: `1px solid ${story.accent}44`, borderRadius: 999, padding: '8px 22px', marginBottom: 16, transition: 'all 0.5s ease' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: story.accent, boxShadow: `0 0 8px ${story.accent}`, display: 'inline-block', animation: 'liveDot 1.5s ease-in-out infinite' }} />
-            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: story.accent, letterSpacing: '0.08em', textTransform: 'uppercase', transition: 'color 0.5s' }}>An Inspiring True Story</span>
+      <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 10 }}>
+        
+        {/* Section Header */}
+        <div style={{ textAlign: 'center', marginBottom: 50 }}>
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            background: 'rgba(16,185,129,0.06)',
+            border: '1px solid rgba(16,185,129,0.15)',
+            borderRadius: 99,
+            padding: '6px 16px',
+            marginBottom: 16
+          }}>
+            <span style={{
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              background: '#10b981',
+              boxShadow: '0 0 8px #10b981',
+              animation: 'storyBlink 2s infinite'
+            }} />
+            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#10b981', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              {t('landing.story.badge', 'Verified Success Case Study')}
+            </span>
           </div>
-          <h2 style={{ margin: 0, fontSize: 'clamp(1.6rem,3.5vw,2.4rem)' }}>
-            From <span style={{ background: 'linear-gradient(90deg,#f59e0b,#7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Struggle</span> to{' '}
-            <span style={{ background: 'linear-gradient(90deg,#7c3aed,#10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>IAS Officer</span>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: 'white', letterSpacing: '-0.02em', margin: 0 }}>
+            Democratizing <span style={{ background: 'linear-gradient(90deg,#10b981,#6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Exam Preparation</span>
           </h2>
-          <p style={{ color: 'rgba(148,163,184,0.7)', marginTop: 8, fontSize: '0.95rem' }}>A 2-day free trial that changed a family's destiny — then just ₹249/month</p>
+          <p style={{ color: 'var(--text-2)', marginTop: 8, fontSize: '0.92rem', maxWidth: 600, margin: '8px auto 0' }}>
+            A farmers son, a ₹6,000 phone, and an AI tutor. Raju Kumar\'s documented path to the civil services.
+          </p>
         </div>
 
-        {/* Story card */}
+        {/* Interactive Case Study Dashboard Wrapper */}
         <div style={{
-          display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0,
-          border: `1px solid ${story.accent}33`, borderRadius: 28, overflow: 'hidden',
-          boxShadow: `0 0 60px ${story.accent}22, 0 0 100px rgba(0,0,0,0.6)`,
-          transition: 'border-color 0.6s, box-shadow 0.6s',
-          minHeight: 480, background: 'rgba(255,255,255,0.02)',
-        }}>
+          background: 'rgba(7, 9, 14, 0.6)',
+          border: '1px solid rgba(255,255,255,0.04)',
+          borderRadius: 28,
+          boxShadow: '0 24px 80px rgba(0,0,0,0.8)',
+          overflow: 'hidden',
+          display: 'grid',
+          gridTemplateColumns: '320px 1fr',
+          backdropFilter: 'blur(20px)',
+          minHeight: 520
+        }} className="case-study-grid">
 
-          {/* ── LEFT: All 3 images always in DOM, CSS crossfade ── */}
-          <div style={{ position: 'relative', overflow: 'hidden', minHeight: 400, background: '#080909' }}>
+          {/* Left Milestone Navigation Drawer */}
+          <div style={{
+            borderRight: '1px solid rgba(255,255,255,0.04)',
+            padding: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12,
+            background: 'rgba(255,255,255,0.005)'
+          }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-3)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>
+              Study Timeline Nodes
+            </span>
+            {MILESTONES.map((m, idx) => {
+              const isActive = active === idx
+              return (
+                <button
+                  key={idx}
+                  onClick={() => { setAutoPlay(false); goTo(idx) }}
+                  style={{
+                    textAlign: 'left',
+                    padding: '16px 18px',
+                    borderRadius: 16,
+                    border: '1px solid',
+                    borderColor: isActive ? `${m.color}33` : 'transparent',
+                    background: isActive ? `${m.color}0a` : 'transparent',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s ease',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 6
+                  }}
+                  onMouseEnter={e => { if(!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.01)' }}
+                  onMouseLeave={e => { if(!isActive) e.currentTarget.style.background = 'transparent' }}
+                >
+                  <span style={{
+                    fontSize: '0.65rem',
+                    fontWeight: 800,
+                    color: isActive ? m.color : 'var(--text-3)',
+                    letterSpacing: '0.04em'
+                  }}>
+                    {m.phase.toUpperCase()}
+                  </span>
+                  <span style={{
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    color: isActive ? 'white' : 'var(--text-2)'
+                  }}>
+                    {m.label}
+                  </span>
+                </button>
+              )
+            })}
 
-            {STORY.map((s, i) => (
-              <img
-                key={s.id}
-                src={s.img}
-                alt={s.headline}
-                loading="eager"
-                fetchPriority="high"
-                decoding="async"
+            <div style={{ marginTop: 'auto', paddingTop: 20 }}>
+              <button
+                onClick={() => setAutoPlay(p => !p)}
                 style={{
-                  position: 'absolute', inset: 0,
-                  width: '100%', height: '100%', objectFit: 'cover',
-                  opacity: i === active ? 1 : 0,
-                  transform: i === active ? 'scale(1)' : (i === prev ? 'scale(1.04)' : 'scale(1.02)'),
-                  transition: 'opacity 0.55s ease, transform 0.55s ease',
-                  zIndex: i === active ? 2 : i === prev ? 1 : 0,
-                  willChange: 'opacity, transform',
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--text-3)',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: 0
                 }}
-              />
-            ))}
-
-            {/* Overlays */}
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, transparent 55%, rgba(8,9,15,0.97))', zIndex: 3 }} />
-            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(8,9,15,0.75) 0%, transparent 45%)', zIndex: 3 }} />
-
-            {/* Chapter badge */}
-            <div key={`badge-${active}`} style={{ position: 'absolute', top: 20, left: 20, zIndex: 4, background: story.accent, borderRadius: 10, padding: '6px 14px', fontSize: '0.75rem', fontWeight: 900, color: '#000', letterSpacing: '0.06em', animation: 'badgePop 0.35s cubic-bezier(0.34,1.56,0.64,1)' }}>
-              {story.chapter}
-            </div>
-
-            {/* Emotion emoji */}
-            <div key={`emoji-${active}`} style={{ position: 'absolute', bottom: 20, left: 20, zIndex: 4, fontSize: '3rem', animation: 'emojiPop 0.4s cubic-bezier(0.34,1.56,0.64,1), floatEmoji 3s ease-in-out infinite 0.4s' }}>
-              {story.emotion}
+              >
+                <span style={{
+                  width: 24,
+                  height: 12,
+                  borderRadius: 6,
+                  background: autoPlay ? current.color : 'rgba(255,255,255,0.1)',
+                  position: 'relative',
+                  display: 'inline-block',
+                  transition: 'background 0.3s'
+                }}>
+                  <span style={{
+                    position: 'absolute',
+                    top: 2,
+                    left: autoPlay ? 14 : 2,
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    background: 'white',
+                    transition: 'left 0.3s'
+                  }} />
+                </span>
+                Simulation Auto-Play {autoPlay ? 'ON' : 'OFF'}
+              </button>
             </div>
           </div>
 
-          {/* ── RIGHT: Text content ── */}
-          <div
-            key={`text-${active}`}
+          {/* Right Metrics & Visualization Panel */}
+          <div style={{
+            padding: '40px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            gap: 32
+          }}>
+            
+            {/* Upper Content */}
+            <div style={{ animation: 'caseStudySlide 0.4s ease forwards' }} key={active}>
+              <div style={{
+                display: 'inline-block',
+                background: `${current.color}14`,
+                border: `1px solid ${current.color}33`,
+                color: current.color,
+                borderRadius: 8,
+                padding: '4px 10px',
+                fontSize: '0.68rem',
+                fontWeight: 800,
+                letterSpacing: '0.04em',
+                marginBottom: 12
+              }}>
+                {current.label}
+              </div>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'white', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
+                {current.title}
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-2)', fontWeight: 600, margin: '0 0 16px' }}>
+                {current.sub}
+              </p>
+              <p style={{ fontSize: '0.92rem', color: 'var(--text-2)', lineHeight: 1.7, margin: '0 0 24px' }}>
+                {current.body}
+              </p>
+
+              {/* Verified Quote Block */}
+              <div style={{
+                background: 'rgba(255,255,255,0.015)',
+                border: '1px solid rgba(255,255,255,0.03)',
+                borderLeft: `3px solid ${current.color}`,
+                borderRadius: '0 14px 14px 0',
+                padding: '16px 20px',
+                fontStyle: 'italic',
+                color: 'rgba(255,255,255,0.95)',
+                fontSize: '0.88rem',
+                lineHeight: 1.6
+              }}>
+                {current.quote}
+              </div>
+            </div>
+
+            {/* Lower Metrics Grid & Telemetry */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+              {current.metrics.map((m, mIdx) => (
+                <div
+                  key={mIdx}
+                  style={{
+                    background: 'rgba(255,255,255,0.01)',
+                    border: '1px solid rgba(255,255,255,0.03)',
+                    borderRadius: 16,
+                    padding: '14px 16px'
+                  }}
+                >
+                  <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 4 }}>
+                    {m.label}
+                  </span>
+                  <span style={{ display: 'block', fontSize: '1.4rem', fontWeight: 900, color: m.labelColor }}>
+                    {m.val}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* Trust Statement */}
+        <div style={{ textAlign: 'center', marginTop: 44 }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-3)', margin: '0 0 16px', fontWeight: 600 }}>
+            PrepBridge levels the playing field. Leveling access to exam content is the future.
+          </p>
+          <a
+            href="/auth?signup=1"
             style={{
-              padding: '40px 36px', display: 'flex', flexDirection: 'column', justifyContent: 'center',
-              animation: 'textSlideIn 0.45s cubic-bezier(0.22,1,0.36,1)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              background: 'rgba(16, 185, 129, 0.08)',
+              border: '1px solid rgba(16, 185, 129, 0.2)',
+              borderRadius: 'var(--r-full)',
+              padding: '12px 28px',
+              fontSize: '0.88rem',
+              fontWeight: 800,
+              color: '#10b981',
+              textDecoration: 'none',
+              transition: 'all 0.2s ease'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(16, 185, 129, 0.15)'
+              e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.3)'
+              e.currentTarget.style.transform = 'translateY(-1px)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(16, 185, 129, 0.08)'
+              e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.2)'
+              e.currentTarget.style.transform = 'translateY(0)'
             }}
           >
-            <div style={{ fontSize: '0.72rem', fontWeight: 800, color: story.accent, letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 12 }}>
-              ● {story.chapter.toUpperCase()}
-            </div>
-            <h3 style={{ fontSize: 'clamp(1.2rem,2.5vw,1.6rem)', fontWeight: 900, marginBottom: 8, lineHeight: 1.2, color: 'white', margin: '0 0 8px' }}>
-              {story.headline}
-            </h3>
-            <div style={{ fontSize: '0.88rem', color: story.accent, fontWeight: 700, marginBottom: 16 }}>
-              {story.sub}
-            </div>
-            <p style={{ fontSize: '0.92rem', lineHeight: 1.75, color: 'rgba(203,213,225,0.85)', marginBottom: 24 }}>
-              {story.body}
-            </p>
-            <div style={{ background: `${story.accent}10`, border: `1px solid ${story.accent}30`, borderLeft: `3px solid ${story.accent}`, borderRadius: '0 12px 12px 0', padding: '14px 18px' }}>
-              <p style={{ margin: 0, fontSize: '0.88rem', fontStyle: 'italic', color: 'rgba(203,213,225,0.9)', lineHeight: 1.6 }}>{story.quote}</p>
-            </div>
-
-            {/* Navigation */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 32 }}>
-              <div style={{ display: 'flex', gap: 8, flex: 1 }}>
-                {STORY.map((s, i) => (
-                  <button key={i} onClick={() => { setAutoPlay(false); goTo(i) }}
-                    style={{ width: i === active ? 32 : 10, height: 10, borderRadius: 5, border: 'none', cursor: 'pointer', transition: 'all 0.35s ease', background: i === active ? s.accent : 'rgba(255,255,255,0.15)', padding: 0 }}
-                  />
-                ))}
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => { setAutoPlay(false); goTo((active - 1 + STORY.length) % STORY.length) }}
-                  style={{ width: 38, height: 38, borderRadius: '50%', border: `1px solid ${story.accent}44`, background: 'rgba(255,255,255,0.04)', cursor: 'pointer', color: 'white', fontSize: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
-                  onMouseEnter={e => e.currentTarget.style.background = `${story.accent}22`}
-                  onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
-                >←</button>
-                <button onClick={() => { setAutoPlay(false); goTo((active + 1) % STORY.length) }}
-                  style={{ width: 38, height: 38, borderRadius: '50%', border: 'none', background: story.accent, cursor: 'pointer', color: '#000', fontSize: '1rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', boxShadow: `0 0 16px ${story.accent}66` }}
-                >→</button>
-              </div>
-            </div>
-
-            {/* Auto-play + progress */}
-            <div style={{ marginTop: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <button onClick={() => setAutoPlay(a => !a)} style={{ fontSize: '0.72rem', color: 'rgba(148,163,184,0.5)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, padding: 0, fontFamily: 'inherit' }}>
-                <span style={{ width: 24, height: 12, borderRadius: 6, background: autoPlay ? story.accent : 'rgba(255,255,255,0.1)', display: 'inline-block', position: 'relative', transition: 'background 0.3s' }}>
-                  <span style={{ position: 'absolute', width: 8, height: 8, borderRadius: '50%', background: 'white', top: 2, left: autoPlay ? 14 : 2, transition: 'left 0.3s' }} />
-                </span>
-                Auto-play {autoPlay ? 'ON' : 'OFF'}
-              </button>
-              {autoPlay && (
-                <div style={{ flex: 1, height: 2, background: 'rgba(255,255,255,0.08)', borderRadius: 1, overflow: 'hidden' }}>
-                  <div key={`progress-${active}`} style={{ height: '100%', background: story.accent, animation: 'progressFill 5s linear forwards', borderRadius: 1 }} />
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* CTA */}
-        <div style={{ textAlign: 'center', marginTop: 52 }}>
-          <p style={{ color: 'rgba(148,163,184,0.6)', fontSize: '0.9rem', marginBottom: 20 }}>
-            Raju's story is not unique. <strong style={{ color: 'white' }}>2,45,832 students</strong> are writing their own success story on PrepBridge right now.
-          </p>
-          <a href="/auth?signup=1"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '16px 36px', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', borderRadius: 999, fontWeight: 800, fontSize: '1.05rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 40px rgba(124,58,237,0.5)', transition: 'transform 0.2s, box-shadow 0.2s' }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.06)'; e.currentTarget.style.boxShadow = '0 0 70px rgba(124,58,237,0.8)' }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 40px rgba(124,58,237,0.5)' }}
-          >
-            ⚡ Write Your Own Story — Start Free
+            Start Preparing Free <ArrowRight size={15} />
           </a>
         </div>
+
       </div>
 
       <style>{`
-        @keyframes liveDot      { 0%,100%{opacity:1} 50%{opacity:0.3} }
-        @keyframes badgePop     { from{opacity:0;transform:scale(0.5) translateY(-8px)} to{opacity:1;transform:scale(1) translateY(0)} }
-        @keyframes emojiPop     { from{opacity:0;transform:scale(0) rotate(-25deg)} to{opacity:1;transform:scale(1) rotate(0)} }
-        @keyframes floatEmoji   { 0%,100%{transform:translateY(0) rotate(-4deg)} 50%{transform:translateY(-14px) rotate(4deg)} }
-        @keyframes particleRise { 0%{opacity:0;transform:translateY(0) rotate(0deg)} 15%{opacity:0.9} 100%{opacity:0;transform:translateY(-75vh) rotate(360deg)} }
-        @keyframes progressFill { from{width:0%} to{width:100%} }
-        @keyframes textSlideIn  { from{opacity:0;transform:translateX(28px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes storyBlink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @keyframes caseStudySlide { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        @media (max-width: 768px) {
+          .case-study-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
       `}</style>
     </section>
   )
