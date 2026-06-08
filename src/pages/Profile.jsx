@@ -185,9 +185,9 @@ export default function Profile() {
           {/* 3-Plan Selector */}
           <div className="plans-selector-grid">
             {[
-              { key: 'monthly',  label: 'Monthly',  price: '₹249',   sub: '/month',         tag: null,          tagColor: null,          accent: 'var(--purple)',  accentRgb: '124,58,237' },
-              { key: 'sixMonth', label: '6 Months', price: '₹1,195', sub: `≈₹${PRICING.sixMonth.perMonth}/mo`, tag: 'Popular',    tagColor: 'var(--cyan)',   accent: 'var(--cyan)',    accentRgb: '0,212,255' },
-              { key: 'annual',   label: 'Annual',   price: '₹1,999', sub: `≈₹${PRICING.annual.perMonth}/mo`,   tag: 'Best Value', tagColor: 'var(--amber)', accent: 'var(--amber)',   accentRgb: '245,158,11' },
+              { key: 'monthly',  label: 'Monthly',  price: '₹249',   sub: '/month',         tag: 'Free during beta', tagColor: 'var(--emerald)',  accent: 'var(--purple)',  accentRgb: '124,58,237' },
+              { key: 'sixMonth', label: '6 Months', price: '₹1,195', sub: `≈₹${PRICING.sixMonth.perMonth}/mo`, tag: 'Free during beta', tagColor: 'var(--emerald)',  accent: 'var(--cyan)',    accentRgb: '0,212,255' },
+              { key: 'annual',   label: 'Annual',   price: '₹1,999', sub: `≈₹${PRICING.annual.perMonth}/mo`,   tag: 'Free during beta', tagColor: 'var(--emerald)',  accent: 'var(--amber)',   accentRgb: '245,158,11' },
             ].map(p => {
               const isSelected = selectedPlan === p.key
               return (

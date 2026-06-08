@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Outlet, useLocation, useNavigate, NavLink } from 'react-router-dom'
 import { useUserStore, useAppStore } from '../../store/useStore'
-import { signOutUser } from '../../firebase/auth'
+import { signOutUser, updateUserProfile } from '../../firebase/auth'
+import { useTranslation } from 'react-i18next'
+import { ALL_LANGUAGES } from '../../data/exams'
 import { getSubscriptionStatus } from '../../services/paymentService'
 import { getSupabaseCurrentAffairs } from '../../services/supabaseService'
 import {
@@ -30,6 +32,7 @@ const NAV_ITEMS = [
   { path: '/app/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/app/exams', icon: BookOpen, label: 'Exam Hub' },
   { path: '/app/mock-tests', icon: ClipboardList, label: 'Mock Tests' },
+  { path: '/app/predict', icon: TrendingUp, label: 'AI Trend Predictor', badge: 'PRO' },
   { path: '/app/current-affairs', icon: Newspaper, label: 'Current Affairs', badge: 'LIVE' },
   { path: '/app/planner', icon: Zap, label: 'AI Planner', badge: 'NEW' },
   { path: '/app/revision', icon: Layers, label: 'Revision Hub', badge: 'NEW' },
@@ -56,14 +59,33 @@ const ADMIN_ITEMS = [
 ]
 
 export default function AppLayout({ isAdmin = false }) {
+  const { t, i18n } = useTranslation()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const { user, profile, logout } = useUserStore()
+  const { user, profile, logout, updateProfile } = useUserStore()
   const { notifications } = useAppStore()
   const location = useLocation()
   const navigate = useNavigate()
   const unread = notifications.filter(n => !n.read).length
   const items = isAdmin ? ADMIN_ITEMS : NAV_ITEMS
+
+  const handleLanguageChange = (e) => {
+    const newLangCode = e.target.value
+    const found = ALL_LANGUAGES.find(l => l.code === newLangCode)
+    const name = found ? found.name : 'English'
+    
+    // Change language in i18n
+    i18n.changeLanguage(newLangCode)
+    
+    // Update profile in store
+    updateProfile({ selectedLanguage: name, language: newLangCode })
+    
+    // Background sync to Supabase
+    if (user?.uid && !user.uid.startsWith('demo_')) {
+      updateUserProfile(user.uid, { selectedLanguage: name, language: newLangCode })
+        .catch(err => console.error('Language sync error:', err))
+    }
+  }
 
   // India Pride Ticker State
   const [prideItems, setPrideItems] = useState([])
@@ -234,11 +256,31 @@ export default function AppLayout({ isAdmin = false }) {
           </div>
         </div>
         <div className="topbar-right">
-          {profile?.selectedLanguage && (
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-3)', background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', padding: '6px 12px' }}>
-              🌐 {profile?.selectedLanguage}
-            </span>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: '1rem' }}>🌐</span>
+            <select
+              value={i18n.language || 'en'}
+              onChange={handleLanguageChange}
+              style={{
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: 'var(--text-2)',
+                background: 'var(--bg-3)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--r-full)',
+                padding: '6px 12px',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                outline: 'none'
+              }}
+            >
+              {ALL_LANGUAGES.map(lang => (
+                <option key={lang.code} value={lang.code} style={{ background: 'var(--bg-2)', color: 'white' }}>
+                  {lang.flag} {lang.native}
+                </option>
+              ))}
+            </select>
+          </div>
           <NavLink to="/app/notifications" className="topbar-btn">
             <Bell size={16} />
             {unread > 0 && <span className="notif-count">{unread > 9 ? '9+' : unread}</span>}

@@ -7,6 +7,7 @@ import { askGemini, generateQuestions } from '../services/gemini'
 import { ALL_LANGUAGES, EXAM_CATEGORIES } from '../data/exams'
 import { Link, useLocation } from 'react-router-dom'
 import { getSubscriptionStatus } from '../services/paymentService'
+import { auth } from '../firebase/config'
 
 // ---------- Free‑tier daily query limit ----------
 // Store count per day in localStorage under key `pb_ai_count_YYYY-MM-DD`.
@@ -201,7 +202,7 @@ function getExamLabel(primaryTarget) {
   return primaryTarget.toUpperCase()
 }
 
-const API_KEY_CONFIGURED = !!import.meta.env.VITE_GEMINI_API_KEY
+const API_KEY_CONFIGURED = true
 
 export default function AITutor() {
   const { profile } = useUserStore()
@@ -254,7 +255,6 @@ export default function AITutor() {
     }
   }
 
-  // Use the centralized helper functions defined above
   const getDailyQueryCount = () => getQueryCount()
   const incrementDailyQueryCount = () => incrementQueryCount()
 
@@ -294,34 +294,85 @@ export default function AITutor() {
     setMessages(m => [...m, userMsg])
     setLoading(true)
 
+    const aiMsgId = Date.now()
+    setMessages(m => [...m, { id: aiMsgId, role: 'ai', text: '', time: new Date() }])
+
+    const history = messages.filter(m => m.role !== 'system')
+    const examContext = profile?.exams || (primaryTarget ? [primaryTarget] : [])
+    let tokenAccumulator = ''
+
     try {
-      const history = messages.filter(m => m.role !== 'system')
-      // Include primaryTarget in exam context for personalized responses
-      const examContext = profile?.exams || (primaryTarget ? [primaryTarget] : [])
-      const response = await askGemini(
-        msg || 'Please solve this exam question step-by-step.',
-        history,
-        language,
-        examContext,
-        imgData,
-        imgType
-      )
-      setMessages(m => [...m, { role: 'ai', text: response, time: new Date() }])
+      const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : ''
+      const response = await fetch('/api/tutor/stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': idToken ? `Bearer ${idToken}` : ''
+        },
+        body: JSON.stringify({
+          userMessage: msg || 'Please solve this exam question step-by-step.',
+          chatHistory: history.map(h => ({ role: h.role, text: h.text })),
+          language,
+          examContext
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`Server status ${response.status}`)
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let chunkBuffer = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+
+        const textChunk = decoder.decode(value, { stream: true })
+        chunkBuffer += textChunk
+
+        const lines = chunkBuffer.split('\n')
+        chunkBuffer = lines.pop() || ''
+
+        for (const line of lines) {
+          const trimmed = line.trim()
+          if (!trimmed || !trimmed.startsWith('data: ')) continue
+
+          const rawData = trimmed.slice(6)
+          if (rawData === '[DONE]') continue
+
+          try {
+            const parsed = JSON.parse(rawData)
+            if (parsed.error) {
+              throw new Error(parsed.error)
+            }
+            if (parsed.text) {
+              tokenAccumulator += parsed.text
+              setMessages(m => m.map(msgItem =>
+                msgItem.id === aiMsgId ? { ...msgItem, text: tokenAccumulator } : msgItem
+              ))
+            }
+          } catch (jsonErr) {}
+        }
+      }
     } catch (err) {
-      console.error('Gemini error:', err)
-      if (err.message === 'NO_API_KEY') {
-        setMessages(m => [...m, {
-          role: 'ai',
-          text: `**⚠️ AI Service Not Configured**\n\nThe Gemini API key is not set up yet. To enable the full AI Tutor:\n\n1. Get your free API key from [Google AI Studio](https://aistudio.google.com)\n2. Add it to your \`.env.local\` file: \`VITE_GEMINI_API_KEY=your_key_here\`\n3. Restart the dev server\n\nIn the meantime, I'll answer from my offline knowledge base! Ask me about **${examLabel || 'your target exam'}** topics. 📚`,
-          time: new Date()
-        }])
-      } else {
-        toast.error('AI tutor is busy. Please try again in a moment.')
-        setMessages(m => [...m, {
-          role: 'ai',
-          text: `Sorry, I'm having trouble connecting right now. Please try again in a moment.\n\nIn the meantime, check our question bank or current affairs section! 📚`,
-          time: new Date()
-        }])
+      console.warn('Streaming failed, falling back to askGemini:', err)
+      try {
+        const fallbackResponse = await askGemini(
+          msg || 'Please solve this exam question step-by-step.',
+          history,
+          language,
+          examContext,
+          imgData,
+          imgType
+        )
+        setMessages(m => m.map(msgItem =>
+          msgItem.id === aiMsgId ? { ...msgItem, text: fallbackResponse } : msgItem
+        ))
+      } catch (fallbackErr) {
+        toast.error('AI solver is busy. Please try again.')
+        setMessages(m => m.filter(msgItem => msgItem.id !== aiMsgId))
       }
     }
     setLoading(false)

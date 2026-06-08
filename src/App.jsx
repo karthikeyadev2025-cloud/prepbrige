@@ -22,6 +22,7 @@ const Courses = lazy(() => import('./pages/Courses'))
 const Leaderboard = lazy(() => import('./pages/Leaderboard'))
 const Notifications = lazy(() => import('./pages/Notifications'))
 const Profile = lazy(() => import('./pages/Profile'))
+const TrendPredictor = lazy(() => import('./pages/TrendPredictor'))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 const AdminQuestions = lazy(() => import('./pages/admin/AdminQuestions'))
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'))
@@ -152,6 +153,7 @@ export default function App() {
             <Route path="mock-tests" element={<MockTest />} />
             <Route path="current-affairs" element={<CurrentAffairs />} />
             <Route path="question-papers" element={<QuestionPapers />} />
+            <Route path="predict" element={<TrendPredictor />} />
             <Route path="ai-tutor" element={<AITutor />} />
             <Route path="planner" element={<StudyPlanner />} />
             <Route path="revision" element={<RevisionHub />} />

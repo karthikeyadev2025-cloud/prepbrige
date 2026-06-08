@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { getSupabaseExamQuestions } from '../services/supabaseService'
 import { useUserStore } from '../store/useStore'
 import { EXAM_CATEGORIES } from '../data/exams'
-import { Search, Download, Eye, Star } from 'lucide-react'
+import { Search, Zap, Eye, Star } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 
 const YEARS = ['2025','2024','2023','2022','2021','2020','2019','2018']
@@ -45,6 +46,7 @@ function getPaperExamId(examId) {
 
 export default function QuestionPapers() {
   const { profile } = useUserStore()
+  const navigate = useNavigate()
   const userExams = profile?.exams || []
   const primaryTarget = profile?.primaryTarget || null
 
@@ -95,144 +97,55 @@ export default function QuestionPapers() {
     return () => window.removeEventListener('prepbridge-portal-sync', handleSync)
   }, [])
 
-  const handleDownload = (paper) => {
-    toast.loading(`Compiling "${paper.title}" with PrepBridge watermark protection...`, { id: 'pyq-down' })
-    
-    setTimeout(async () => {
-      try {
-        let examKey = paper.exam.toLowerCase().replace(' ', '_').replace('-', '_');
-        let questionsList = await getSupabaseExamQuestions(examKey, 15);
-        if (questionsList.length === 0) {
-          questionsList = await getSupabaseExamQuestions('upsc', 15);
-        }
-        
-        let questionsHtml = '';
-        questionsList.forEach((q, i) => {
-          questionsHtml += `
-            <div class="question-card">
-              <div class="question-title">Q${i+1}. ${q.text}</div>
-              <ul class="options-list">
-                ${q.options.map((o, idx) => `
-                  <li class="${idx === q.correct ? 'correct-option' : ''}">
-                    ${String.fromCharCode(65 + idx)}) ${o} ${idx === q.correct ? '✓ (Correct)' : ''}
-                  </li>
-                `).join('')}
-              </ul>
-              <div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div>
-            </div>
-          `;
-        });
-
-        const docContent = `
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <title>${paper.title} — PrepBridge Protected PYQ</title>
-            <style>
-              body {
-                font-family: 'Outfit', 'Segoe UI', system-ui, sans-serif;
-                background-color: #f8fafc;
-                color: #0f172a;
-                padding: 40px;
-                max-width: 800px;
-                margin: 0 auto;
-                position: relative;
-              }
-              .watermark {
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%) rotate(-45deg);
-                font-size: 5rem;
-                font-weight: 900;
-                color: rgba(124, 58, 237, 0.05);
-                white-space: nowrap;
-                pointer-events: none;
-                z-index: 9999;
-                text-transform: uppercase;
-                letter-spacing: 0.1em;
-              }
-              .header {
-                border-bottom: 2px solid #7c3aed;
-                padding-bottom: 20px;
-                margin-bottom: 30px;
-              }
-              .title { font-size: 1.8rem; font-weight: 800; color: #1e1b4b; margin: 0; }
-              .subtitle { font-size: 1rem; color: #64748b; margin-top: 5px; }
-              .copyright-shield {
-                background: #e0f2fe;
-                border: 1px solid #bae6fd;
-                border-radius: 8px;
-                padding: 12px 16px;
-                font-size: 0.82rem;
-                color: #0369a1;
-                margin-bottom: 24px;
-                line-height: 1.5;
-              }
-              .question-card {
-                background: white;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
-                padding: 20px;
-                margin-bottom: 20px;
-                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-                position: relative;
-              }
-              .question-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 12px; line-height: 1.5; }
-              .options-list { list-style: none; padding-left: 0; margin-bottom: 16px; }
-              .options-list li { padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; border: 1px solid #f1f5f9; font-size: 0.92rem; }
-              .correct-option { background: #d1fae5; border-color: #34d399 !important; color: #065f46; font-weight: 600; }
-              .explanation { font-size: 0.85rem; color: #475569; background: #f8fafc; padding: 12px; border-radius: 8px; border-left: 3px solid #64748b; }
-            </style>
-          </head>
-          <body>
-            <div class="watermark">PREPBRIDGE COPYRIGHT SECURED</div>
-            <div class="watermark" style="top: 25%">PREPBRIDGE PYQ Resource</div>
-            <div class="watermark" style="top: 75%">PREPBRIDGE PYQ Resource</div>
-            
-            <div class="header">
-              <h1 class="title">PrepBridge Study Material</h1>
-              <div class="subtitle">${paper.title} (${paper.paper}) — Year ${paper.year}</div>
-            </div>
-
-            <div class="copyright-shield">
-              <strong>🔒 COPYRIGHT WARNING & WATERMARK PROTECTION:</strong><br>
-              This document is dynamically compiled and watermarked by PrepBridge. Any unauthorized reproduction, online hosting, redistribution, or modification of this document without explicit written permission from PrepBridge is strictly prohibited and constitutes a violation of copyright laws.
-            </div>
-
-            <h2>Solved Sectional Questions</h2>
-            ${questionsHtml}
-            
-            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 40px 0;">
-            <p style="text-align: center; font-size: 0.8rem; color: #94a3b8;">
-              Compiled dynamically by PrepBridge (C) 2026 — India's #1 All-in-One Exam Prep Platform. All Rights Reserved.
-            </p>
-          </body>
-          </html>
-        `;
-
-        // Create Blob and trigger download (web only — native uses share sheet)
-        const blob = new Blob([docContent], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        if (document.body) {
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `${paper.id}_prepbridge_watermarked.html`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-        } else {
-          window.open(url, '_blank');
-        }
-        URL.revokeObjectURL(url);
-
-        toast.success(`Study material downloaded successfully! Watermarked & copyright-secured. 📁`, { id: 'pyq-down', duration: 4000 });
-      } catch (err) {
-        console.error('Download compilation failed:', err);
-        toast.error('Download failed. Please try again.', { id: 'pyq-down' });
+  const handleSolveOnline = async (paper) => {
+    toast.loading(`Preparing online test environment for "${paper.title}"...`, { id: 'pyq-solve' })
+    try {
+      const testTemplateId = `paper_${paper.id}`
+      let examKey = paper.exam.toLowerCase().replace(' ', '_').replace('-', '_')
+      let questionsList = await getSupabaseExamQuestions(examKey, 20)
+      if (questionsList.length === 0) {
+        questionsList = await getSupabaseExamQuestions('upsc', 20)
       }
-    }, 1500)
+
+      // Format questions for Practice Mode
+      const parsedQuestions = questionsList.map((q, idx) => ({
+        ...q,
+        text: `[PYQ Question ${idx + 1}] — ${q.text}`,
+        explanation: `📝 Previous Year Question Paper Note: ${q.explanation}`
+      }))
+
+      const paperTemplate = {
+        id: testTemplateId,
+        title: `PYQ Practice: ${paper.title} (${paper.year})`,
+        exam: paper.exam,
+        totalQuestions: parsedQuestions.length,
+        duration: parsedQuestions.length * 2,
+        pattern: 'MCQ',
+        negativeMarking: -0.25,
+        marksPerQuestion: 1,
+        syllabus: [`Previous Year Question Paper - ${paper.paper}`],
+        attempts: 0,
+        avgScore: 0,
+        difficulty: 'medium'
+      }
+
+      localStorage.setItem(`prepbridge_ai_questions_${testTemplateId}`, JSON.stringify(parsedQuestions))
+
+      const localTests = localStorage.getItem('prepbridge_auto_updated_tests')
+      const parsed = localTests ? JSON.parse(localTests) : []
+      if (!parsed.some(t => t.id === testTemplateId)) {
+        localStorage.setItem('prepbridge_auto_updated_tests', JSON.stringify([paperTemplate, ...parsed]))
+      }
+
+      toast.success('Online practice test prepared successfully!', { id: 'pyq-solve' })
+      setTimeout(() => {
+        navigate(`/app/test/${testTemplateId}`)
+      }, 1000)
+
+    } catch (err) {
+      console.error('Failed to prepare PYQ practice:', err)
+      toast.error('Failed to start online practice. Please try again.', { id: 'pyq-solve' })
+    }
   }
 
   const exams = [...new Set(papers.map(p => p.exam))]
@@ -260,7 +173,7 @@ export default function QuestionPapers() {
           <h1 className="page-title">Question Papers 📄</h1>
           <p className="page-subtitle">Previous year question papers with solutions — 10+ years, all major exams</p>
         </div>
-        <div className="stat-pill">📥 {papers.reduce((a, p) => a + p.downloads, 0).toLocaleString()} downloads</div>
+        <div className="stat-pill">⚡ {papers.reduce((a, p) => a + p.downloads, 0).toLocaleString()} online practices</div>
       </div>
 
       {/* Personalization Banner */}
@@ -330,14 +243,14 @@ export default function QuestionPapers() {
             <div style={{ display: 'flex', gap: 14 }}>
               <span style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>📝 {paper.questions} Qs</span>
               <span style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>📄 {paper.pages} pages</span>
-              <span style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>📥 {(paper.downloads/1000).toFixed(1)}K</span>
+              <span style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>⚡ {(paper.downloads/1000).toFixed(1)}K solved</span>
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => handlePreviewClick(paper)} className="btn btn-outline btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
                 <Eye size={13} /> Preview
               </button>
-              <button onClick={() => handleDownload(paper)} className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
-                <Download size={13} /> Download
+              <button onClick={() => handleSolveOnline(paper)} className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center', gap: 6 }}>
+                <Zap size={13} /> Solve Online
               </button>
             </div>
             {previewId === paper.id && (

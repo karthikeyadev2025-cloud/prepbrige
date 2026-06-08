@@ -5,13 +5,13 @@ import { toast } from 'react-hot-toast'
 import { EXAM_CATEGORIES, ALL_STATES, ALL_LANGUAGES } from '../data/exams'
 import { CheckCircle, ArrowRight, ArrowLeft, Zap, Brain, Plus } from 'lucide-react'
 import { updateUserProfile } from '../firebase/auth'
-import { createTrialSubscription } from '../services/paymentService'
+import { initiatePremiumCheckout, PRICING, createTrialSubscription } from '../services/paymentService'
 import { uploadToSupabase } from '../services/supabaseService'
 
-const STEPS = ['Language','State','Exams','Profile','Schedule']
+const STEPS = ['Language', 'Category Type', 'Exams', 'Profile', 'Schedule', 'Payment']
 
-const EDUCATION_LEVELS = ['10th Pass','12th Pass','Graduate','Post Graduate','Other']
-const STUDY_HOURS = ['1-2 hours','2-3 hours','3-4 hours','4-6 hours','6+ hours']
+const EDUCATION_LEVELS = ['10th Pass', '12th Pass', 'Graduate', 'Post Graduate', 'Other']
+const STUDY_HOURS = ['1-2 hours', '2-3 hours', '3-4 hours', '4-6 hours', '6+ hours']
 
 export default function Onboarding() {
   const [step, setStep] = useState(0)
@@ -19,14 +19,22 @@ export default function Onboarding() {
   const navigate = useNavigate()
 
   const [data, setData] = useState(() => ({
-    language: 'en', languageName: 'English',
-    state: '', exams: [],
+    language: 'en',
+    languageName: 'English',
+    categoryType: 'govt',
+    state: '',
+    exams: [],
     // Pre-fill name from Google sign-in / existing profile if available
     name: profile?.displayName || profile?.name || user?.displayName || '',
-    education: '', targetYear: '2026',
-    studyHours: '3-4 hours', examDate: '',
-    primaryTarget: '', lakshyaSlogan: ''
+    education: '',
+    targetYear: '2026',
+    studyHours: '3-4 hours',
+    examDate: '',
+    primaryTarget: '',
+    lakshyaSlogan: ''
   }))
+
+  const [selectedPlan, setSelectedPlan] = useState('monthly')
   const [photoFile, setPhotoFile] = useState(null)
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState(() =>
     profile?.photoURL && !profile.photoURL.startsWith('data:') ? profile.photoURL : ''
@@ -61,11 +69,12 @@ export default function Onboarding() {
 
   const next = () => {
     if (step === 0 && !data.language) { toast.error('Please select a language'); return }
-    if (step === 1 && !data.state) { toast.error('Please select your state'); return }
+    if (step === 1 && !data.categoryType) { toast.error('Please select a preparation track'); return }
     if (step === 2 && data.exams.length === 0) { toast.error('Select at least one exam'); return }
     if (step === 2 && data.exams.length > 0 && !data.primaryTarget) { toast.error('Please select your Primary Target Exam (Lakshya)'); return }
     if (step === 3 && !data.name.trim()) { toast.error('Please enter your name'); return }
-    if (step === STEPS.length - 1) { handleComplete(); return }
+    if (step === 3 && !data.state) { toast.error('Please select your state'); return }
+    if (step === STEPS.length - 1) { handleCompletePayment(); return }
     setStep(s => s + 1)
   }
 
@@ -78,6 +87,28 @@ export default function Onboarding() {
       }
       setPhotoFile(file)
       setPhotoPreviewUrl(URL.createObjectURL(file))
+    }
+  }
+
+  const handleCompletePayment = async () => {
+    setUploading(true)
+    try {
+      const paymentStarted = await initiatePremiumCheckout(
+        user,
+        profile,
+        updateProfile,
+        async () => {
+          // Success callback — save profile and set complete
+          await handleComplete();
+        },
+        selectedPlan
+      )
+      if (!paymentStarted) {
+        setUploading(false)
+      }
+    } catch (e) {
+      toast.error('Payment initialization failed: ' + e.message)
+      setUploading(false)
     }
   }
 
@@ -105,6 +136,7 @@ export default function Onboarding() {
       }
     }
 
+    const latestProfile = useUserStore.getState().profile || {}
     const profileUpdates = {
       ...data,
       uid: user?.uid,
@@ -113,12 +145,10 @@ export default function Onboarding() {
       selectedLanguage: data.languageName,
       photoURL: finalPhotoUrl,
       onboardingComplete: true,
-      createdAt: profile?.createdAt || new Date().toISOString(),
-      points: profile?.points || 0,
-      streak: profile?.streak || 0,
-      subscription: profile?.subscription?.plan === 'paid'
-        ? profile.subscription  // preserve existing paid subscription
-        : createTrialSubscription(),
+      createdAt: latestProfile.createdAt || new Date().toISOString(),
+      points: latestProfile.points || 0,
+      streak: latestProfile.streak || 0,
+      subscription: latestProfile.subscription || createTrialSubscription(),
     }
 
     // 1. Update Zustand store immediately (user lands on dashboard)
@@ -137,15 +167,14 @@ export default function Onboarding() {
       }
     }
 
-    // 3. Background sync to Supabase (non-blocking — UI already navigated)
+    // 3. Background sync to Supabase (non-blocking)
     if (user?.uid && !user.uid.startsWith('demo_')) {
       updateUserProfile(user.uid, profileUpdates)
         .catch(e => console.error('[Onboarding] Supabase sync failed:', e))
     }
 
     setUploading(false)
-    toast.success('Profile setup complete! Your 2-day free trial has started 🎉', { duration: 4000 })
-    // Small delay so toast renders before route change
+    toast.success('Subscription activated and enrollment complete! Welcome to PrepBridge! 🚀', { duration: 5000 })
     setTimeout(() => navigate('/app/home', { replace: true }), 300)
   }
 
@@ -180,10 +209,11 @@ export default function Onboarding() {
           <div style={{ marginBottom: 20 }}>
             <div className="label" style={{ marginBottom: 8 }}>Step {step + 1} of {STEPS.length}</div>
             {step === 0 && <h3>Choose your language 🌐</h3>}
-            {step === 1 && <h3>Which state are you from? 🗺️</h3>}
-            {step === 2 && <h3>Which exams are you targeting? 🎯</h3>}
+            {step === 1 && <h3>Choose your preparation track 🎯</h3>}
+            {step === 2 && <h3>Which exams are you targeting? 📋</h3>}
             {step === 3 && <h3>Tell us about yourself 👤</h3>}
             {step === 4 && <h3>Set your daily study schedule ⏰</h3>}
+            {step === 5 && <h3>Unlock Premium Access ⚡</h3>}
           </div>
 
           {/* Step 0: Language */}
@@ -203,13 +233,55 @@ export default function Onboarding() {
             </div>
           )}
 
-          {/* Step 1: State */}
+          {/* Step 1: Category Type */}
           {step === 1 && (
-            <div className="state-grid">
-              {ALL_STATES.map(state => (
-                <button key={state} className={`state-btn ${data.state === state ? 'selected' : ''}`}
-                  onClick={() => setData(d => ({ ...d, state }))}>
-                  {state}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {[
+                {
+                  id: 'govt',
+                  title: 'Government Job Exams',
+                  icon: '🏛️',
+                  desc: 'UPSC Civil Services, SSC CGL, Banking (SBI/IBPS), Railways, State PSC, Defence, Police, and Teaching DSC exams.'
+                },
+                {
+                  id: 'entrance',
+                  title: 'College Entrance Exams',
+                  icon: '🎓',
+                  desc: 'Medical MBBS (NEET), Law (CLAT, LAWCET), Engineering (JEE, GATE), State Entrance Tests (AP EAPCET, TS EAMCET, KCET, WBJEE), and Board Exams.'
+                }
+              ].map(cat => (
+                <button
+                  key={cat.id}
+                  onClick={() => setData(d => ({ ...d, categoryType: cat.id, exams: [], primaryTarget: '' }))}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 16,
+                    padding: '20px',
+                    borderRadius: 'var(--r-lg)',
+                    background: data.categoryType === cat.id ? 'var(--cyan-10)' : 'rgba(255,255,255,0.03)',
+                    border: data.categoryType === cat.id ? '2px solid var(--cyan)' : '1px solid var(--border)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    textAlign: 'left',
+                    color: 'white',
+                    fontFamily: 'inherit',
+                    width: '100%',
+                    minHeight: '80px'
+                  }}
+                >
+                  <span style={{ fontSize: '2.2rem', flexShrink: 0 }}>{cat.icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 800, fontSize: '1.05rem', color: data.categoryType === cat.id ? 'var(--cyan)' : 'white', marginBottom: 4 }}>
+                      {cat.title}
+                    </div>
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-3)', lineHeight: 1.45 }}>
+                      {cat.desc}
+                    </div>
+                  </div>
+                  {data.categoryType === cat.id && (
+                    <CheckCircle size={20} color="var(--cyan)" style={{ flexShrink: 0, marginTop: 4 }} />
+                  )}
                 </button>
               ))}
             </div>
@@ -218,7 +290,7 @@ export default function Onboarding() {
           {/* Step 2: Exams */}
           {step === 2 && (
             <div style={{ maxHeight: 420, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {EXAM_CATEGORIES.map(cat => (
+              {EXAM_CATEGORIES.filter(cat => cat.type === data.categoryType).map(cat => (
                 <div key={cat.id}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                     <span>{cat.icon}</span>{cat.label}
@@ -233,7 +305,7 @@ export default function Onboarding() {
                         <div>
                           <div style={{ fontSize: '0.88rem', fontWeight: 600 }}>{exam.name}</div>
                           <div style={{ fontSize: '0.72rem', color: 'var(--text-3)' }}>{exam.fullName}</div>
-                          {exam.vacancies && <div style={{ fontSize: '0.68rem', color: 'var(--emerald)', marginTop: 2 }}>{exam.vacancies.toLocaleString()} vacancies</div>}
+                          {exam.vacancies && <div style={{ fontSize: '0.68rem', color: 'var(--emerald)', marginTop: 2 }}>{exam.vacancies.toLocaleString()} seats/vacancies</div>}
                         </div>
                       </div>
                     ))}
@@ -293,22 +365,40 @@ export default function Onboarding() {
                 <label className="form-label">Full Name</label>
                 <input className="form-input" placeholder="Your full name" value={data.name} onChange={e => setData(d => ({ ...d, name: e.target.value }))} />
               </div>
+              
+              <div className="form-group">
+                <label className="form-label">Which state are you from?</label>
+                <select 
+                  className="form-input" 
+                  value={data.state} 
+                  onChange={e => setData(d => ({ ...d, state: e.target.value }))}
+                  style={{ background: 'var(--bg-2)', color: 'white', width: '100%', padding: '12px', border: '1px solid var(--border)', borderRadius: 'var(--r-md)' }}
+                >
+                  <option value="">-- Select your state --</option>
+                  {ALL_STATES.map(state => (
+                    <option key={state} value={state}>{state}</option>
+                  ))}
+                </select>
+              </div>
+
               <div className="form-group">
                 <label className="form-label">Education Level</label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {EDUCATION_LEVELS.map(l => (
-                    <button key={l} className={`state-btn ${data.education === l ? 'selected' : ''}`} onClick={() => setData(d => ({ ...d, education: l }))} style={{ flex: 'none' }}>{l}</button>
+                    <button key={l} type="button" className={`state-btn ${data.education === l ? 'selected' : ''}`} onClick={() => setData(d => ({ ...d, education: l }))} style={{ flex: 'none' }}>{l}</button>
                   ))}
                 </div>
               </div>
+              
               <div className="form-group">
                 <label className="form-label">Target Exam Year</label>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {['2026','2027','2028'].map(y => (
-                    <button key={y} className={`state-btn ${data.targetYear === y ? 'selected' : ''}`} onClick={() => setData(d => ({ ...d, targetYear: y }))} style={{ flex: 1, textAlign: 'center' }}>{y}</button>
+                    <button key={y} type="button" className={`state-btn ${data.targetYear === y ? 'selected' : ''}`} onClick={() => setData(d => ({ ...d, targetYear: y }))} style={{ flex: 1, textAlign: 'center' }}>{y}</button>
                   ))}
                 </div>
               </div>
+              
               <div className="form-group">
                 <label className="form-label">Phone (optional)</label>
                 <input className="form-input" type="tel" placeholder="For notifications" value={data.phone || ''} onChange={e => setData(d => ({ ...d, phone: e.target.value }))} />
@@ -323,7 +413,7 @@ export default function Onboarding() {
                 <label className="form-label">Daily study hours</label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {STUDY_HOURS.map(h => (
-                    <button key={h} className={`state-btn ${data.studyHours === h ? 'selected' : ''}`} onClick={() => setData(d => ({ ...d, studyHours: h }))} style={{ flex: 'none' }}>{h}</button>
+                    <button key={h} type="button" className={`state-btn ${data.studyHours === h ? 'selected' : ''}`} onClick={() => setData(d => ({ ...d, studyHours: h }))} style={{ flex: 'none' }}>{h}</button>
                   ))}
                 </div>
               </div>
@@ -355,6 +445,70 @@ export default function Onboarding() {
               </div>
             </div>
           )}
+
+          {/* Step 5: Payment */}
+          {step === 5 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-3)', textAlign: 'center', marginBottom: 8 }}>
+                Unlock unlimited premium mock tests, step-by-step K² AI explanations, and 24/7 streaming AI Tutor chat.
+              </p>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {Object.entries(PRICING).map(([key, plan]) => (
+                  <div
+                    key={key}
+                    onClick={() => setSelectedPlan(key)}
+                    style={{
+                      padding: '16px 20px',
+                      borderRadius: 'var(--r-md)',
+                      background: selectedPlan === key ? 'var(--purple-10)' : 'rgba(255,255,255,0.03)',
+                      border: selectedPlan === key ? '2px solid var(--purple)' : '1px solid var(--border)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      position: 'relative'
+                    }}
+                  >
+                    {plan.tag && (
+                      <span style={{
+                        position: 'absolute',
+                        top: -10,
+                        right: 16,
+                        background: 'var(--grad)',
+                        color: 'white',
+                        fontSize: '0.65rem',
+                        fontWeight: 800,
+                        padding: '2px 8px',
+                        borderRadius: 'var(--r-full)',
+                        textTransform: 'uppercase'
+                      }}>
+                        {plan.tag === 'best' ? 'Best Value' : 'Most Popular'}
+                      </span>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '1.05rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+                          {plan.label}
+                          <span style={{ fontSize: '0.65rem', color: 'var(--emerald)', background: 'rgba(16, 185, 129, 0.1)', padding: '2px 8px', borderRadius: 'var(--r-sm)', border: '1px solid rgba(16, 185, 129, 0.2)', fontWeight: 800 }}>Free during beta</span>
+                        </div>
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', marginTop: 4 }}>
+                          {plan.description}
+                        </div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'white' }}>₹{plan.amount}</div>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-4)' }}>billed {plan.planDuration}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', justifyContent: 'center', marginTop: 8, background: 'rgba(16, 185, 129, 0.08)', padding: '10px', borderRadius: 'var(--r-md)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+                <span style={{ fontSize: '1rem' }}>🛡️</span>
+                <span style={{ fontSize: '0.78rem', color: 'var(--emerald)' }}>Secure 256-bit encrypted checkout via Razorpay</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Navigation */}
@@ -368,11 +522,11 @@ export default function Onboarding() {
             {uploading ? (
               <>
                 <div className="spinner-loader" style={{ marginRight: 8 }} />
-                Completing Setup...
+                {step === STEPS.length - 1 ? 'Processing Checkout...' : 'Saving Details...'}
               </>
             ) : (
               <>
-                {step === STEPS.length - 1 ? 'Complete Setup 🏃' : 'Continue'} <ArrowRight size={16} />
+                {step === STEPS.length - 1 ? 'Pay & Activate Premium ⚡' : 'Continue'} <ArrowRight size={16} />
               </>
             )}
           </button>

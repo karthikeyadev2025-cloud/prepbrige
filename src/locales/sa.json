@@ -1,0 +1,69 @@
+{
+  "translation": {
+    "app_name": "[Sanskrit] PrepBridge",
+    "dashboard": {
+      "title": "Aspirant Dashboard",
+      "welcome": "Welcome back, {{name}}!",
+      "primary_target": "Target Exam: {{exam}}",
+      "accuracy": "Average Accuracy",
+      "streak": "Daily Streak",
+      "streak_days": "{{count}} Days",
+      "points": "Earned Points",
+      "attempts": "Total Attempts",
+      "weak_areas": "AI-Identified Weak Areas",
+      "recent_tests": "Recent Mock Tests",
+      "explain_wrong": "Explain with K² AI",
+      "solved_explanations": "Step-by-Step AI Solutions"
+    },
+    "nav": {
+      "home": "Home",
+      "papers": "Question Papers",
+      "timetable": "Study Planner",
+      "news": "Current Affairs",
+      "profile": "Profile",
+      "mock_tests": "Mock Tests",
+      "ai_tutor": "AI Tutor",
+      "leaderboard": "Leaderboard",
+      "notifications": "Notifications",
+      "exit_admin": "Exit Admin",
+      "enter_admin": "Enter Admin Panel",
+      "logout": "Logout"
+    },
+    "tutor": {
+      "welcome": "I am K² (K-square) AI, your competitive exam helper. Ask me any doubt from your UPSC, SSC, Banking, Law, MBBS, or State Entrance syllabus!",
+      "placeholder": "Ask your doubt in any language (e.g. explain article 21, teach child psychology stages, solve a math trick...)",
+      "sending": "Thinking...",
+      "send_button": "Ask K²"
+    },
+    "tests": {
+      "title": "Mock Exams Hub",
+      "subtitle": "National & State-level testing with negative marking & instant scoring",
+      "start_test": "Start Test",
+      "time_left": "Time Left",
+      "submit_test": "Submit Test",
+      "secured_session": "Secured Session",
+      "palette": "Question Palette",
+      "answered": "Answered",
+      "flagged": "Flagged",
+      "remaining": "Remaining",
+      "not_visited": "Not Visited",
+      "grade_report": "Grade Report & Review",
+      "score": "Your Score",
+      "correct": "Correct Options",
+      "wrong": "Wrong Options",
+      "rank": "All India Rank",
+      "ai_generate": "Generate Custom Test with AI",
+      "retake": "Retake Test"
+    },
+    "onboarding": {
+      "choose_lang": "Choose your language 🌐",
+      "choose_track": "Choose your preparation track 🎯",
+      "choose_exams": "Which exams are you targeting? 📋",
+      "tell_about_yourself": "Tell us about yourself 👤",
+      "set_schedule": "Set your daily study schedule ⏰",
+      "unlock_premium": "Unlock Premium Access ⚡",
+      "continue": "Continue",
+      "back": "Back"
+    }
+  }
+}

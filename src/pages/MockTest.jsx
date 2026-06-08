@@ -2,8 +2,10 @@ import { useState, useEffect, useMemo } from 'react'
 import { getSupabaseTestTemplates } from '../services/supabaseService'
 import { useNavigate } from 'react-router-dom'
 import { useUserStore } from '../store/useStore'
-import { EXAM_CATEGORIES } from '../data/exams'
-import { Clock, Target, Users, Zap, BarChart3 } from 'lucide-react'
+import { EXAM_CATEGORIES, ALL_LANGUAGES } from '../data/exams'
+import { Clock, Target, Users, Zap, BarChart3, X } from 'lucide-react'
+import { auth } from '../firebase/config'
+import { toast } from 'react-hot-toast'
 
 const DIFFICULTY_COLOR = { easy: 'var(--emerald)', medium: 'var(--amber)', hard: 'var(--red)' }
 
@@ -18,7 +20,15 @@ function getExamLabel(examId) {
 
 export default function MockTest() {
   const navigate = useNavigate()
-  const { profile } = useUserStore()
+  const { profile, user } = useUserStore()
+  
+  // AI Wizard Modal State
+  const [showAIModal, setShowAIModal] = useState(false)
+  const [aiSubject, setAiSubject] = useState('General Knowledge')
+  const [aiDifficulty, setAiDifficulty] = useState('medium')
+  const [aiCount, setAiCount] = useState(5)
+  const [aiLanguage, setAiLanguage] = useState(profile?.language || 'en')
+  const [generating, setGenerating] = useState(false)
 
   // Build dynamic filter tabs from user's selected exams
   const userExams = useMemo(() => profile?.exams || [], [profile])
@@ -91,6 +101,132 @@ export default function MockTest() {
       filter?.startsWith(t.exam)
     )
   }, [tests, filter])
+
+  const handleGenerateAITest = async () => {
+    if (generating) return
+    setGenerating(true)
+    toast.loading('AI is crafting your custom test questions...', { id: 'ai-gen' })
+    try {
+      const idToken = auth.currentUser ? await auth.currentUser.getIdToken() : ''
+      const res = await fetch('/api/quiz/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': idToken ? `Bearer ${idToken}` : ''
+        },
+        body: JSON.stringify({
+          examId: primaryTarget || 'general',
+          subject: aiSubject,
+          difficulty: aiDifficulty,
+          language: aiLanguage,
+          count: aiCount
+        })
+      })
+
+      if (!res.ok) {
+        throw new Error(`Server returned HTTP ${res.status}`)
+      }
+
+      const testData = await res.json()
+      
+      if (testData.success) {
+        const newTemplate = {
+          id: testData.testTemplateId,
+          title: testData.title,
+          exam: testData.exam,
+          totalQuestions: testData.totalQuestions,
+          duration: testData.duration,
+          pattern: 'MCQ',
+          negativeMarking: testData.negativeMarking,
+          marksPerQuestion: testData.marksPerQuestion,
+          syllabus: [aiSubject],
+          attempts: 0,
+          avgScore: 0,
+          difficulty: testData.difficulty
+        }
+
+        // Save questions locally so TestEngine can read them directly
+        localStorage.setItem(`prepbridge_ai_questions_${testData.testTemplateId}`, JSON.stringify(testData.questions))
+
+        const localTests = localStorage.getItem('prepbridge_auto_updated_tests')
+        const parsed = localTests ? JSON.parse(localTests) : []
+        localStorage.setItem('prepbridge_auto_updated_tests', JSON.stringify([newTemplate, ...parsed]))
+
+        toast.success('AI Test generated successfully! Starting test now...', { id: 'ai-gen' })
+        setShowAIModal(false)
+        
+        setTimeout(() => {
+          navigate(`/app/test/${testData.testTemplateId}`)
+        }, 1000)
+      } else {
+        throw new Error(testData.error || 'Failed to generate questions')
+      }
+    } catch (err) {
+      console.warn('Server-side AI test generation failed. Using offline generator:', err)
+      
+      // Offline fallback generation
+      const testTemplateId = 'ai_' + Math.random().toString(36).substr(2, 9)
+      const offlineQuestions = [
+        {
+          id: 'q_1',
+          text: `Sample MCQ 1 for ${aiSubject} (${aiDifficulty}): Which of the following is protected under Article 21?`,
+          options: ["Right to Property", "Right to Education", "Right to Life & Personal Liberty", "Right to Constitutional Remedies"],
+          correct: 2,
+          explanation: "Article 21 guarantees the Protection of Life and Personal Liberty: No person shall be deprived of his life or personal liberty except according to procedure established by law.",
+          subject: aiSubject,
+          difficulty: aiDifficulty
+        },
+        {
+          id: 'q_2',
+          text: `Sample MCQ 2 for ${aiSubject} (${aiDifficulty}): According to Lev Vygotsky, what represents the gap between what a child can do independently and with guidance?`,
+          options: ["Zone of Proximal Development (ZPD)", "Sensorimotor Stage", "Scaffolding", "Schema"],
+          correct: 0,
+          explanation: "The Zone of Proximal Development (ZPD) is the range of tasks that a child can perform with help but not yet alone.",
+          subject: aiSubject,
+          difficulty: aiDifficulty
+        },
+        {
+          id: 'q_3',
+          text: `Sample MCQ 3 for ${aiSubject} (${aiDifficulty}): The Kakatiya Dynasty ruled from which capital in historical Telangana?`,
+          options: ["Hyderabad", "Warangal (Orugallu)", "Khammam", "Nalgonda"],
+          correct: 1,
+          explanation: "The Kakatiyas ruled with Orugallu (modern-day Warangal) as their capital city.",
+          subject: aiSubject,
+          difficulty: aiDifficulty
+        }
+      ]
+
+      const fallbackTemplate = {
+        id: testTemplateId,
+        title: `AI custom test: ${aiSubject.toUpperCase()} (Offline Fallback)`,
+        exam: primaryTarget || 'general',
+        totalQuestions: offlineQuestions.length,
+        duration: offlineQuestions.length * 2,
+        pattern: 'MCQ',
+        negativeMarking: -0.25,
+        marksPerQuestion: 1,
+        syllabus: [aiSubject],
+        attempts: 0,
+        avgScore: 0,
+        difficulty: aiDifficulty
+      }
+
+      localStorage.setItem(`prepbridge_ai_questions_${testTemplateId}`, JSON.stringify(offlineQuestions))
+      
+      const localTests = localStorage.getItem('prepbridge_auto_updated_tests')
+      const parsed = localTests ? JSON.parse(localTests) : []
+      localStorage.setItem('prepbridge_auto_updated_tests', JSON.stringify([fallbackTemplate, ...parsed]))
+
+      toast.success('Custom test created in offline demo mode!', { id: 'ai-gen' })
+      setShowAIModal(false)
+      
+      setTimeout(() => {
+        navigate(`/app/test/${testTemplateId}`)
+      }, 1000)
+    } finally {
+      setGenerating(false)
+    }
+  }
 
   return (
     <div className="page animate-fade-in">
@@ -242,10 +378,160 @@ export default function MockTest() {
           Let AI create a personalized mock test based on your weak areas
           {primaryTarget && ` for ${getExamLabel(primaryTarget)}`}
         </p>
-        <button className="btn btn-primary" onClick={() => navigate('/app/ai-tutor')} style={{ gap: 8 }}>
+        <button className="btn btn-primary" onClick={() => setShowAIModal(true)} style={{ gap: 8, margin: '0 auto' }}>
           <Zap size={15} /> Generate Custom Test with AI
         </button>
       </div>
+
+      {/* AI Quiz Generator Modal */}
+      {showAIModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.85)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999,
+          padding: '20px'
+        }}>
+          <div className="card card-p" style={{
+            maxWidth: '480px',
+            width: '100%',
+            background: 'var(--bg-2)',
+            border: '1.5px solid var(--border-2)',
+            borderRadius: 'var(--r-lg)',
+            boxShadow: 'var(--shadow-lg)',
+            position: 'relative'
+          }}>
+            <button
+              onClick={() => setShowAIModal(false)}
+              style={{
+                position: 'absolute',
+                top: 16,
+                right: 16,
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-3)',
+                cursor: 'pointer'
+              }}
+            >
+              <X size={20} />
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+              <div style={{ width: 36, height: 36, background: 'var(--grad)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Zap size={18} color="white" />
+              </div>
+              <h3 style={{ margin: 0 }}>Create Custom AI Test</h3>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
+              <div className="form-group">
+                <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: 6 }}>Subject / Topic</label>
+                <select
+                  className="form-input"
+                  value={aiSubject}
+                  onChange={e => setAiSubject(e.target.value)}
+                  style={{ background: 'var(--bg-3)', color: 'white', border: '1px solid var(--border)' }}
+                >
+                  <option value="General Knowledge">General Knowledge</option>
+                  <option value="Current Affairs">Current Affairs</option>
+                  <option value="Indian Polity & Constitution">Indian Polity & Constitution</option>
+                  <option value="Indian History & Dynasties">Indian History & Dynasties</option>
+                  <option value="Quantitative Aptitude">Quantitative Aptitude</option>
+                  <option value="Reasoning & Analogy">Reasoning & Analogy</option>
+                  <option value="Child Psychology & Pedagogy">Child Psychology & Pedagogy</option>
+                  <option value="AP/TS State PSC Syllabus">AP/TS State PSC Syllabus</option>
+                  <option value="General Science & Technology">General Science & Technology</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: 6 }}>Difficulty Level</label>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {['easy', 'medium', 'hard'].map(d => (
+                    <button
+                      key={d}
+                      type="button"
+                      className={`state-btn ${aiDifficulty === d ? 'selected' : ''}`}
+                      onClick={() => setAiDifficulty(d)}
+                      style={{ flex: 1, textTransform: 'capitalize', textAlign: 'center' }}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: 6 }}>Questions Count</label>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {[5, 10, 15, 20].map(c => (
+                    <button
+                      key={c}
+                      type="button"
+                      className={`state-btn ${aiCount === c ? 'selected' : ''}`}
+                      onClick={() => setAiCount(c)}
+                      style={{ flex: 1, textAlign: 'center' }}
+                    >
+                      {c} Qs
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: 6 }}>Language</label>
+                <select
+                  className="form-input"
+                  value={aiLanguage}
+                  onChange={e => setAiLanguage(e.target.value)}
+                  style={{ background: 'var(--bg-3)', color: 'white', border: '1px solid var(--border)' }}
+                >
+                  {ALL_LANGUAGES.map(lang => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.flag} {lang.native} ({lang.name})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 12, justifySelf: 'flex-end', justifyContent: 'flex-end', width: '100%' }}>
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={() => setShowAIModal(false)}
+                disabled={generating}
+                style={{ minHeight: '48px', padding: '0 20px' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleGenerateAITest}
+                disabled={generating}
+                style={{ minHeight: '48px', padding: '0 24px', background: 'var(--grad)', display: 'flex', alignItems: 'center', gap: 6 }}
+              >
+                {generating ? (
+                  <>
+                    <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Zap size={14} />
+                    Generate Test
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

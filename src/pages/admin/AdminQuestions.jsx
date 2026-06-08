@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { getSupabaseExamQuestions } from '../../services/supabaseService'
 import { Plus, Upload, Search, Edit, Trash2 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { supabase } from '../../lib/supabase'
 
 export default function AdminQuestions() {
   const [questions, setQuestions] = useState([])
@@ -21,12 +22,57 @@ export default function AdminQuestions() {
     !search || q.text.toLowerCase().includes(search.toLowerCase())
   )
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!form.text.trim()) { toast.error('Question text required'); return }
-    setQuestions(qs => [...qs, { ...form, id: 'new_' + Date.now(), num: qs.length + 1 }])
-    setShowAdd(false)
-    setForm({ text: '', options: ['','','',''], correct: 0, explanation: '', subject: 'GK', difficulty: 'medium', exam: 'general' })
-    toast.success('Question added!')
+    try {
+      const { data, error } = await supabase.from('questions').insert({
+        question_text: form.text,
+        options: form.options.map(o => ({ text: o })),
+        correct_option_id: form.correct,
+        explanation: form.explanation,
+        subject_id: form.subject
+      }).select()
+
+      if (error) throw error
+
+      if (data && data[0]) {
+        const questionId = data[0].id
+        const { error: mapError } = await supabase.from('question_exam_mapping').insert({
+          question_id: questionId,
+          exam_id: form.exam
+        })
+        if (mapError) throw mapError
+      }
+
+      toast.success('Question added to database!')
+      setShowAdd(false)
+      setForm({ text: '', options: ['','','',''], correct: 0, explanation: '', subject: 'GK', difficulty: 'medium', exam: 'general' })
+      const qList = await getSupabaseExamQuestions(null, 50)
+      setQuestions(qList)
+    } catch (e) {
+      console.warn('DB Insert failed, saving locally:', e)
+      setQuestions(qs => [...qs, { ...form, id: 'new_' + Date.now(), num: qs.length + 1 }])
+      setShowAdd(false)
+      setForm({ text: '', options: ['','','',''], correct: 0, explanation: '', subject: 'GK', difficulty: 'medium', exam: 'general' })
+      toast.success('Saved locally')
+    }
+  }
+
+  const handleDelete = async (qId, idx) => {
+    if (!window.confirm('Delete this question from database?')) return
+    try {
+      if (qId && !String(qId).startsWith('new_')) {
+        await supabase.from('question_exam_mapping').delete().eq('question_id', qId)
+        const { error } = await supabase.from('questions').delete().eq('id', qId)
+        if (error) throw error
+      }
+      setQuestions(qs => qs.filter((_, i) => i !== idx))
+      toast.success('Deleted from database!')
+    } catch (e) {
+      console.warn('DB delete failed, removing locally:', e)
+      setQuestions(qs => qs.filter((_, i) => i !== idx))
+      toast.success('Removed locally')
+    }
   }
 
   return (
@@ -116,8 +162,8 @@ export default function AdminQuestions() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-              <button className="topbar-btn" style={{ width: 30, height: 30 }} onClick={() => toast.success('Edit dialog opening...')}><Edit size={12} /></button>
-              <button className="topbar-btn" style={{ width: 30, height: 30, color: 'var(--red)' }} onClick={() => { setQuestions(qs => qs.filter((_, idx) => idx !== i)); toast.success('Deleted') }}><Trash2 size={12} /></button>
+              <button className="topbar-btn" style={{ width: 30, height: 30 }} onClick={() => toast.success('Edit dialog coming soon!')}><Edit size={12} /></button>
+              <button className="topbar-btn" style={{ width: 30, height: 30, color: 'var(--red)' }} onClick={() => handleDelete(q.id, i)}><Trash2 size={12} /></button>
             </div>
           </div>
         ))}

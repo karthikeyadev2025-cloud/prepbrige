@@ -436,7 +436,7 @@ function TargetCourseMaterialsCard({ primaryTarget }) {
           <span>📄</span>
           <div style={{ textAlign: 'left' }}>
             <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'white' }}>Solved PYQs</div>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-3)' }}>Download solved PDF papers</div>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-3)' }}>Solve previous papers online</div>
           </div>
         </button>
 

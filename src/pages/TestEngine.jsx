@@ -1,15 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useAppStore } from '../store/useStore'
+import { useAppStore, useUserStore } from '../store/useStore'
 import { getSupabaseTestTemplates, getSupabaseExamQuestions } from '../services/supabaseService'
 import { saveTestResult } from '../services/resultService'
 import { supabase } from '../lib/supabase'
 import { toast } from 'react-hot-toast'
 import { Clock, Flag, ChevronLeft, ChevronRight, AlertTriangle, CheckCircle, XCircle, ShieldCheck } from 'lucide-react'
+import DOMPurify from 'dompurify'
 
 export default function TestEngine() {
   const { testId } = useParams()
   const navigate = useNavigate()
+  const { profile } = useUserStore()
 
   const [test, setTest] = useState(null)
   const [questions, setQuestions] = useState([])
@@ -24,6 +26,33 @@ export default function TestEngine() {
   const [result, setResult] = useState(null)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
 
+  // AI Explanation State
+  const [aiExplanations, setAiExplanations] = useState({})
+  const [loadingExplanation, setLoadingExplanation] = useState({})
+
+  const handleExplainWithAI = async (qId, questionText, userAnswerText, correctAnswerText) => {
+    if (loadingExplanation[qId]) return
+    setLoadingExplanation(prev => ({ ...prev, [qId]: true }))
+    try {
+      const { explainWrongAnswer } = await import('../services/gemini')
+      const explanationText = await explainWrongAnswer(questionText, userAnswerText, correctAnswerText, profile?.selectedLanguage || 'en')
+      setAiExplanations(prev => ({ ...prev, [qId]: explanationText }))
+    } catch (err) {
+      toast.error('AI is currently busy. Please try again.')
+    } finally {
+      setLoadingExplanation(prev => ({ ...prev, [qId]: false }))
+    }
+  }
+
+  const formatAIText = (text) => {
+    if (!text) return ''
+    return text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\n/g, '<br />')
+      .replace(/•/g, '&bull;')
+  }
+
   // Track responsive screen size
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768)
@@ -34,18 +63,45 @@ export default function TestEngine() {
   useEffect(() => {
     async function loadTest() {
       setLoading(true)
-      const allTests = await getSupabaseTestTemplates()
-      const t = allTests.find(t => t.id === testId) || allTests[0]
+      let t = null
+      let qList = []
+
+      // 1. Try custom local tests first
+      try {
+        const localTests = localStorage.getItem('prepbridge_auto_updated_tests')
+        const parsed = localTests ? JSON.parse(localTests) : []
+        t = parsed.find(item => item.id === testId)
+        if (t) {
+          const localQs = localStorage.getItem(`prepbridge_ai_questions_${testId}`)
+          if (localQs) {
+            qList = JSON.parse(localQs)
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to load local custom test template:', e)
+      }
+
+      // 2. Fallback to Supabase test templates
+      if (!t) {
+        const allTests = await getSupabaseTestTemplates()
+        t = allTests.find(t => t.id === testId) || allTests[0]
+        if (t) {
+          qList = await getSupabaseExamQuestions(t.exam, Math.min(t.totalQuestions, 20))
+        }
+      }
+
       if (t) {
         setTest(t)
         setTimeLeft(t.duration * 60)
-        const qList = await getSupabaseExamQuestions(t.exam, Math.min(t.totalQuestions, 20))
-        setQuestions(qList)
+        setQuestions(qList || [])
+      } else {
+        toast.error('Test template not found')
+        navigate('/app/mock-tests')
       }
       setLoading(false)
     }
     loadTest()
-  }, [testId])
+  }, [testId, navigate])
 
   const [showExitConfirm, setShowExitConfirm] = useState(false)
   const { addTestResult, addPoints } = useAppStore()
@@ -233,6 +289,47 @@ export default function TestEngine() {
                       {!isSkipped && <div style={{ fontSize: '0.8rem', color: isCorrect ? 'var(--emerald)' : 'var(--red)' }}>Your answer: {q.options[userAns]}</div>}
                       {!isCorrect && <div style={{ fontSize: '0.8rem', color: 'var(--emerald)' }}>Correct: {q.options[q.correct]}</div>}
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', marginTop: 4 }}>💡 {q.explanation}</div>
+                      
+                      {!isCorrect && (
+                        <div style={{ marginTop: 8 }}>
+                          {aiExplanations[q.id] ? (
+                            <div style={{
+                              background: 'var(--bg-3)',
+                              border: '1px solid var(--border)',
+                              borderRadius: 'var(--r-md)',
+                              padding: '12px 16px',
+                              marginTop: 8,
+                              fontSize: '0.8rem',
+                              color: 'var(--text-2)',
+                              lineHeight: 1.55,
+                              animation: 'fadeUp 0.2s ease'
+                            }}>
+                              <div style={{ fontWeight: 700, color: 'var(--purple)', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+                                <span>🧠</span> K² AI Explanation:
+                              </div>
+                              <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatAIText(aiExplanations[q.id])) }} />
+                            </div>
+                          ) : (
+                            <button
+                              className="btn btn-outline btn-sm"
+                              onClick={() => handleExplainWithAI(q.id, q.text, q.options[userAns] || 'Skipped', q.options[q.correct])}
+                              disabled={loadingExplanation[q.id]}
+                              style={{ display: 'flex', alignItems: 'center', gap: 6, minHeight: '32px', fontSize: '0.72rem', padding: '4px 10px' }}
+                            >
+                              {loadingExplanation[q.id] ? (
+                                <>
+                                  <div className="spinner-loader" style={{ width: 12, height: 12, borderWidth: 1.5 }} />
+                                  K² is thinking...
+                                </>
+                              ) : (
+                                <>
+                                  <span>🧠</span> Explain with K² AI
+                                </>
+                              )}
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

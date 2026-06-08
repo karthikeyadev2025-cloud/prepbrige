@@ -17,11 +17,6 @@ export interface ApiClientOptions<T> extends RequestInit {
   /** Optional signal to abort request */
   abortSignal?: AbortSignal;
 }
-  /** Zod schema to validate the JSON response */
-  schema: z.ZodSchema<T>;
-  /** Optional signal to abort request */
-  abortSignal?: AbortSignal;
-}
 
 export async function apiClient<T>(
   endpoint: string,
