@@ -261,6 +261,7 @@ function TiltCard({ children, style = {} }) {
    EXAM CATEGORIES SHOWCASE Component
    ───────────────────────────────────────────────────────────────────────────── */
 function ExamCategoriesShowcase() {
+  const { t } = useTranslation()
   const [activeTrack, setActiveTrack] = useState('govt') // 'govt' | 'entrance'
   const [expandedCat, setExpandedCat] = useState('upsc')
 
@@ -444,6 +445,7 @@ function ExamCategoriesShowcase() {
    INTERACTIVE TRY-BEFORE-SIGNUP DEMO Component
    ───────────────────────────────────────────────────────────────────────────── */
 function InteractiveMockDemo() {
+  const { t } = useTranslation()
   const [currentIdx, setCurrentIdx] = useState(0)
   const [selectedOpt, setSelectedOpt] = useState(null)
   const [checked, setChecked] = useState(false)
@@ -717,6 +719,7 @@ function InteractiveMockDemo() {
    PEAKPREDICT & SECURE SOLVED PAPERS SPOTLIGHT Component
    ───────────────────────────────────────────────────────────────────────────── */
 function AddonSpotlight() {
+  const { t } = useTranslation()
   return (
     <section id="addons" style={{ padding: 'clamp(48px,8vw,100px) clamp(16px,4vw,24px)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
       <div style={{ maxWidth: 1100, margin: '0 auto' }}>
