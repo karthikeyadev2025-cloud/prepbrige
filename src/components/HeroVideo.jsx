@@ -22,7 +22,7 @@ function ParticleCanvas() {
       vx: (crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff - 0.5) * 0.4,
       vy: (crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff - 0.5) * 0.4,
       alpha: crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff * 0.6 + 0.1,
-      color: crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff > 0.5 ? '124,58,237' : '0,212,255',
+      color: crypto.getRandomValues(new Uint32Array(1))[0] / 0xffffffff > 0.5 ? '99,102,241' : '16,185,129',
     }))
 
     // Connection lines
@@ -34,7 +34,7 @@ function ParticleCanvas() {
           const dist = Math.sqrt(dx * dx + dy * dy)
           if (dist < 130) {
             ctx.beginPath()
-            ctx.strokeStyle = `rgba(124,58,237,${0.12 * (1 - dist / 130)})`
+            ctx.strokeStyle = `rgba(99,102,241,${0.12 * (1 - dist / 130)})`
             ctx.lineWidth = 0.5
             ctx.moveTo(particles[i].x, particles[i].y)
             ctx.lineTo(particles[j].x, particles[j].y)
@@ -141,13 +141,13 @@ const STORIES = [
 
 // ─── Hero Typewriter ──────────────────────────────────────────────────────────
 const JOB_WORDS = [
-  { word: 'IAS Officer',    gradient: 'linear-gradient(90deg,#7c3aed,#a855f7)', glow: 'rgba(124,58,237,0.6)' },
-  { word: 'SSC CGL Job',    gradient: 'linear-gradient(90deg,#0080ff,#00d4ff)', glow: 'rgba(0,128,255,0.6)'  },
+  { word: 'IAS Officer',    gradient: 'linear-gradient(90deg,#10b981,#6366f1)', glow: 'rgba(16,185,129,0.6)' },
+  { word: 'SSC CGL Job',    gradient: 'linear-gradient(90deg,#10b981,#059669)', glow: 'rgba(16,185,129,0.6)'  },
   { word: 'Bank PO',        gradient: 'linear-gradient(90deg,#059669,#10b981)', glow: 'rgba(16,185,129,0.6)' },
-  { word: 'Railway Job',    gradient: 'linear-gradient(90deg,#dc2626,#f97316)', glow: 'rgba(220,38,38,0.6)'  },
-  { word: 'IPS Officer',    gradient: 'linear-gradient(90deg,#7c3aed,#00d4ff)', glow: 'rgba(124,58,237,0.6)' },
-  { word: 'Police Officer', gradient: 'linear-gradient(90deg,#1d4ed8,#3b82f6)', glow: 'rgba(29,78,216,0.6)'  },
-  { word: 'Teacher (KVS)',  gradient: 'linear-gradient(90deg,#d97706,#f59e0b)', glow: 'rgba(217,119,6,0.6)'  },
+  { word: 'Railway Job',    gradient: 'linear-gradient(90deg,#8b5cf6,#6366f1)', glow: 'rgba(99,102,241,0.6)'  },
+  { word: 'IPS Officer',    gradient: 'linear-gradient(90deg,#6366f1,#10b981)', glow: 'rgba(99,102,241,0.6)' },
+  { word: 'Police Officer', gradient: 'linear-gradient(90deg,#4f46e5,#6366f1)', glow: 'rgba(99,102,241,0.6)'  },
+  { word: 'Teacher (KVS)',  gradient: 'linear-gradient(90deg,#f59e0b,#10b981)', glow: 'rgba(16,185,129,0.6)'  },
 ]
 
 function HeroTypewriter() {
@@ -183,13 +183,9 @@ function HeroTypewriter() {
 
   const { gradient, glow } = JOB_WORDS[wordIdx]
   
-  const cursorColor = glow.includes('124,58,237') ? '#a855f7'
-    : glow.includes('0,128,255')  ? '#00d4ff'
-    : glow.includes('16,185,129') ? '#10b981'
-    : glow.includes('220,38,38')  ? '#f97316'
-    : glow.includes('29,78,216')  ? '#60a5fa'
-    : glow.includes('217,119,6')  ? '#fbbf24'
-    : '#a855f7'
+  const cursorColor = glow.includes('16,185,129') ? '#10b981'
+    : glow.includes('99,102,241') ? '#6366f1'
+    : '#10b981'
 
   return (
     <div style={{ marginBottom: 24, animation: 'heroSlideIn 0.8s ease both' }}>
@@ -246,7 +242,7 @@ function HeroTypewriter() {
       }}>
         <span style={{ color: 'rgba(255,255,255,0.85)' }}>{t('landing.hero.title_line3_1', 'Starts Here.')}</span>
         <span style={{
-          backgroundImage: 'linear-gradient(90deg,#10b981 0%,#00d4ff 30%,#ffffff 50%,#00d4ff 70%,#10b981 100%)',
+          backgroundImage: 'linear-gradient(90deg,#10b981 0%,#6366f1 30%,#ffffff 50%,#6366f1 70%,#10b981 100%)',
           backgroundSize: '200% auto',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -271,26 +267,26 @@ export default function HeroVideo() {
   }, [])
 
   const FLOATING_CARDS = [
-    { exam: 'IAS / IPS', icon: '🏛️', color: '124,58,237', delay: 0,   x: 2,  y: 16 },
-    { exam: 'SSC CGL',   icon: '📋', color: '0,128,255',   delay: 1,   x: 78, y: 10 },
-    { exam: 'IBPS PO',   icon: '🏦', color: '5,150,105',   delay: 2,   x: 80, y: 50 },
-    { exam: 'RRB NTPC',  icon: '🚂', color: '220,38,38',   delay: 0.5, x: 2,  y: 60 },
-    { exam: 'NEET UG',   icon: '⚕️', color: '220,38,38',   delay: 1.5, x: 76, y: 78 },
-    { exam: 'JEE Mains', icon: '⚙️', color: '0,128,255',   delay: 2.5, x: 2,  y: 82 },
-    { exam: 'BPSC',      icon: '🗺️', color: '8,145,178',   delay: 1,   x: 84, y: 30 },
-    { exam: 'CTET',      icon: '📖', color: '217,119,6',   delay: 3,   x: 2,  y: 38 },
+    { exam: 'IAS / IPS', icon: '🏛️', color: '99,102,241', delay: 0,   x: 2,  y: 16 },
+    { exam: 'SSC CGL',   icon: '📋', color: '16,185,129', delay: 1,   x: 78, y: 10 },
+    { exam: 'IBPS PO',   icon: '🏦', color: '16,185,129', delay: 2,   x: 80, y: 50 },
+    { exam: 'RRB NTPC',  icon: '🚂', color: '99,102,241', delay: 0.5, x: 2,  y: 60 },
+    { exam: 'NEET UG',   icon: '⚕️', color: '99,102,241', delay: 1.5, x: 76, y: 78 },
+    { exam: 'JEE Mains', icon: '⚙️', color: '16,185,129', delay: 2.5, x: 2,  y: 82 },
+    { exam: 'BPSC',      icon: '🗺️', color: '16,185,129', delay: 1,   x: 84, y: 30 },
+    { exam: 'CTET',      icon: '📖', color: '99,102,241', delay: 3,   x: 2,  y: 38 },
   ]
 
   return (
-    <section style={{ position: 'relative', width: '100%', minHeight: '100vh', overflow: 'hidden', background: 'linear-gradient(135deg, #08090f 0%, #0d0a1a 40%, #080d14 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <section style={{ position: 'relative', width: '100%', minHeight: '100vh', overflow: 'hidden', background: 'linear-gradient(135deg, #030408 0%, #080911 50%, #030408 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 
       {/* Particle canvas background */}
       <ParticleCanvas />
 
       {/* Glowing blobs */}
-      <div style={{ position: 'absolute', top: '5%', left: '15%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(60px)', zIndex: 0, animation: 'blobPulse 8s ease-in-out infinite' }} />
-      <div style={{ position: 'absolute', bottom: '10%', right: '10%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(0,212,255,0.2) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(60px)', zIndex: 0, animation: 'blobPulse 10s ease-in-out 2s infinite' }} />
-      <div style={{ position: 'absolute', top: '40%', right: '25%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(40px)', zIndex: 0, animation: 'blobPulse 12s ease-in-out 4s infinite' }} />
+      <div style={{ position: 'absolute', top: '5%', left: '15%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(80px)', zIndex: 0, animation: 'blobPulse 8s ease-in-out infinite' }} />
+      <div style={{ position: 'absolute', bottom: '10%', right: '10%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(80px)', zIndex: 0, animation: 'blobPulse 10s ease-in-out 2s infinite' }} />
+      <div style={{ position: 'absolute', top: '40%', right: '25%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(60px)', zIndex: 0, animation: 'blobPulse 12s ease-in-out 4s infinite' }} />
 
       {/* Floating exam cards */}
       {FLOATING_CARDS.map((c, i) => <FloatingCard key={i} {...c} />)}
@@ -313,7 +309,7 @@ export default function HeroVideo() {
 
         {/* CTA buttons */}
         <div className="hero-cta-row" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 40, animation: 'heroSlideIn 0.8s ease 0.3s both', width: '100%', padding: '0 8px' }}>
-          <a href="/auth?signup=1" className="hero-cta-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '15px 28px', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', borderRadius: 'var(--r-full)', fontWeight: 800, fontSize: '1rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 40px rgba(124,58,237,0.5)', transition: 'transform 0.2s,box-shadow 0.2s', flex: '1 1 auto', justifyContent: 'center', minWidth: 200, maxWidth: 340 }}
+          <a href="/auth?signup=1" className="hero-cta-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '15px 28px', background: 'linear-gradient(135deg,#10b981,#6366f1)', borderRadius: 'var(--r-full)', fontWeight: 800, fontSize: '1rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 40px rgba(16,185,129,0.4)', transition: 'transform 0.2s,box-shadow 0.2s', flex: '1 1 auto', justifyContent: 'center', minWidth: 200, maxWidth: 340 }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
@@ -330,8 +326,8 @@ export default function HeroVideo() {
         {/* Animated stats */}
         <div className="hero-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, maxWidth: 680, margin: '0 auto 40px', animation: 'heroSlideIn 0.8s ease 0.4s both', width: '100%' }}>
           {[
-            { value: 500000, suffix: '+', label: t('landing.stats.questions', 'Questions'), color: '#00d4ff', prefix: '' },
-            { value: 200, suffix: '+', label: t('landing.stats.exams', 'Exams Covered'), color: '#7c3aed', prefix: '' },
+            { value: 500000, suffix: '+', label: t('landing.stats.questions', 'Questions'), color: '#10b981', prefix: '' },
+            { value: 200, suffix: '+', label: t('landing.stats.exams', 'Exams Covered'), color: '#6366f1', prefix: '' },
             { value: 249, suffix: '/mo', label: t('landing.stats.starts_at', 'Starts At Just'), color: '#10b981', prefix: '₹' },
             { value: 22, suffix: '', label: t('landing.stats.languages', 'Indian Languages'), color: '#f59e0b', prefix: '' },
           ].map(s => (
@@ -346,7 +342,7 @@ export default function HeroVideo() {
 
         {/* Success story ticker */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--r-full)', padding: '10px 20px', animation: 'heroSlideIn 0.8s ease 0.5s both' }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', color: 'white', flexShrink: 0 }}>
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#10b981,#6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', color: 'white', flexShrink: 0 }}>
             {(STORIES[activeStory]?.name || '?')[0]}
           </div>
           <div style={{ textAlign: 'left', minWidth: 240 }}>
@@ -369,7 +365,7 @@ export default function HeroVideo() {
       <div style={{ position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, zIndex: 10, animation: 'bounce 2s ease-in-out infinite' }}>
         <span style={{ fontSize: '0.7rem', color: 'rgba(148,163,184,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t('landing.hero.scroll_explore', 'Scroll to explore')}</span>
         <div style={{ width: 24, height: 38, border: '2px solid rgba(255,255,255,0.15)', borderRadius: 12, display: 'flex', justifyContent: 'center', paddingTop: 6 }}>
-          <div style={{ width: 4, height: 8, background: 'rgba(0,212,255,0.7)', borderRadius: 2, animation: 'scrollDot 2s ease-in-out infinite' }} />
+          <div style={{ width: 4, height: 8, background: 'rgba(16,185,129,0.7)', borderRadius: 2, animation: 'scrollDot 2s ease-in-out infinite' }} />
         </div>
       </div>
 
