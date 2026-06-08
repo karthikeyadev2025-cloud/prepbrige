@@ -5,6 +5,7 @@ import { format, formatDistanceToNow, parseISO, isAfter, differenceInDays } from
 import { useUserStore } from '../store/useStore'
 import { usePlatformStore } from '../store/usePlatformStore'
 import { fetchNews, fetchTimetables, fetchUserAttempts, type NewsArticle, type TimetableEntry, type ExamTimetable } from '../lib/supabase'
+import { COURSES } from './Courses'
 
 function StatCard({ icon: Icon, label, value, color }: { icon: React.ComponentType<{ size?: number; color?: string }>; label: string; value: string | number; color: string }) {
   return (
@@ -294,6 +295,119 @@ export default function HomeDashboard() {
             </div>
           </div>
         )}
+
+        {/* Netflix course catalog row */}
+        <div style={{ marginTop: 32 }}>
+          {(() => {
+            const primaryTarget = profile?.primaryTarget || 'ias'
+            const getCourseProgressPct = (course: any) => {
+              const defaults: any = { ias: 66, appsc: 63, tgpsc: 62, police: 63, teaching: 67, ssc_cgl: 69, banking: 68, neet_ug: 68, jee_main: 68 }
+              return defaults[primaryTarget] || 60
+            }
+            
+            const targetCourses = COURSES.filter(course => {
+              let target = null
+              const courseId = course.id
+              const examName = course.exam.toLowerCase()
+
+              if (examName === 'upsc' || courseId === 'upsc_complete') target = 'ias'
+              else if (examName === 'appsc' || courseId === 'appsc_group2') target = 'appsc'
+              else if (examName === 'tgpsc' || courseId === 'tgpsc_group1') target = 'tgpsc'
+              else if (examName.includes('police') || courseId.includes('police')) target = 'police'
+              else if (examName.includes('dsc') || examName.includes('teaching') || courseId.includes('dsc')) target = 'teaching'
+              else if (examName.includes('ssc') || courseId.includes('ssc')) target = 'ssc_cgl'
+              else if (examName.includes('banking') || examName.includes('po') || examName.includes('clerk') || courseId.includes('banking')) target = 'banking'
+              else if (examName.includes('ntpc') || courseId.includes('ntpc')) target = 'rrb_ntpc'
+              else if (examName.includes('neet') || courseId.includes('neet')) target = 'neet_ug'
+              else if (examName.includes('jee') || courseId.includes('jee')) target = 'jee_main'
+
+              return target === primaryTarget
+            })
+
+            const otherCourses = COURSES.filter(course => !targetCourses.includes(course))
+
+            const renderDashboardCard = (course: any) => {
+              const accentColor = course.color || '#00e676'
+              const progress = getCourseProgressPct(course)
+              return (
+                <div 
+                  key={course.id} 
+                  className="netflix-card"
+                  style={{
+                    borderTop: `4px solid ${accentColor}`,
+                    height: 250,
+                    flex: '0 0 280px',
+                    background: 'rgba(15, 17, 26, 0.8)',
+                    padding: 16,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between'
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <span style={{ fontSize: '1.4rem' }}>{course.icon}</span>
+                      <span style={{ fontSize: '0.62rem', background: 'rgba(255,255,255,0.03)', color: 'var(--text-3)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 20, padding: '2px 8px' }}>
+                        {course.exam}
+                      </span>
+                    </div>
+                    <h4 style={{ fontSize: '0.88rem', fontWeight: 900, color: 'white', margin: '4px 0', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', lineHeight: 1.3 }}>
+                      {course.title}
+                    </h4>
+                  </div>
+
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: 'var(--text-3)', marginBottom: 4, fontWeight: 700 }}>
+                      <span>Progress</span>
+                      <span style={{ color: accentColor }}>{progress}%</span>
+                    </div>
+                    <div style={{ height: 4, background: 'rgba(255,255,255,0.05)', borderRadius: 2, marginBottom: 12 }}>
+                      <div style={{ width: `${progress}%`, background: accentColor, height: 4, borderRadius: 2 }} />
+                    </div>
+
+                    <button 
+                      onClick={() => {
+                        navigate('/app/ai-tutor', { 
+                          state: { 
+                            initialQuery: `Let's resume studying "${course.title}".` 
+                          } 
+                        })
+                      }}
+                      className="btn btn-prime-green"
+                      style={{ width: '100%', minHeight: 34, height: 34, fontSize: '0.75rem', borderRadius: 8, justifyContent: 'center' }}
+                    >
+                      Resume Study
+                    </button>
+                  </div>
+                </div>
+              )
+            }
+
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                {targetCourses.length > 0 && (
+                  <div className="netflix-row-container">
+                    <div className="netflix-row-header">
+                      <div className="netflix-row-title">🎯 My Target Syllabus Tracks</div>
+                    </div>
+                    <div className="netflix-row" style={{ gap: 16 }}>
+                      {targetCourses.map(c => renderDashboardCard(c))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="netflix-row-container">
+                  <div className="netflix-row-header">
+                    <div className="netflix-row-title">🌟 Trending Prime Mocks & Study Guides</div>
+                  </div>
+                  <div className="netflix-row" style={{ gap: 16 }}>
+                    {otherCourses.map(c => renderDashboardCard(c))}
+                  </div>
+                </div>
+              </div>
+            )
+          })()}
+        </div>
       </div>
     </div>
   )

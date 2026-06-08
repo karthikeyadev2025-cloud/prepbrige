@@ -797,3 +797,70 @@ p { color: var(--text-2); line-height: 1.7; }
   transform: scale(1.1) rotate(10deg);
 }
 
+/* =====================================================
+   Netflix-Style Horizontal Catalog Utilities
+   ===================================================== */
+.netflix-row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 4px 24px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE/Edge */
+}
+
+.netflix-row::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.netflix-card {
+  flex: 0 0 320px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  background: var(--prime-card-bg);
+  border: 1px solid var(--prime-border);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.netflix-card:hover {
+  transform: scale(1.03) translateY(-4px);
+  border-color: rgba(0, 230, 118, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 230, 118, 0.12), 0 0 1px rgba(0, 230, 118, 0.3);
+  z-index: 10;
+}
+
+.netflix-card-purple:hover {
+  border-color: rgba(124, 77, 255, 0.45);
+  box-shadow: 0 12px 30px rgba(124, 77, 255, 0.12), 0 0 1px rgba(124, 77, 255, 0.3);
+}
+
+.netflix-row-container {
+  position: relative;
+  margin-bottom: 36px;
+}
+
+.netflix-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding: 0 4px;
+}
+
+.netflix-row-title {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: white;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+

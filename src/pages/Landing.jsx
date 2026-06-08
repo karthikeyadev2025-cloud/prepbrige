@@ -243,150 +243,143 @@ function TiltCard({ children, style = {} }) {
    ───────────────────────────────────────────────────────────────────────────── */
 function ExamCategoriesShowcase() {
   const { t } = useTranslation()
-  const [activeTrack, setActiveTrack] = useState('govt') // 'govt' | 'entrance'
 
-  const govtCats = EXAM_CATEGORIES.filter(cat => cat.type === 'govt' || !cat.type)
+  // Filter categories into PrepInsta Prime shelves
+  const centralCats = EXAM_CATEGORIES.filter(cat => cat.id === 'upsc' || cat.id === 'ssc' || cat.id === 'banking' || cat.id === 'railway' || cat.id === 'defence')
+  const stateCats = EXAM_CATEGORIES.filter(cat => cat.id === 'state_psc' || cat.id === 'police' || cat.id === 'state_psc_group2' || cat.id === 'teaching')
   const entranceCats = EXAM_CATEGORIES.filter(cat => cat.type === 'entrance')
-  const activeCats = activeTrack === 'govt' ? govtCats : entranceCats
 
-  return (
-    <section id="categories" style={{ padding: 'clamp(50px,8vw,100px) clamp(16px,4vw,24px)', maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
-      <div className="radial-glow-prime-green" style={{ top: '10%', right: '-10%', opacity: 0.6 }} />
-      <div className="radial-glow-prime-purple" style={{ bottom: '5%', left: '-5%', opacity: 0.5 }} />
-
-      <RevealDiv style={{ textAlign: 'center', marginBottom: 48 }}>
-        <div className="prime-badge" style={{ marginBottom: 16 }}>
-          ⚡ EXAM HUB PLATFORM
+  const renderNetflixRow = (title, icon, categoriesList, isPurple) => {
+    return (
+      <div className="netflix-row-container" key={title}>
+        <div className="netflix-row-header">
+          <div className="netflix-row-title">
+            <span>{icon}</span>
+            <span>{title}</span>
+          </div>
+          <span style={{ fontSize: '0.75rem', color: isPurple ? 'var(--prime-purple)' : 'var(--prime-green)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            {categoriesList.length} Categories Active
+          </span>
         </div>
-        <h2 style={{ fontSize: 'clamp(2rem, 5vw, 2.8rem)', fontWeight: 900, marginBottom: 14, color: 'white', letterSpacing: '-0.02em' }}>
-          Explore <span style={{ background: 'linear-gradient(90deg,#00e676,#7c4dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>PrepInsta Prime</span> Style Catalog
-        </h2>
-        <p style={{ color: 'var(--text-2)', maxWidth: 620, margin: '0 auto 36px', fontSize: '0.95rem', lineHeight: 1.7 }}>
-          Choose your competitive exam path. Instantly practice national mock exams, review official answer keys, and clear your concepts with 24/7 K² AI Tutor guidance.
-        </p>
-
-        {/* Track Switcher */}
-        <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 999, padding: 6, gap: 4, boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.5)' }}>
-          <button
-            onClick={() => setActiveTrack('govt')}
-            style={{
-              padding: '12px 28px', borderRadius: 999, border: 'none', background: activeTrack === 'govt' ? 'var(--prime-grad-green)' : 'transparent',
-              color: activeTrack === 'govt' ? '#030408' : 'var(--text-3)', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', transition: 'all 0.25s',
-              minHeight: 46
-            }}
-          >
-            💼 {t('landing.catalog.govt', 'Government Job Exams')}
-          </button>
-          <button
-            onClick={() => setActiveTrack('entrance')}
-            style={{
-              padding: '12px 28px', borderRadius: 999, border: 'none', background: activeTrack === 'entrance' ? 'var(--prime-grad-purple)' : 'transparent',
-              color: activeTrack === 'entrance' ? 'white' : 'var(--text-3)', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', transition: 'all 0.25s',
-              minHeight: 46
-            }}
-          >
-            🎓 {t('landing.catalog.entrance', 'College Entrance & Boards')}
-          </button>
-        </div>
-      </RevealDiv>
-
-      {/* Grid structure */}
-      <div className="grid-3" style={{ gap: 24, position: 'relative', zIndex: 1 }}>
-        {activeCats.map((cat) => {
-          const catColor = cat.color || '#00e676';
-          return (
-            <RevealDiv key={cat.id} direction="scale">
+        <div className="netflix-row">
+          {categoriesList.map((cat) => {
+            const catColor = cat.color || '#00e676';
+            return (
               <div 
-                className={`prepinsta-card ${activeTrack === 'entrance' ? 'prepinsta-card-purple' : ''}`}
-                style={{ 
-                  height: '100%', 
-                  display: 'flex', 
-                  flexDirection: 'column',
-                  borderTop: `3px solid ${catColor}`,
-                  boxShadow: `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)`
+                key={cat.id} 
+                className={`netflix-card ${isPurple ? 'netflix-card-purple' : ''}`}
+                style={{
+                  borderTop: `4px solid ${catColor}`,
                 }}
               >
-                <div style={{ padding: '24px 24px 18px', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                    <span style={{ fontSize: '2rem' }}>{cat.icon}</span>
+                <div style={{ padding: '20px 20px 14px', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                    <span style={{ fontSize: '1.8rem' }}>{cat.icon}</span>
                     <span 
                       style={{ 
-                        fontSize: '0.68rem', 
+                        fontSize: '0.65rem', 
                         fontWeight: 800, 
                         color: catColor, 
                         background: `${catColor}0f`, 
                         border: `1px solid ${catColor}33`, 
                         borderRadius: 30, 
-                        padding: '3px 10px',
+                        padding: '2px 8px',
                         textTransform: 'uppercase',
-                        letterSpacing: '0.04em'
+                        letterSpacing: '0.03em'
                       }}
                     >
                       {cat.exams.length} Tracks
                     </span>
                   </div>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: 'white', marginBottom: 6 }}>{cat.label}</h3>
-                  <p style={{ fontSize: '0.78rem', color: 'var(--text-3)', lineHeight: 1.4 }}>
-                    Complete syllabus preparation including previous years question analysis.
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 900, color: 'white', marginBottom: 4 }}>{cat.label}</h3>
+                  <p style={{ fontSize: '0.75rem', color: 'var(--text-3)', lineHeight: 1.4 }}>
+                    Crack {cat.exams.length} major exam modules with targeted AI analysis.
                   </p>
                 </div>
 
-                <div style={{ padding: 20, flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {cat.exams.slice(0, 4).map((exam) => (
-                    <div 
-                      key={exam.id}
-                      style={{
-                        background: 'rgba(255,255,255,0.01)',
-                        border: '1px solid rgba(255,255,255,0.03)',
-                        borderRadius: 12,
-                        padding: '10px 14px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: 12,
-                        transition: 'var(--t)'
-                      }}
-                      className="bento-btn-interactive"
-                    >
-                      <div style={{ minWidth: 0 }}>
-                        <span style={{ display: 'block', color: 'white', fontWeight: 700, fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{exam.name}</span>
-                        <span style={{ display: 'block', color: 'var(--text-3)', fontSize: '0.68rem', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{exam.fullName}</span>
+                <div style={{ padding: 16, flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {cat.exams.slice(0, 3).map((exam) => (
+                      <div 
+                        key={exam.id}
+                        style={{
+                          background: 'rgba(255,255,255,0.01)',
+                          border: '1px solid rgba(255,255,255,0.02)',
+                          borderRadius: 8,
+                          padding: '6px 10px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: 8
+                        }}
+                      >
+                        <div style={{ minWidth: 0, flex: 1 }}>
+                          <span style={{ display: 'block', color: 'white', fontWeight: 700, fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{exam.name}</span>
+                          <span style={{ display: 'block', color: 'var(--text-3)', fontSize: '0.62rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{exam.fullName}</span>
+                        </div>
+                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                          {exam.vacancies ? (
+                            <span style={{ display: 'block', color: '#00e676', fontWeight: 800, fontSize: '0.7rem' }}>{exam.vacancies.toLocaleString()} seats</span>
+                          ) : (
+                            <span style={{ display: 'block', color: 'var(--text-4)', fontSize: '0.7rem', fontWeight: 700 }}>Active</span>
+                          )}
+                        </div>
                       </div>
-                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        {exam.vacancies ? (
-                          <span style={{ display: 'block', color: '#00e676', fontWeight: 800, fontSize: '0.76rem' }}>{exam.vacancies.toLocaleString()} seats</span>
-                        ) : (
-                          <span style={{ display: 'block', color: 'var(--text-3)', fontSize: '0.76rem', fontWeight: 700 }}>Active Track</span>
-                        )}
-                        <span style={{ display: 'block', color: 'var(--text-4)', fontSize: '0.6rem', marginTop: 1 }}>Date: {new Date(exam.nextDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</span>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
 
-                  {cat.exams.length > 4 && (
-                    <div style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-3)', fontWeight: 600, padding: '4px 0' }}>
-                      + {cat.exams.length - 4} more exams available in this track
+                  {cat.exams.length > 3 && (
+                    <div style={{ textAlign: 'center', fontSize: '0.68rem', color: 'var(--text-4)', fontWeight: 750, margin: '2px 0' }}>
+                      + {cat.exams.length - 3} more exams covered
                     </div>
                   )}
 
                   <Link
                     to="/auth?signup=1"
-                    className={`btn btn-sm ${activeTrack === 'govt' ? 'btn-prime-green' : 'btn-prime-purple'}`}
+                    className={`btn btn-sm ${isPurple ? 'btn-prime-purple' : 'btn-prime-green'}`}
                     style={{
                       width: '100%',
                       marginTop: 'auto',
                       justifyContent: 'center',
-                      fontSize: '0.8rem',
-                      gap: 6
+                      fontSize: '0.75rem',
+                      borderRadius: 10,
+                      minHeight: 38,
+                      gap: 4,
+                      padding: '4px 12px'
                     }}
                   >
-                    Start Practice <ArrowRight size={13} />
+                    Crack Mocks <ArrowRight size={11} />
                   </Link>
                 </div>
               </div>
-            </RevealDiv>
-          )
-        })}
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <section id="categories" style={{ padding: 'clamp(50px,8vw,100px) clamp(16px,4vw,24px)', maxWidth: 1240, margin: '0 auto', position: 'relative' }}>
+      <div className="radial-glow-prime-green" style={{ top: '15%', right: '-10%', opacity: 0.5 }} />
+      <div className="radial-glow-prime-purple" style={{ bottom: '20%', left: '-10%', opacity: 0.4 }} />
+
+      <RevealDiv style={{ textAlign: 'center', marginBottom: 56 }}>
+        <div className="prime-badge" style={{ marginBottom: 16 }}>
+          ⚡ PrepBridge Prime Catalog
+        </div>
+        <h2 style={{ fontSize: 'clamp(2rem, 5vw, 2.8rem)', fontWeight: 900, marginBottom: 14, color: 'white', letterSpacing: '-0.02em' }}>
+          India's Future in <span style={{ background: 'linear-gradient(90deg,#00e676,#7c4dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Netflix-Style</span> Learning
+        </h2>
+        <p style={{ color: 'var(--text-2)', maxWidth: 640, margin: '0 auto', fontSize: '0.95rem', lineHeight: 1.75 }}>
+          One Prime subscription unlocks 200+ central and state exams. Browse paths, practice timed mock tests, and get real-time corrections.
+        </p>
+      </RevealDiv>
+
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        {renderNetflixRow('Popular Central Government Exams', '🏛️', centralCats, false)}
+        {renderNetflixRow('State PSC & Police Mocks', '🗺️', stateCats, false)}
+        {renderNetflixRow('College Entrance & Boards', '🎓', entranceCats, true)}
       </div>
     </section>
   )
