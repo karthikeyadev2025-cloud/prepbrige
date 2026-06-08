@@ -74,9 +74,9 @@ export default function StorySection() {
   return (
     <section style={{
       padding: '100px 24px',
-      background: 'linear-gradient(180deg, #030408 0%, #07080f 100%)',
-      borderTop: '1px solid rgba(255,255,255,0.03)',
-      borderBottom: '1px solid rgba(255,255,255,0.03)',
+      background: '#FFFFFF',
+      borderTop: '1px solid rgba(26,26,46,0.06)',
+      borderBottom: '1px solid rgba(26,26,46,0.06)',
       position: 'relative',
       overflow: 'hidden'
     }}>
@@ -84,7 +84,7 @@ export default function StorySection() {
       <div style={{
         position: 'absolute',
         inset: 0,
-        backgroundImage: `radial-gradient(circle at 50% 55%, ${current.color}08 0%, transparent 60%)`,
+        backgroundImage: `radial-gradient(circle at 50% 55%, ${current.color}05 0%, transparent 60%)`,
         transition: 'all 0.8s ease',
         pointerEvents: 'none'
       }} />
@@ -97,8 +97,8 @@ export default function StorySection() {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 8,
-            background: 'rgba(0,230,118,0.06)',
-            border: '1px solid rgba(0,230,118,0.15)',
+            background: 'rgba(108, 99, 255, 0.06)',
+            border: '1px solid rgba(108, 99, 255, 0.2)',
             borderRadius: 99,
             padding: '6px 16px',
             marginBottom: 16
@@ -107,45 +107,44 @@ export default function StorySection() {
               width: 6,
               height: 6,
               borderRadius: '50%',
-              background: '#00e676',
-              boxShadow: '0 0 8px #00e676',
+              background: '#6C63FF',
+              boxShadow: '0 0 8px #6C63FF',
               animation: 'storyBlink 2s infinite'
             }} />
-            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#00e676', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#6C63FF', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               {t('landing.story.badge', 'Verified Success Case Study')}
             </span>
           </div>
-          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: 'white', letterSpacing: '-0.02em', margin: 0 }}>
-            Democratizing <span style={{ background: 'linear-gradient(90deg,#00e676,#7c4dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Exam Preparation</span>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: '#1A1A2E', letterSpacing: '-0.02em', margin: 0 }}>
+            Democratizing <span style={{ background: 'linear-gradient(90deg,#6C63FF,#00C9A7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Exam Preparation</span>
           </h2>
-          <p style={{ color: 'var(--text-2)', marginTop: 8, fontSize: '0.92rem', maxWidth: 600, margin: '8px auto 0' }}>
-            A farmers son, a ₹6,000 phone, and an AI tutor. Raju Kumar\'s documented path to the civil services.
+          <p style={{ color: '#575775', marginTop: 8, fontSize: '0.92rem', maxWidth: 600, margin: '8px auto 0' }}>
+            A farmer's son, a ₹6,000 phone, and an AI tutor. Raju Kumar's documented path to the civil services.
           </p>
         </div>
 
         {/* Interactive Case Study Dashboard Wrapper */}
         <div style={{
-          background: 'rgba(7, 9, 14, 0.6)',
-          border: '1px solid rgba(255,255,255,0.04)',
+          background: '#FFFFFF',
+          border: '1px solid rgba(26,26,46,0.06)',
           borderRadius: 28,
-          boxShadow: '0 24px 80px rgba(0,0,0,0.8)',
+          boxShadow: 'var(--light-card-shadow)',
           overflow: 'hidden',
           display: 'grid',
           gridTemplateColumns: '320px 1fr',
-          backdropFilter: 'blur(20px)',
           minHeight: 520
         }} className="case-study-grid">
 
           {/* Left Milestone Navigation Drawer */}
           <div style={{
-            borderRight: '1px solid rgba(255,255,255,0.04)',
+            borderRight: '1px solid rgba(26,26,46,0.06)',
             padding: '24px',
             display: 'flex',
             flexDirection: 'column',
             gap: 12,
-            background: 'rgba(255,255,255,0.005)'
+            background: '#F9F9FB'
           }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: 'var(--text-3)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#575775', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 6 }}>
               Study Timeline Nodes
             </span>
             {MILESTONES.map((m, idx) => {
@@ -159,7 +158,7 @@ export default function StorySection() {
                     padding: '16px 18px',
                     borderRadius: 16,
                     border: '1px solid',
-                    borderColor: isActive ? `${m.color}33` : 'transparent',
+                    borderColor: isActive ? `${m.color}44` : 'transparent',
                     background: isActive ? `${m.color}0a` : 'transparent',
                     cursor: 'pointer',
                     transition: 'all 0.3s ease',
@@ -167,13 +166,13 @@ export default function StorySection() {
                     flexDirection: 'column',
                     gap: 6
                   }}
-                  onMouseEnter={e => { if(!isActive) e.currentTarget.style.background = 'rgba(255,255,255,0.01)' }}
+                  onMouseEnter={e => { if(!isActive) e.currentTarget.style.background = 'rgba(26,26,46,0.02)' }}
                   onMouseLeave={e => { if(!isActive) e.currentTarget.style.background = 'transparent' }}
                 >
                   <span style={{
                     fontSize: '0.65rem',
                     fontWeight: 800,
-                    color: isActive ? m.color : 'var(--text-3)',
+                    color: isActive ? m.color : '#575775',
                     letterSpacing: '0.04em'
                   }}>
                     {m.phase.toUpperCase()}
@@ -181,7 +180,7 @@ export default function StorySection() {
                   <span style={{
                     fontSize: '0.85rem',
                     fontWeight: 700,
-                    color: isActive ? 'white' : 'var(--text-2)'
+                    color: isActive ? '#1A1A2E' : '#575775'
                   }}>
                     {m.label}
                   </span>
@@ -195,7 +194,7 @@ export default function StorySection() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'var(--text-3)',
+                  color: '#575775',
                   fontSize: '0.72rem',
                   fontWeight: 700,
                   cursor: 'pointer',
@@ -209,7 +208,7 @@ export default function StorySection() {
                   width: 24,
                   height: 12,
                   borderRadius: 6,
-                  background: autoPlay ? current.color : 'rgba(255,255,255,0.1)',
+                  background: autoPlay ? current.color : 'rgba(26,26,46,0.1)',
                   position: 'relative',
                   display: 'inline-block',
                   transition: 'background 0.3s'
@@ -255,25 +254,25 @@ export default function StorySection() {
               }}>
                 {current.label}
               </div>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'white', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
+              <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#1A1A2E', margin: '0 0 6px', letterSpacing: '-0.01em' }}>
                 {current.title}
               </h3>
-              <p style={{ fontSize: '0.88rem', color: 'var(--text-2)', fontWeight: 600, margin: '0 0 16px' }}>
+              <p style={{ fontSize: '0.88rem', color: '#575775', fontWeight: 600, margin: '0 0 16px' }}>
                 {current.sub}
               </p>
-              <p style={{ fontSize: '0.92rem', color: 'var(--text-2)', lineHeight: 1.7, margin: '0 0 24px' }}>
+              <p style={{ fontSize: '0.92rem', color: '#575775', lineHeight: 1.7, margin: '0 0 24px' }}>
                 {current.body}
               </p>
 
               {/* Verified Quote Block */}
               <div style={{
-                background: 'rgba(255,255,255,0.015)',
-                border: '1px solid rgba(255,255,255,0.03)',
+                background: `${current.color}05`,
+                border: `1px solid ${current.color}15`,
                 borderLeft: `3px solid ${current.color}`,
                 borderRadius: '0 14px 14px 0',
                 padding: '16px 20px',
                 fontStyle: 'italic',
-                color: 'rgba(255,255,255,0.95)',
+                color: '#1A1A2E',
                 fontSize: '0.88rem',
                 lineHeight: 1.6
               }}>
@@ -287,13 +286,13 @@ export default function StorySection() {
                 <div
                   key={mIdx}
                   style={{
-                    background: 'rgba(255,255,255,0.01)',
-                    border: '1px solid rgba(255,255,255,0.03)',
+                    background: 'rgba(26,26,46,0.01)',
+                    border: '1px solid rgba(26,26,46,0.04)',
                     borderRadius: 16,
                     padding: '14px 16px'
                   }}
                 >
-                  <span style={{ display: 'block', fontSize: '0.68rem', color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 4 }}>
+                  <span style={{ display: 'block', fontSize: '0.68rem', color: '#575775', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 4 }}>
                     {m.label}
                   </span>
                   <span style={{ display: 'block', fontSize: '1.4rem', fontWeight: 900, color: m.labelColor }}>
@@ -309,37 +308,20 @@ export default function StorySection() {
 
         {/* Trust Statement */}
         <div style={{ textAlign: 'center', marginTop: 44 }}>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-3)', margin: '0 0 16px', fontWeight: 600 }}>
+          <p style={{ fontSize: '0.85rem', color: '#575775', margin: '0 0 16px', fontWeight: 600 }}>
             PrepBridge levels the playing field. Leveling access to exam content is the future.
           </p>
           <a
             href="/auth?signup=1"
+            className="btn-light-outline"
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'rgba(16, 185, 129, 0.08)',
-              border: '1px solid rgba(16, 185, 129, 0.2)',
-              borderRadius: 'var(--r-full)',
               padding: '12px 28px',
               fontSize: '0.88rem',
               fontWeight: 800,
-              color: '#00e676',
-              textDecoration: 'none',
-              transition: 'all 0.2s ease'
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = 'rgba(16, 185, 129, 0.15)'
-              e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.3)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = 'rgba(16, 185, 129, 0.08)'
-              e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.2)'
-              e.currentTarget.style.transform = 'translateY(0)'
+              textDecoration: 'none'
             }}
           >
-            Start Preparing Free <ArrowRight size={15} />
+            Start Preparing Free <ArrowRight size={15} style={{ marginLeft: 6 }} />
           </a>
         </div>
 

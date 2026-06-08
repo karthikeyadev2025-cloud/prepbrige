@@ -863,4 +863,135 @@ p { color: var(--text-2); line-height: 1.7; }
   gap: 8px;
 }
 
+/* =====================================================
+   Light Theme Landing Page Overrides (PrepInsta Inspired)
+   ===================================================== */
+:root {
+  --light-bg-base: #FFFFFF;
+  --light-bg-sec: #F5F5F5;
+  --light-text-title: #1A1A2E;
+  --light-text-body: #575775;
+  --light-prime-grad: linear-gradient(135deg, #6C63FF, #00C9A7);
+  --light-card-shadow: 0 10px 35px rgba(26, 26, 46, 0.06);
+}
+
+.light-theme-landing {
+  background: var(--light-bg-base) !important;
+  color: var(--light-text-body) !important;
+}
+
+.light-theme-landing h1, 
+.light-theme-landing h2, 
+.light-theme-landing h3, 
+.light-theme-landing h4 {
+  color: var(--light-text-title) !important;
+}
+
+/* Light Mode rounded feature cards with hover transitions */
+.light-card-feature {
+  background: var(--light-bg-base);
+  border: 1px solid rgba(26, 26, 46, 0.05);
+  border-radius: 24px;
+  box-shadow: var(--light-card-shadow);
+  padding: 30px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.light-card-feature:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(108, 99, 255, 0.12);
+  border-color: rgba(108, 99, 255, 0.2);
+}
+
+/* Light FAQ accordion item */
+.light-faq-item {
+  border-bottom: 1px solid rgba(26, 26, 46, 0.08);
+  padding: 16px 0;
+}
+
+.light-faq-trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--light-text-title);
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.light-faq-trigger:hover {
+  color: #6C63FF;
+}
+
+.light-faq-content {
+  font-size: 0.92rem;
+  color: var(--light-text-body);
+  line-height: 1.6;
+  padding: 8px 0 16px 0;
+}
+
+/* Custom rounded buttons for light theme */
+.btn-light-prime {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px !important;
+  background: var(--light-prime-grad) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 999px !important;
+  box-shadow: 0 5px 20px rgba(108, 99, 255, 0.25) !important;
+  font-weight: 800 !important;
+  font-size: 0.9rem !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  cursor: pointer;
+  min-height: 48px;
+}
+
+.btn-light-prime:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(108, 99, 255, 0.4) !important;
+}
+
+.btn-light-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px !important;
+  background: transparent !important;
+  border: 2px solid #6C63FF !important;
+  color: #6C63FF !important;
+  border-radius: 999px !important;
+  font-weight: 800 !important;
+  font-size: 0.9rem !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer;
+  min-height: 48px;
+}
+
+.btn-light-outline:hover {
+  background: rgba(108, 99, 255, 0.05) !important;
+  border-color: #00C9A7 !important;
+  color: #00C9A7 !important;
+}
+
+/* Light mode category/Netflix cards */
+.light-netflix-card {
+  background: var(--light-bg-base) !important;
+  border: 1px solid rgba(26, 26, 46, 0.06) !important;
+  box-shadow: var(--light-card-shadow) !important;
+}
+
+.light-netflix-card:hover {
+  border-color: rgba(108, 99, 255, 0.3) !important;
+  box-shadow: 0 12px 30px rgba(108, 99, 255, 0.08) !important;
+}
+
 
