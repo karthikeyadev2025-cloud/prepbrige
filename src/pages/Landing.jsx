@@ -941,6 +941,14 @@ export default function Landing() {
           </span>
         </div>
 
+        {/* Desktop Nav Links */}
+        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }} className="desktop-nav-links">
+          <a href="#categories" style={{ color: 'var(--text-2)', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none', transition: 'color 0.2s' }}>Prepare</a>
+          <a href="#features" style={{ color: 'var(--text-2)', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none', transition: 'color 0.2s' }}>Features</a>
+          <a href="#demo" style={{ color: 'var(--text-2)', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none', transition: 'color 0.2s' }}>Try Mock</a>
+          <a href="#pricing" style={{ color: 'var(--text-2)', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none', transition: 'color 0.2s' }}>Prime Plans</a>
+        </div>
+
         {/* Desktop Nav Actions */}
         <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexShrink: 0 }} className="desktop-nav-group">
           
@@ -1526,6 +1534,9 @@ export default function Landing() {
             grid-column: span 1 !important;
           }
           .desktop-nav-group {
+            display: none !important;
+          }
+          .desktop-nav-links {
             display: none !important;
           }
           .mobile-menu-trigger {
