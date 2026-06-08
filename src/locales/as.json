@@ -27,7 +27,9 @@
       "notifications": "Notifications",
       "exit_admin": "Exit Admin",
       "enter_admin": "Enter Admin Panel",
-      "logout": "Logout"
+      "logout": "Logout",
+      "login": "Login",
+      "start_free": "Start Free"
     },
     "tutor": {
       "welcome": "I am K² (K-square) AI, your competitive exam helper. Ask me any doubt from your UPSC, SSC, Banking, Law, MBBS, or State Entrance syllabus!",
@@ -64,6 +66,63 @@
       "unlock_premium": "Unlock Premium Access ⚡",
       "continue": "Continue",
       "back": "Back"
+    },
+    "landing": {
+      "hero": {
+        "live_aspirants": "{{count}} aspirants preparing right now · Free for everyone",
+        "title_line1": "Your Dream",
+        "title_line3_1": "Starts Here.",
+        "title_line3_2": "Try Free.",
+        "subtitle": "One login for 200+ exams — UPSC, SSC, Banking, Railways, State PSC & more. AI tutor in 22 Indian languages. Real mock tests. Live current affairs. All for less than a chai per day.",
+        "cta_primary": "Start Preparing Free →",
+        "cta_secondary": "Watch How It Works",
+        "scroll_explore": "Scroll to explore",
+        "word_0": "IAS Officer",
+        "word_1": "SSC CGL Job",
+        "word_2": "Bank PO",
+        "word_3": "Railway Job",
+        "word_4": "IPS Officer",
+        "word_5": "Police Officer",
+        "word_6": "Teacher (KVS)"
+      },
+      "stats": {
+        "questions": "Questions",
+        "exams": "Exams Covered",
+        "starts_at": "Starts At Just",
+        "languages": "Indian Languages"
+      },
+      "prepared_with": "Prepared with PrepBridge",
+      "catalog": {
+        "title": "Supported Tracks & Categories",
+        "desc": "Explore the exact competitive exams we cover. Instantly launch AI-generated mocks mapped to the latest trends.",
+        "govt": "Government Job Exams",
+        "entrance": "College Entrance & Boards"
+      },
+      "demo": {
+        "title": "Try a Live Mock Test",
+        "desc": "No signup required. Test our interactive interface and read real-time K² AI explanations.",
+        "check": "Check Answer",
+        "next": "Next Question →",
+        "finish": "Finish Test",
+        "completed": "Mini Mock Test Completed!",
+        "scored": "You scored {{score}} out of {{total}} correct options.",
+        "retake": "Retake Demo Mocks",
+        "access": "Access 5 Lakh+ Mocks & AI Tutor Now"
+      },
+      "addons": {
+        "peak": {
+          "title": "K² PeakPredict Addon"
+        },
+        "pyq": {
+          "title": "Strictly Online PYQs"
+        }
+      },
+      "pricing": {
+        "title": "One plan. All exams. Try free.",
+        "desc": "2-day free trial for all new students. No credit card required. Cancel anytime.",
+        "beta": "Free During Beta Active",
+        "start_trial": "Start Free Beta Trial"
+      }
     }
   }
 }

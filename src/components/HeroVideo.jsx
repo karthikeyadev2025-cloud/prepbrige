@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 // ─── Particle Canvas ──────────────────────────────────────────────────────────
 function ParticleCanvas() {
@@ -150,13 +151,14 @@ const JOB_WORDS = [
 ]
 
 function HeroTypewriter() {
+  const { t } = useTranslation()
   const [wordIdx, setWordIdx]   = useState(0)
   const [displayed, setDisplayed] = useState('')
   const [phase, setPhase]       = useState('typing') // typing | pause | deleting
   const [showUnder, setShowUnder] = useState(false)
 
   useEffect(() => {
-    const current = JOB_WORDS[wordIdx].word
+    const current = t(`landing.hero.word_${wordIdx}`, { defaultValue: JOB_WORDS[wordIdx].word })
     let timeout
 
     if (phase === 'typing') {
@@ -193,7 +195,7 @@ function HeroTypewriter() {
     <div style={{ marginBottom: 24, animation: 'heroSlideIn 0.8s ease both' }}>
       {/* Line 1: "Your Dream" */}
       <div style={{ fontSize: 'clamp(2.2rem,5.5vw,4rem)', fontWeight: 900, lineHeight: 1.1, letterSpacing: '-0.03em', color: 'white', marginBottom: 4 }}>
-        Your Dream
+        {t('landing.hero.title_line1', 'Your Dream')}
       </div>
 
       {/* Line 2: Typewriter word — clean gradient text, NO key unmounting, NO shorthand background conflicts */}
@@ -242,7 +244,7 @@ function HeroTypewriter() {
         justifyContent: 'center', gap: 14, flexWrap: 'wrap',
         animation: 'heroSlideIn 0.8s ease 0.15s both',
       }}>
-        <span style={{ color: 'rgba(255,255,255,0.85)' }}>Starts Here.</span>
+        <span style={{ color: 'rgba(255,255,255,0.85)' }}>{t('landing.hero.title_line3_1', 'Starts Here.')}</span>
         <span style={{
           backgroundImage: 'linear-gradient(90deg,#10b981 0%,#00d4ff 30%,#ffffff 50%,#00d4ff 70%,#10b981 100%)',
           backgroundSize: '200% auto',
@@ -250,7 +252,7 @@ function HeroTypewriter() {
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
           animation: 'shimmerPrice 2.5s linear infinite',
-        }}>Try Free.</span>
+        }}>{t('landing.hero.title_line3_2', 'Try Free.')}</span>
       </div>
     </div>
   )
@@ -259,6 +261,7 @@ function HeroTypewriter() {
 
 // ─── Main HeroVideo Component ─────────────────────────────────────────────────
 export default function HeroVideo() {
+  const { t } = useTranslation()
   const [activeStory, setActiveStory] = useState(0)
 
   // Cycle success stories
@@ -298,15 +301,14 @@ export default function HeroVideo() {
         {/* Live badge */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 'var(--r-full)', padding: '8px 18px', marginBottom: 28, fontSize: '0.82rem', fontWeight: 600, color: '#10b981' }}>
           <span style={{ width: 8, height: 8, background: '#10b981', borderRadius: '50%', boxShadow: '0 0 8px #10b981', animation: 'livePulse 2s ease-in-out infinite', display: 'inline-block' }} />
-          2,45,832 aspirants preparing right now · Free for everyone
+          {t('landing.hero.live_aspirants', { count: '2,45,832', defaultValue: '2,45,832 aspirants preparing right now · Free for everyone' })}
         </div>
 
         {/* Main headline — typewriter */}
         <HeroTypewriter />
 
         <p style={{ fontSize: 'clamp(1rem, 2.5vw, 1.18rem)', color: 'rgba(148,163,184,0.9)', maxWidth: 620, margin: '0 auto 40px', lineHeight: 1.75, animation: 'heroSlideIn 0.8s ease 0.2s both' }}>
-          One login for <strong style={{ color: '#fff' }}>200+ exams</strong> — UPSC, SSC, Banking, Railways, State PSC &amp; more.
-          AI tutor in <strong style={{ color: '#fff' }}>22 Indian languages</strong>. Real mock tests. Live current affairs. All for less than a chai per day.
+          {t('landing.hero.subtitle', 'One login for 200+ exams — UPSC, SSC, Banking, Railways, State PSC & more. AI tutor in 22 Indian languages. Real mock tests. Live current affairs. All for less than a chai per day.')}
         </p>
 
         {/* CTA buttons */}
@@ -315,23 +317,23 @@ export default function HeroVideo() {
             onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
-            ⚡ Start Preparing Free →
+            ⚡ {t('landing.hero.cta_primary', 'Start Preparing Free →')}
           </a>
           <a href="#features" className="hero-cta-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '15px 24px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 'var(--r-full)', fontWeight: 700, fontSize: '1rem', color: 'white', textDecoration: 'none', backdropFilter: 'blur(10px)', transition: 'all 0.2s', flex: '1 1 auto', justifyContent: 'center', minWidth: 180, maxWidth: 280 }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
           >
-            🎬 Watch How It Works
+            🎬 {t('landing.hero.cta_secondary', 'Watch How It Works')}
           </a>
         </div>
 
         {/* Animated stats */}
         <div className="hero-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, maxWidth: 680, margin: '0 auto 40px', animation: 'heroSlideIn 0.8s ease 0.4s both', width: '100%' }}>
           {[
-            { value: 500000, suffix: '+', label: 'Questions', color: '#00d4ff', prefix: '' },
-            { value: 200, suffix: '+', label: 'Exams Covered', color: '#7c3aed', prefix: '' },
-            { value: 249, suffix: '/mo', label: 'Starts At Just', color: '#10b981', prefix: '₹' },
-            { value: 22, suffix: '', label: 'Indian Languages', color: '#f59e0b', prefix: '' },
+            { value: 500000, suffix: '+', label: t('landing.stats.questions', 'Questions'), color: '#00d4ff', prefix: '' },
+            { value: 200, suffix: '+', label: t('landing.stats.exams', 'Exams Covered'), color: '#7c3aed', prefix: '' },
+            { value: 249, suffix: '/mo', label: t('landing.stats.starts_at', 'Starts At Just'), color: '#10b981', prefix: '₹' },
+            { value: 22, suffix: '', label: t('landing.stats.languages', 'Indian Languages'), color: '#f59e0b', prefix: '' },
           ].map(s => (
             <div key={s.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 12px', backdropFilter: 'blur(10px)' }}>
               <div style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 900, color: s.color, marginBottom: 4 }}>
@@ -352,7 +354,7 @@ export default function HeroVideo() {
               🎉 {STORIES[activeStory].name} — <span style={{ color: '#10b981' }}>{STORIES[activeStory].rank}</span>
             </div>
             <div style={{ fontSize: '0.72rem', color: 'rgba(148,163,184,0.7)' }}>
-              {STORIES[activeStory].state} · {STORIES[activeStory].year} · Prepared with PrepBridge
+              {STORIES[activeStory].state} · {STORIES[activeStory].year} · {t('landing.prepared_with', 'Prepared with PrepBridge')}
             </div>
           </div>
           <div style={{ display: 'flex', gap: 4 }}>
@@ -365,7 +367,7 @@ export default function HeroVideo() {
 
       {/* Scroll indicator */}
       <div style={{ position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, zIndex: 10, animation: 'bounce 2s ease-in-out infinite' }}>
-        <span style={{ fontSize: '0.7rem', color: 'rgba(148,163,184,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Scroll to explore</span>
+        <span style={{ fontSize: '0.7rem', color: 'rgba(148,163,184,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t('landing.hero.scroll_explore', 'Scroll to explore')}</span>
         <div style={{ width: 24, height: 38, border: '2px solid rgba(255,255,255,0.15)', borderRadius: 12, display: 'flex', justifyContent: 'center', paddingTop: 6 }}>
           <div style={{ width: 4, height: 8, background: 'rgba(0,212,255,0.7)', borderRadius: 2, animation: 'scrollDot 2s ease-in-out infinite' }} />
         </div>

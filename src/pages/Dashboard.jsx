@@ -715,6 +715,112 @@ function PortalAutoSync() {
   )
 }
 
+function UpgradeBanner({ profile }) {
+  const sub = getSubscriptionStatus(profile?.subscription)
+  if (sub.isPaid) return null
+
+  if (sub.isTrial && sub.isActive) {
+    const urgent = sub.hoursLeft < 12
+    const warning = sub.hoursLeft < 24
+    const accentColor = urgent ? 'var(--red)' : warning ? 'var(--amber)' : 'var(--emerald)'
+    const bgColor = urgent
+      ? 'linear-gradient(135deg, rgba(239,68,68,0.14), rgba(239,68,68,0.06))'
+      : warning
+      ? 'linear-gradient(135deg, rgba(245,158,11,0.14), rgba(245,158,11,0.06))'
+      : 'linear-gradient(135deg, rgba(16,185,129,0.14), rgba(0,212,255,0.08))'
+    const borderColor = urgent ? 'rgba(239,68,68,0.35)' : warning ? 'rgba(245,158,11,0.35)' : 'rgba(16,185,129,0.35)'
+
+    return (
+      <div className="card card-p animate-fade-in" style={{
+        background: bgColor,
+        border: `1px solid ${borderColor}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        flexWrap: 'wrap', gap: 16, padding: '18px 24px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 260 }}>
+          <div style={{ width: 44, height: 44, borderRadius: '50%', background: `rgba(${urgent ? '239,68,68' : warning ? '245,158,11' : '16,185,129'},0.15)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Timer size={20} color={accentColor} />
+          </div>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'white', marginBottom: 2 }}>
+              {urgent ? '⚠️ Trial expires in ' : '🌟 Free Trial Active — '}
+              <span style={{ color: accentColor }}>
+                {sub.hoursLeft < 1 ? 'less than 1 hour' : sub.hoursLeft < 24 ? `${sub.hoursLeft}h left` : `${sub.daysLeft} day${sub.daysLeft !== 1 ? 's' : ''} left`}
+              </span>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-3)' }}>
+              You have full premium access during your 2-day trial. Upgrade now to keep it going!
+            </div>
+          </div>
+        </div>
+        <Link to="/app/profile" className="btn" style={{
+          gap: 8, fontWeight: 700, flexShrink: 0,
+          background: accentColor, color: 'white',
+          boxShadow: `0 0 20px ${accentColor}55`
+        }}>
+          <Zap size={14} /> Upgrade — from ₹249/mo
+        </Link>
+      </div>
+    )
+  }
+
+  return (
+    <div className="card card-p animate-fade-in" style={{
+      background: 'linear-gradient(135deg, rgba(124,58,237,0.18), rgba(0,212,255,0.12))',
+      border: '1px solid rgba(124,58,237,0.3)',
+      boxShadow: '0 8px 32px rgba(124,58,237,0.1)',
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      flexWrap: 'wrap', gap: 16, padding: '20px 24px'
+    }}>
+      <div style={{ flex: 1, minWidth: 280 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+          <Star size={20} color="var(--amber)" style={{ fill: 'var(--amber)', flexShrink: 0 }} />
+          <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'white' }}>
+            {sub.isTrial && sub.isExpired ? '🔒 Your Free Trial has Ended' : 'Unlock All-Access Premium Prep 📎'}
+          </h4>
+        </div>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5 }}>
+          {sub.isTrial && sub.isExpired
+            ? 'Your 2-day free trial is over. Subscribe now to keep all premium features from just ₹249/month.'
+            : 'Starting at just ₹249/mo · Save 20% with our 6-month plan · Unlimited AI doubt solving, mock tests & more.'}
+        </p>
+      </div>
+      <Link to="/app/profile" className="btn btn-primary" style={{ gap: 8, boxShadow: 'var(--glow-purple)', fontWeight: 700 }}>
+        <Zap size={14} /> {sub.isTrial && sub.isExpired ? 'Subscribe Now' : 'Upgrade Now (from ₹249/mo)'}
+      </Link>
+    </div>
+  )
+}
+
+function RecommendedMocks({ mockTests }) {
+  return (
+    <div className="card card-p">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}><ClipboardList size={18} color="var(--cyan)" /> Recommended Mock Tests</h4>
+        <Link to="/app/mock-tests" style={{ fontSize: '0.82rem', color: 'var(--cyan)' }}>View all</Link>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {(mockTests || []).slice(0, 3).map(test => (
+          <Link key={test.id} to={`/app/test/${test.id}`} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', textDecoration: 'none', transition: 'var(--t)' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cyan)'; e.currentTarget.style.background = 'var(--cyan-10)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
+          >
+            <div style={{ width: 44, height: 44, borderRadius: 'var(--r-md)', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <ClipboardList size={20} color="white" />
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-1)', marginBottom: 2 }}>{test.title}</div>
+              <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{test.totalQuestions}Q • {test.duration}min • {test.attempts.toLocaleString()} attempts</div>
+            </div>
+            <span className={`badge ${test.difficulty === 'hard' ? 'badge-red' : test.difficulty === 'medium' ? 'badge-amber' : 'badge-emerald'}`}>{test.difficulty}</span>
+            <ArrowRight size={16} color="var(--text-3)" />
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function Dashboard() {
   const { profile } = useUserStore()
   const { streak, totalPoints, incrementStreak, addPoints } = useAppStore()
@@ -725,6 +831,7 @@ export default function Dashboard() {
   const [dailyQuiz, setDailyQuiz] = useState(null)
   const [quizAnswer, setQuizAnswer] = useState(null)
   const [activeStudyPoint, setActiveStudyPoint] = useState(null)
+  const [activeTab, setActiveTab] = useState('overview') // 'overview' | 'study' | 'analytics'
 
   const examNames = { upsc: 'UPSC', ias: 'IAS', ssc_cgl: 'SSC CGL', ibps_po: 'IBPS PO', rrb_ntpc: 'RRB NTPC', neet_ug: 'NEET', jee_main: 'JEE Mains' }
   const primaryTarget = profile?.primaryTarget || (profile?.exams && profile.exams[0]) || 'ias'
@@ -748,9 +855,9 @@ export default function Dashboard() {
     }
   }
 
-  // Listener for dynamic updates across other components (like PortalAutoSync) and target changes
+  // Listener for dynamic updates
   useEffect(() => {
-    setSyllabusList(getSyllabusProgress(primaryTarget)) // eslint-disable-line react-hooks/set-state-in-effect
+    setSyllabusList(getSyllabusProgress(primaryTarget))
     const handlePortalSync = () => {
       setSyllabusList(getSyllabusProgress(primaryTarget))
     }
@@ -761,12 +868,11 @@ export default function Dashboard() {
   const handleQuizAnswer = (optionIdx) => {
     setQuizAnswer(optionIdx)
     if (optionIdx === dailyQuiz.correct) {
-      toast.success('Correct answer! +10 Points added to your preparation bank. Daily Lakshya streak extended! 🎯')
+      toast.success('Correct answer! +10 Points added. Streak extended! 🎯')
       addPoints(10)
-      // Dynamic syllabus increment!
       updateSyllabusProgress(primaryTarget, dailyQuiz.subject || 'General', 4)
     } else {
-      toast.error('Incorrect. Review the explanation below.')
+      toast.error('Incorrect answer. Review explanation below.')
     }
     incrementStreak()
   }
@@ -775,25 +881,14 @@ export default function Dashboard() {
   const [currentAffairs, setCurrentAffairs] = useState([])
   const [studyPointsDB, setStudyPointsDB] = useState({})
 
-  // Load everything from Supabase based on primaryTarget
   useEffect(() => {
     async function loadData() {
-      // Load mock tests
       const tests = await getSupabaseTestTemplates(primaryTarget)
       setMockTests(tests)
-      
-      // Load total questions
-      const count = await getSupabaseQuestionsCount(primaryTarget)
-      
-      // Load daily quiz
       const quiz = await getSupabaseDailyQuiz(primaryTarget)
       setDailyQuiz(quiz)
-      
-      // Load current affairs
       const affairs = await getSupabaseCurrentAffairs()
       setCurrentAffairs(affairs)
-      
-      // Load study points
       const points = await getSupabaseStudyPoints(primaryTarget)
       setStudyPointsDB(points)
     }
@@ -801,184 +896,90 @@ export default function Dashboard() {
   }, [primaryTarget])
 
   return (
-    <div className="page animate-fade-in">
-      {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-          <div>
-            <h2 style={{ marginBottom: 4 }}>{greeting}, {profile?.name?.split(' ')[0] || 'Aspirant'} 👋</h2>
-            <p style={{ fontSize: '0.9rem', margin: 0 }}>
-              {format(new Date(), 'EEEE, d MMMM yyyy')} • Target: {(profile?.exams || []).map(e => examNames[e] || e).slice(0, 3).join(', ')}{(profile?.exams?.length || 0) > 3 ? ` +${(profile?.exams?.length || 0) - 3} more` : ''}
-            </p>
+    <div className="page animate-fade-in" style={{ paddingBottom: 64 }}>
+      {/* Greeting Header */}
+      <div style={{ marginBottom: 24 }}>
+        <h2 style={{ marginBottom: 4, color: 'white', fontWeight: 800 }}>{greeting}, {profile?.name?.split(' ')[0] || 'Aspirant'} 👋</h2>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-3)', margin: 0 }}>
+          {format(new Date(), 'EEEE, d MMMM yyyy')} • Target: {(profile?.exams || []).map(e => examNames[e] || e).slice(0, 3).join(', ')}{(profile?.exams?.length || 0) > 3 ? ` +${(profile?.exams?.length || 0) - 3} more` : ''}
+        </p>
+      </div>
+
+      {/* Top Navigation Tabs */}
+      <div style={{
+        display: 'flex',
+        background: 'rgba(255,255,255,0.02)',
+        border: '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 16,
+        padding: 4,
+        gap: 6,
+        marginBottom: 24,
+        backdropFilter: 'blur(12px)'
+      }}>
+        {[
+          { id: 'overview', label: 'Overview', icon: '🎯' },
+          { id: 'study', label: 'AI Study Plan', icon: '📖' },
+          { id: 'analytics', label: 'Analytics', icon: '📊' }
+        ].map(t => (
+          <button
+            key={t.id}
+            onClick={() => setActiveTab(t.id)}
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '12px 10px',
+              border: 'none',
+              borderRadius: 12,
+              background: activeTab === t.id ? 'linear-gradient(135deg, #7c3aed, #00d4ff)' : 'transparent',
+              color: activeTab === t.id ? 'white' : 'var(--text-3)',
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              minHeight: 44
+            }}
+          >
+            <span>{t.icon}</span>
+            <span>{t.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Overview Tab Content */}
+      {activeTab === 'overview' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <IndiaPrideMarqueeBanner prideItems={currentAffairs.filter(item => item.isPrideMoment || item.importance === 'high')} />
+          <LakshyaVisionBanner profile={profile} primaryTarget={primaryTarget} />
+          
+          <div className="grid-4">
+            <StatCard icon={<Flame size={20} color="var(--amber)" />} label="Day Streak" value={`${streak || 3} 🔥`} bg="var(--amber-10)" color="var(--amber)" />
+            <StatCard icon={<Trophy size={20} color="var(--purple)" />} label="Total Points" value={(totalPoints || 2840).toLocaleString()} trend={12} bg="var(--purple-10)" />
+            <StatCard icon={<ClipboardList size={20} color="var(--cyan)" />} label="Tests Taken" value="24" trend={8} bg="var(--cyan-10)" />
+            <StatCard icon={<Target size={20} color="var(--emerald)" />} label="Accuracy" value="73.4%" trend={5} bg="var(--emerald-10)" />
           </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <Link to="/app/mock-tests" className="btn btn-primary btn-sm"><Play size={14} /> Start Mock Test</Link>
-          </div>
+
+          <UpgradeBanner profile={profile} />
+          <TargetCourseMaterialsCard primaryTarget={primaryTarget} />
+          <RecommendedMocks mockTests={mockTests} />
         </div>
-      </div>
+      )}
 
-      {/* India Pride & Editorial Banner */}
-      <IndiaPrideMarqueeBanner prideItems={currentAffairs.filter(item => item.isPrideMoment || item.importance === 'high')} />
-
-      {/* Mera Lakshya Vision Banner */}
-      <LakshyaVisionBanner profile={profile} primaryTarget={primaryTarget} />
-
-      {/* Stats */}
-      <div className="grid-4" style={{ marginBottom: 28 }}>
-        <StatCard icon={<Flame size={20} color="var(--amber)" />} label="Day Streak" value={`${streak || 3} 🔥`} bg="var(--amber-10)" color="var(--amber)" />
-        <StatCard icon={<Trophy size={20} color="var(--purple)" />} label="Total Points" value={(totalPoints || 2840).toLocaleString()} trend={12} bg="var(--purple-10)" />
-        <StatCard icon={<ClipboardList size={20} color="var(--cyan)" />} label="Tests Taken" value="24" trend={8} bg="var(--cyan-10)" />
-        <StatCard icon={<Target size={20} color="var(--emerald)" />} label="Accuracy" value="73.4%" trend={5} bg="var(--emerald-10)" />
-      </div>
-
-      {/* Smart Trial / Upgrade Banner */}
-      {(() => {
-        const sub = getSubscriptionStatus(profile?.subscription)
-        if (sub.isPaid) return null // Premium user — no banner needed
-
-        if (sub.isTrial && sub.isActive) {
-          // Trial is running — show countdown with urgency coloring
-          const urgent = sub.hoursLeft < 12
-          const warning = sub.hoursLeft < 24
-          const accentColor = urgent ? 'var(--red)' : warning ? 'var(--amber)' : 'var(--emerald)'
-          const bgColor = urgent
-            ? 'linear-gradient(135deg, rgba(239,68,68,0.14), rgba(239,68,68,0.06))'
-            : warning
-            ? 'linear-gradient(135deg, rgba(245,158,11,0.14), rgba(245,158,11,0.06))'
-            : 'linear-gradient(135deg, rgba(16,185,129,0.14), rgba(0,212,255,0.08))'
-          const borderColor = urgent ? 'rgba(239,68,68,0.35)' : warning ? 'rgba(245,158,11,0.35)' : 'rgba(16,185,129,0.35)'
-
-          return (
-            <div className="card card-p animate-fade-in" style={{
-              marginBottom: 28,
-              background: bgColor,
-              border: `1px solid ${borderColor}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              flexWrap: 'wrap', gap: 16, padding: '18px 24px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 260 }}>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: `rgba(${urgent ? '239,68,68' : warning ? '245,158,11' : '16,185,129'},0.15)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Timer size={20} color={accentColor} />
-                </div>
-                <div>
-                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'white', marginBottom: 2 }}>
-                    {urgent ? '⚠️ Trial expires in ' : '🌟 Free Trial Active — '}
-                    <span style={{ color: accentColor }}>
-                      {sub.hoursLeft < 1 ? 'less than 1 hour' : sub.hoursLeft < 24 ? `${sub.hoursLeft}h left` : `${sub.daysLeft} day${sub.daysLeft !== 1 ? 's' : ''} left`}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-3)' }}>
-                    You have full premium access during your 2-day trial. Upgrade now to keep it going!
-                  </div>
-                </div>
-              </div>
-              <Link to="/app/profile" className="btn" style={{
-                gap: 8, fontWeight: 700, flexShrink: 0,
-                background: accentColor, color: 'white',
-                boxShadow: `0 0 20px ${accentColor}55`
-              }}>
-                <Zap size={14} /> Upgrade — from ₹249/mo
-              </Link>
-            </div>
-          )
-        }
-
-        // Trial expired or free plan — standard upgrade CTA
-        return (
-          <div className="card card-p animate-fade-in" style={{
-            marginBottom: 28,
-            background: 'linear-gradient(135deg, rgba(124,58,237,0.18), rgba(0,212,255,0.12))',
-            border: '1px solid rgba(124,58,237,0.3)',
-            boxShadow: '0 8px 32px rgba(124,58,237,0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            flexWrap: 'wrap', gap: 16, padding: '20px 24px'
-          }}>
-            <div style={{ flex: 1, minWidth: 280 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                <Star size={20} color="var(--amber)" style={{ fill: 'var(--amber)', flexShrink: 0 }} />
-                <h4 style={{ margin: 0, fontSize: '1.1rem', color: 'white' }}>
-                  {sub.isTrial && sub.isExpired ? '🔒 Your Free Trial has Ended' : 'Unlock All-Access Premium Prep 📎'}
-                </h4>
-              </div>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.5 }}>
-                {sub.isTrial && sub.isExpired
-                  ? 'Your 2-day free trial is over. Subscribe now to keep all premium features from just ₹249/month.'
-                  : 'Starting at just ₹249/mo · Save 20% with our 6-month plan · Unlimited AI doubt solving, mock tests & more.'}
-              </p>
-            </div>
-            <Link to="/app/profile" className="btn btn-primary" style={{ gap: 8, boxShadow: 'var(--glow-purple)', fontWeight: 700 }}>
-              <Zap size={14} /> {sub.isTrial && sub.isExpired ? 'Subscribe Now' : 'Upgrade Now (from ₹249/mo)'}
-            </Link>
-          </div>
-        )
-      })()}
-
-      {/* Main grid */}
-      <div className="dashboard-layout-grid">
+      {/* AI Study Plan Tab Content */}
+      {activeTab === 'study' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <AIRecommendation profile={profile} exams={profile?.exams || []} setActiveStudyPoint={setActiveStudyPoint} updateSyllabusProgress={updateSyllabusProgress} studyPointsDB={studyPointsDB} />
-          
-          {/* Target Course & Solved Materials */}
-          <TargetCourseMaterialsCard primaryTarget={primaryTarget} />
-
-          {/* Quick mock test */}
-          <div className="card card-p">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-              <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}><ClipboardList size={18} color="var(--cyan)" /> Recommended Mock Tests</h4>
-              <Link to="/app/mock-tests" style={{ fontSize: '0.82rem', color: 'var(--cyan)' }}>View all</Link>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {mockTests.slice(0, 3).length > 0 ? (
-                mockTests.slice(0, 3).map(test => (
-                  <Link key={test.id} to={`/app/test/${test.id}`} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', textDecoration: 'none', transition: 'var(--t)' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cyan)'; e.currentTarget.style.background = 'var(--cyan-10)' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
-                  >
-                    <div style={{ width: 44, height: 44, borderRadius: 'var(--r-md)', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <ClipboardList size={20} color="white" />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-1)', marginBottom: 2 }}>{test.title}</div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{test.totalQuestions}Q • {test.duration}min • {test.attempts.toLocaleString()} attempts</div>
-                    </div>
-                    <span className={`badge ${test.difficulty === 'hard' ? 'badge-red' : test.difficulty === 'medium' ? 'badge-amber' : 'badge-emerald'}`}>{test.difficulty}</span>
-                    <ArrowRight size={16} color="var(--text-3)" />
-                  </Link>
-                ))
-              ) : (
-                mockTests.slice(0, 3).map(test => (
-                  <Link key={test.id} to={`/app/test/${test.id}`} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--r-md)', border: '1px solid var(--border)', textDecoration: 'none', transition: 'var(--t)' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cyan)'; e.currentTarget.style.background = 'var(--cyan-10)' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)' }}
-                  >
-                    <div style={{ width: 44, height: 44, borderRadius: 'var(--r-md)', background: 'var(--grad)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <ClipboardList size={20} color="white" />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-1)', marginBottom: 2 }}>{test.title}</div>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{test.totalQuestions}Q • {test.duration}min • {test.attempts.toLocaleString()} attempts</div>
-                    </div>
-                    <span className={`badge ${test.difficulty === 'hard' ? 'badge-red' : test.difficulty === 'medium' ? 'badge-amber' : 'badge-emerald'}`}>{test.difficulty}</span>
-                    <ArrowRight size={16} color="var(--text-3)" />
-                  </Link>
-                ))
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Right column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           <PortalAutoSync />
           <StreakCard streak={streak} />
           <QuickCurrentAffairs currentAffairs={currentAffairs} />
 
-          {/* Daily quiz */}
           {dailyQuiz && (
             <div className="card card-p" style={{ border: '1px solid var(--amber-10)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                 <span style={{ fontSize: '1.1rem' }}>⚡</span>
-                <h4 style={{ margin: 0 }}>Daily Quiz</h4>
+                <h4 style={{ margin: 0, color: 'white' }}>Daily Quiz</h4>
                 <span className="badge badge-amber" style={{ marginLeft: 'auto' }}>+10 pts</span>
               </div>
               <p style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-1)', marginBottom: 14, lineHeight: 1.55 }}>{dailyQuiz.text}</p>
@@ -1001,16 +1002,15 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* Upcoming exams */}
           <div className="card card-p">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
               <Calendar size={18} color="var(--purple)" />
-              <h4 style={{ margin: 0 }}>Upcoming Exams</h4>
+              <h4 style={{ margin: 0, color: 'white' }}>Upcoming Exams</h4>
             </div>
             {[{ name: 'RBI Grade B', date: '2026-05-31', days: 5 }, { name: 'JEE Advanced', date: '2026-05-18', days: 20 }, { name: 'TNPSC Group 2', date: '2026-05-24', days: 32 }].map(e => (
               <div key={e.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
                 <div>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 600 }}>{e.name}</div>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'white' }}>{e.name}</div>
                   <div style={{ fontSize: '0.72rem', color: 'var(--text-3)' }}>{e.date}</div>
                 </div>
                 <span style={{ fontSize: '0.78rem', fontWeight: 700, color: e.days < 10 ? 'var(--red)' : e.days < 30 ? 'var(--amber)' : 'var(--emerald)' }}>{e.days}d left</span>
@@ -1018,101 +1018,105 @@ export default function Dashboard() {
             ))}
           </div>
         </div>
-      </div>
-      {/* Anomaly-Free Performance Analytics & Trajectory Tracker */}
-      <div className="grid-2" style={{ marginBottom: 28, gap: 20 }}>
-        {/* Score Trajectory Line Chart */}
-        <div className="card card-p" style={{ minHeight: '340px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <TrendingUp size={18} color="var(--cyan)" /> Performance Trajectory
+      )}
+
+      {/* Analytics Tab Content */}
+      {activeTab === 'analytics' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="grid-2" style={{ gap: 20 }}>
+            {/* Score Trajectory Line Chart */}
+            <div className="card card-p" style={{ minHeight: '340px', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8, color: 'white' }}>
+                  <TrendingUp size={18} color="var(--cyan)" /> Performance Trajectory
+                </h4>
+                <span style={{ fontSize: '0.72rem', background: 'var(--cyan-10)', color: 'var(--cyan)', padding: '3px 8px', borderRadius: 'var(--r-full)', fontWeight: 700 }}>AI Predicted: AIR 840</span>
+              </div>
+              <div style={{ flex: 1, width: '100%', height: '240px' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={[
+                    { name: 'Mock 1', score: 62, avg: 58 },
+                    { name: 'Mock 2', score: 68, avg: 60 },
+                    { name: 'Mock 3', score: 75, avg: 62 },
+                    { name: 'Mock 4', score: 71, avg: 61 },
+                    { name: 'Mock 5', score: 84, avg: 64 }
+                  ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                    <XAxis dataKey="name" stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} />
+                    <YAxis stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} domain={[0, 100]} />
+                    <Tooltip contentStyle={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', color: 'var(--text-1)' }} />
+                    <Legend style={{ fontSize: '0.8rem' }} />
+                    <Line name="My Score" type="monotone" dataKey="score" stroke="var(--cyan)" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                    <Line name="Batch Avg" type="monotone" dataKey="avg" stroke="var(--purple)" strokeWidth={2} strokeDasharray="4 4" dot={{ r: 3 }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Subject Accuracy Rates Bar Chart */}
+            <div className="card card-p" style={{ minHeight: '340px', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8, color: 'white' }}>
+                  <Target size={18} color="var(--purple)" /> Subject Accuracy Rates
+                </h4>
+                <span style={{ fontSize: '0.72rem', background: 'var(--purple-10)', color: 'var(--purple)', padding: '3px 8px', borderRadius: 'var(--r-full)', fontWeight: 700 }}>Polity Dominance</span>
+              </div>
+              <div style={{ flex: 1, width: '100%', height: '240px' }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={[
+                    { subject: 'Polity', accuracy: 82 },
+                    { subject: 'History', accuracy: 65 },
+                    { subject: 'Economy', accuracy: 78 },
+                    { subject: 'Geography', accuracy: 70 },
+                    { subject: 'Science', accuracy: 60 }
+                  ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                    <XAxis dataKey="subject" stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} />
+                    <YAxis stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} domain={[0, 100]} />
+                    <Tooltip contentStyle={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', color: 'var(--text-1)' }} />
+                    <Bar name="Accuracy %" dataKey="accuracy" fill="url(#accuracyGrad)" radius={[4, 4, 0, 0]}>
+                      <defs>
+                        <linearGradient id="accuracyGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="var(--purple)" stopOpacity={0.85} />
+                          <stop offset="100%" stopColor="var(--cyan)" stopOpacity={0.35} />
+                        </linearGradient>
+                      </defs>
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress overview */}
+          <div className="card card-p">
+            <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8, color: 'white' }}>
+              <TrendingUp size={18} color="var(--cyan)" /> Subject-wise Progress (Lakshya Syllabus)
             </h4>
-            <span style={{ fontSize: '0.72rem', background: 'var(--cyan-10)', color: 'var(--cyan)', padding: '3px 8px', borderRadius: 'var(--r-full)', fontWeight: 700 }}>AI Predicted: AIR 840</span>
-          </div>
-          <div style={{ flex: 1, width: '100%', height: '240px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={[
-                { name: 'Mock 1', score: 62, avg: 58 },
-                { name: 'Mock 2', score: 68, avg: 60 },
-                { name: 'Mock 3', score: 75, avg: 62 },
-                { name: 'Mock 4', score: 71, avg: 61 },
-                { name: 'Mock 5', score: 84, avg: 64 }
-              ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="name" stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} />
-                <YAxis stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} domain={[0, 100]} />
-                <Tooltip contentStyle={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', color: 'var(--text-1)' }} />
-                <Legend style={{ fontSize: '0.8rem' }} />
-                <Line name="My Score" type="monotone" dataKey="score" stroke="var(--cyan)" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                <Line name="Batch Avg" type="monotone" dataKey="avg" stroke="var(--purple)" strokeWidth={2} strokeDasharray="4 4" dot={{ r: 3 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Subject Accuracy Rates Bar Chart */}
-        <div className="card card-p" style={{ minHeight: '340px', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Target size={18} color="var(--purple)" /> Subject Accuracy Rates
-            </h4>
-            <span style={{ fontSize: '0.72rem', background: 'var(--purple-10)', color: 'var(--purple)', padding: '3px 8px', borderRadius: 'var(--r-full)', fontWeight: 700 }}>Polity Dominance</span>
-          </div>
-          <div style={{ flex: 1, width: '100%', height: '240px' }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={[
-                { subject: 'Polity', accuracy: 82 },
-                { subject: 'History', accuracy: 65 },
-                { subject: 'Economy', accuracy: 78 },
-                { subject: 'Geography', accuracy: 70 },
-                { subject: 'Science', accuracy: 60 }
-              ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="subject" stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} />
-                <YAxis stroke="var(--text-3)" style={{ fontSize: '0.75rem' }} domain={[0, 100]} />
-                <Tooltip contentStyle={{ background: 'var(--bg-2)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', color: 'var(--text-1)' }} />
-                <Bar name="Accuracy %" dataKey="accuracy" fill="url(#accuracyGrad)" radius={[4, 4, 0, 0]}>
-                  {/* Gradient fill integration */}
-                  <defs>
-                    <linearGradient id="accuracyGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="var(--purple)" stopOpacity={0.85} />
-                      <stop offset="100%" stopColor="var(--cyan)" stopOpacity={0.35} />
-                    </linearGradient>
-                  </defs>
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="grid-3">
+              {(() => {
+                const syllabusBoost = localStorage.getItem('prepbridge_syllabus_boost') === 'true';
+                return (syllabusList || []).map(s => {
+                  const displayPct = Math.min(100, s.pct + (syllabusBoost ? 5 : 0));
+                  return (
+                    <div key={s.name}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: '0.85rem' }}>
+                        <span style={{ fontWeight: 500, color: 'white' }}>{s.name}</span>
+                        <span style={{ fontWeight: 700, color: s.color }}>{displayPct}% {syllabusBoost && <span style={{ fontSize: '0.65rem', color: 'var(--emerald)', display: 'block', textAlign: 'right' }}>✓ Synced</span>}</span>
+                      </div>
+                      <div className="progress-bar">
+                        <div className="progress-fill" style={{ width: `${displayPct}%`, background: s.color }} />
+                      </div>
+                    </div>
+                  )
+                })
+              })()}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Progress overview */}
-      <div className="card card-p" style={{ marginBottom: 28 }}>
-        <h4 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-          <TrendingUp size={18} color="var(--cyan)" /> Subject-wise Progress (Lakshya Syllabus)
-        </h4>
-        <div className="grid-3">
-          {(() => {
-            const syllabusBoost = localStorage.getItem('prepbridge_syllabus_boost') === 'true';
-            return (syllabusList || []).map(s => {
-              const displayPct = Math.min(100, s.pct + (syllabusBoost ? 5 : 0));
-              return (
-                <div key={s.name}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: '0.85rem' }}>
-                    <span style={{ fontWeight: 500 }}>{s.name}</span>
-                    <span style={{ fontWeight: 700, color: s.color }}>{displayPct}% {syllabusBoost && <span style={{ fontSize: '0.65rem', color: 'var(--emerald)', display: 'block', textAlign: 'right' }}>✓ Synced</span>}</span>
-                  </div>
-                  <div className="progress-bar">
-                    <div className="progress-fill" style={{ width: `${displayPct}%`, background: s.color }} />
-                  </div>
-                </div>
-              )
-            })
-          })()}
-        </div>
-      </div>
-
-      {/* Glassmorphic Study Plan Points Modal Drawer */}
+      {/* Glassmorphic Study Plan Points Drawer (Slide-up Bottom Sheet on Mobile) */}
       {activeStudyPoint && (
         <div style={{
           position: 'fixed',
@@ -1130,17 +1134,15 @@ export default function Dashboard() {
           padding: 20,
           animation: 'fadeIn 0.25s ease'
         }} onClick={() => setActiveStudyPoint(null)}>
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(10, 15, 30, 0.98))',
+          <div className="study-drawer" onClick={e => e.stopPropagation()} style={{
+            background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(10, 15, 30, 0.99))',
             border: '1px solid rgba(0, 212, 255, 0.25)',
-            borderRadius: 'var(--r-xl)',
-            maxWidth: 600,
-            width: '100%',
-            padding: '28px 30px',
             boxShadow: '0 20px 50px rgba(0, 212, 255, 0.15)',
             position: 'relative',
-            animation: 'scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)'
-          }} onClick={e => e.stopPropagation()}>
+          }}>
+            {/* Mobile Drag/Handle indicator */}
+            <div style={{ display: 'none', width: 36, height: 4, background: 'rgba(255,255,255,0.15)', borderRadius: 2, margin: '0 auto 16px' }} className="drawer-handle" />
+
             {/* Close Button */}
             <button onClick={() => setActiveStudyPoint(null)} style={{
               position: 'absolute',
@@ -1156,7 +1158,8 @@ export default function Dashboard() {
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              transition: 'var(--t)'
+              transition: 'var(--t)',
+              minHeight: 32
             }}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.color = 'white' }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.color = 'var(--text-3)' }}
@@ -1233,6 +1236,37 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* Styled Sheets Injection */}
+      <style>{`
+        .study-drawer {
+          border-radius: var(--r-xl);
+          max-width: 600px;
+          width: 100%;
+          padding: 28px 30px;
+          animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes slideUpSheet {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }
+        @media (max-width: 600px) {
+          .study-drawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 100%;
+            border-radius: 24px 24px 0 0;
+            padding: 20px 20px 40px;
+            animation: slideUpSheet 0.35s cubic-bezier(0.32, 0.94, 0.6, 1) forwards;
+            border-bottom: none !important;
+          }
+          .drawer-handle {
+            display: block !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

@@ -14,10 +14,10 @@ import {
 } from 'lucide-react'
 
 const BOTTOM_TABS = [
-  { path: '/app/home', icon: Home, label: 'Home' },
-  { path: '/app/papers', icon: FileText, label: 'Papers' },
-  { path: '/app/timetable', icon: Calendar, label: 'Timetable' },
-  { path: '/app/news', icon: Newspaper, label: 'News' },
+  { path: '/app/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+  { path: '/app/mock-tests', icon: ClipboardList, label: 'Mock Mocks' },
+  { path: '/app/ai-tutor', icon: BrainCircuit, label: 'AI Tutor' },
+  { path: '/app/news', icon: Newspaper, label: 'News Feed' },
   { path: '/app/profile', icon: User, label: 'Profile' },
 ]
 
@@ -314,7 +314,6 @@ export default function AppLayout({ isAdmin = false }) {
           backdropFilter: 'blur(20px)',
           borderTop: '1px solid var(--border)',
           zIndex: 200,
-          display: 'none',
           alignItems: 'stretch',
           justifyContent: 'space-around',
         }}>
@@ -342,6 +341,32 @@ export default function AppLayout({ isAdmin = false }) {
           ))}
         </nav>
       )}
+
+      {/* Responsive Styles Injection */}
+      <style>{`
+        .mobile-bottom-nav {
+          display: none;
+        }
+        @media (max-width: 768px) {
+          .sidebar {
+            display: none !important;
+          }
+          .mobile-bottom-nav {
+            display: flex !important;
+          }
+          .topbar {
+            left: 0 !important;
+            width: 100% !important;
+          }
+          #hamburger {
+            display: none !important;
+          }
+          .main-content {
+            margin-left: 0 !important;
+            padding-bottom: 80px !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }

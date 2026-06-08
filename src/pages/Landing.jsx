@@ -276,10 +276,10 @@ function ExamCategoriesShowcase() {
           Exam Catalog
         </div>
         <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: 12 }}>
-          Supported Tracks &amp; <span style={{ background: 'linear-gradient(90deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Categories</span>
+          {t('landing.catalog.title', 'Supported Tracks & Categories')}
         </h2>
         <p style={{ color: 'var(--text-3)', maxWidth: 580, margin: '0 auto 32px', fontSize: '0.92rem' }}>
-          Explore the exact competitive exams we cover. Instantly launch AI-generated mocks mapped to the latest trends.
+          {t('landing.catalog.desc', 'Explore the exact competitive exams we cover. Instantly launch AI-generated mocks mapped to the latest trends.')}
         </p>
 
         {/* Track switch buttons */}
@@ -292,7 +292,7 @@ function ExamCategoriesShowcase() {
               minHeight: 44
             }}
           >
-            💼 Government Job Exams
+            💼 {t('landing.catalog.govt', 'Government Job Exams')}
           </button>
           <button
             onClick={() => { setActiveTrack('entrance'); setExpandedCat(entranceCats[0]?.id || '') }}
@@ -302,7 +302,7 @@ function ExamCategoriesShowcase() {
               minHeight: 44
             }}
           >
-            🎓 College Entrance &amp; Boards
+            🎓 {t('landing.catalog.entrance', 'College Entrance & Boards')}
           </button>
         </div>
       </RevealDiv>
@@ -512,10 +512,10 @@ function InteractiveMockDemo() {
             ⚡ Interactive Demo
           </div>
           <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.4rem)', fontWeight: 900, marginBottom: 10 }}>
-            Try a <span style={{ background: 'linear-gradient(90deg,#00d4ff,#10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Live Mock Test</span>
+            {t('landing.demo.title', 'Try a Live Mock Test')}
           </h2>
           <p style={{ color: 'var(--text-3)', fontSize: '0.92rem' }}>
-            No signup required. Test our interactive interface and read real-time K² AI explanations.
+            {t('landing.demo.desc', 'No signup required. Test our interactive interface and read real-time K² AI explanations.')}
           </p>
         </RevealDiv>
 
@@ -616,7 +616,7 @@ function InteractiveMockDemo() {
                         minHeight: 44
                       }}
                     >
-                      Check Answer
+                      {t('landing.demo.check', 'Check Answer')}
                     </button>
                   ) : (
                     <button
@@ -634,7 +634,7 @@ function InteractiveMockDemo() {
                         minHeight: 44
                       }}
                     >
-                      {currentIdx === questions.length - 1 ? 'Finish Test' : 'Next Question →'}
+                      {currentIdx === questions.length - 1 ? t('landing.demo.finish', 'Finish Test') : t('landing.demo.next', 'Next Question →')}
                     </button>
                   )}
                 </div>
@@ -662,9 +662,9 @@ function InteractiveMockDemo() {
             ) : (
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
                 <div style={{ fontSize: '3rem', marginBottom: 16 }}>🏆</div>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'white', marginBottom: 8 }}>Mini Mock Test Completed!</h3>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'white', marginBottom: 8 }}>{t('landing.demo.completed', 'Mini Mock Test Completed!')}</h3>
                 <p style={{ color: 'var(--text-3)', fontSize: '0.95rem', marginBottom: 24 }}>
-                  You scored <strong style={{ color: '#10b981' }}>{scores} out of {questions.length}</strong> correct options.
+                  {t('landing.demo.scored', { score: scores, total: questions.length, defaultValue: 'You scored {{score}} out of {{total}} correct options.' })}
                 </p>
 
                 <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -682,7 +682,7 @@ function InteractiveMockDemo() {
                       minHeight: 44
                     }}
                   >
-                    🔄 Retake Demo Mocks
+                    🔄 {t('landing.demo.retake', 'Retake Demo Mocks')}
                   </button>
                   <Link
                     to="/auth?signup=1"
@@ -701,7 +701,7 @@ function InteractiveMockDemo() {
                       minHeight: 44
                     }}
                   >
-                    ⚡ Access 5 Lakh+ Mocks &amp; AI Tutor Now
+                    ⚡ {t('landing.demo.access', 'Access 5 Lakh+ Mocks & AI Tutor Now')}
                   </Link>
                 </div>
               </div>
@@ -777,7 +777,7 @@ function AddonSpotlight() {
               📊 AI Syllabus Telemetry
             </div>
             <h3 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', fontWeight: 900, marginBottom: 14, color: 'white', lineHeight: 1.2 }}>
-              K² PeakPredict Addon
+              {t('landing.addons.peak.title', 'K² PeakPredict Addon')}
             </h3>
             <p style={{ fontSize: '0.92rem', color: 'var(--text-3)', lineHeight: 1.7, marginBottom: 20 }}>
               Examine historical exam trends, isolate recurring subject topics, and practice with high-probability questions.
@@ -821,7 +821,7 @@ function AddonSpotlight() {
               🔒 Secured online environment
             </div>
             <h3 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', fontWeight: 900, marginBottom: 14, color: 'white', lineHeight: 1.2 }}>
-              Strictly Online PYQs
+              {t('landing.addons.pyq.title', 'Strictly Online PYQs')}
             </h3>
             <p style={{ fontSize: '0.92rem', color: 'var(--text-3)', lineHeight: 1.7, marginBottom: 20 }}>
               To ensure mock exam conditions and safeguard premium study material, past papers must be completed directly inside our platform.
@@ -1011,11 +1011,11 @@ export default function Landing() {
             )}
           </div>
 
-          <Link to="/auth" style={{ color: 'var(--text-2)', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', padding: '7px 14px', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', transition: 'all 0.2s', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', minHeight: 36 }}
+          <Link to="/auth" className="nav-login-btn" style={{ color: 'var(--text-2)', fontSize: '0.85rem', fontWeight: 600, textDecoration: 'none', padding: '7px 14px', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', transition: 'all 0.2s', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', minHeight: 36 }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--cyan)'; e.currentTarget.style.color = 'var(--cyan)' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-2)' }}>Login</Link>
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-2)' }}>{t('nav.login', 'Login')}</Link>
           <Link to="/auth?signup=1" style={{ background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', color: 'white', fontWeight: 700, fontSize: '0.85rem', textDecoration: 'none', padding: '8px 16px', borderRadius: 'var(--r-full)', boxShadow: '0 0 16px rgba(124,58,237,0.4)', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 4, minHeight: 36 }}>
-            Start Free →
+            {t('nav.start_free', 'Start Free')} →
           </Link>
         </div>
       </nav>
@@ -1108,15 +1108,15 @@ export default function Landing() {
         <div style={{ position: 'relative', zIndex: 1 }}>
           <RevealDiv>
             <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 700, color: '#10b981', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Simple Pricing</div>
-            <h2 style={{ marginBottom: 8, fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900 }}>One plan. <span style={{ background: 'linear-gradient(90deg,#7c3aed,#00d4ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>All exams. Try free.</span></h2>
-            <p style={{ marginBottom: 48, color: 'var(--text-3)', fontSize: '0.92rem' }}>2-day free trial for all new students. No credit card required. Cancel anytime.</p>
+            <h2 style={{ marginBottom: 8, fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900 }}>{t('landing.pricing.title', 'One plan. All exams. Try free.')}</h2>
+            <p style={{ marginBottom: 48, color: 'var(--text-3)', fontSize: '0.92rem' }}>{t('landing.pricing.desc', '2-day free trial for all new students. No credit card required. Cancel anytime.')}</p>
           </RevealDiv>
 
           <RevealDiv delay={0.1} direction="scale">
             <div style={{ display: 'inline-block', padding: 2, borderRadius: 30, background: 'linear-gradient(135deg,#7c3aed,#00d4ff,#10b981,#f59e0b)', backgroundSize: '300% 300%', animation: 'borderSpin 4s linear infinite', boxShadow: '0 0 80px rgba(124,58,237,0.3)' }}>
               <div style={{ maxWidth: 500, background: '#0d0a1a', borderRadius: 28, padding: '36px clamp(16px,6vw,40px)', textAlign: 'center' }}>
                 <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 'var(--r-full)', padding: '5px 16px', fontSize: '0.78rem', fontWeight: 800, color: '#10b981', marginBottom: 20 }}>
-                  ✨ Free During Beta Active
+                  ✨ {t('landing.pricing.beta', 'Free During Beta Active')}
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: 10, marginBottom: 24 }}>
@@ -1154,7 +1154,7 @@ export default function Landing() {
                 </div>
 
                 <Link to="/auth?signup=1" style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', padding: '16px 28px', background: 'linear-gradient(135deg,#7c3aed,#00d4ff)', borderRadius: 'var(--r-full)', fontWeight: 800, fontSize: '1rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 30px rgba(124,58,237,0.5)', width: '100%', boxSizing: 'border-box', minHeight: 48 }}>
-                  Start Free Beta Trial <ArrowRight size={18} style={{ marginLeft: 8 }} />
+                  {t('landing.pricing.start_trial', 'Start Free Beta Trial')} <ArrowRight size={18} style={{ marginLeft: 8 }} />
                 </Link>
                 <div style={{ marginTop: 14, fontSize: '0.78rem', color: 'var(--text-4)' }}>No credit card required. Start solving instantly.</div>
               </div>
@@ -1197,6 +1197,9 @@ export default function Landing() {
         @keyframes blobPulse       { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-50%) scale(1.1)} }
         @keyframes borderSpin      { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
         @keyframes slideIn         { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        @media (max-width: 500px) {
+          .nav-login-btn { display: none !important; }
+        }
       `}</style>
     </div>
   )
