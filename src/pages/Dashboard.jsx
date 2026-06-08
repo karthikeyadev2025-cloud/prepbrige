@@ -20,14 +20,15 @@ import { getSubscriptionStatus } from '../services/paymentService'
 import { ResponsiveContainer, LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
 
 function StatCard({ icon, label, value, trend, color, bg }) {
+  const isGreen = label.includes('Accuracy') || label.includes('Streak') || color?.includes('emerald') || color?.includes('green');
   return (
-    <div className="card card-p stat-card">
-      <div className="stat-card-header">
-        <div className="stat-icon" style={{ background: bg || 'var(--cyan-10)' }}>{icon}</div>
-        {trend && <span className={`stat-trend ${trend > 0 ? 'trend-up' : 'trend-down'}`}>{trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%</span>}
+    <div className={`prepinsta-card ${isGreen ? '' : 'prepinsta-card-purple'}`} style={{ padding: 20, background: 'rgba(15, 17, 26, 0.7)', border: '1px solid rgba(255, 255, 255, 0.04)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+        <div className="stat-icon" style={{ width: 44, height: 44, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', background: bg || 'rgba(0, 230, 118, 0.08)' }}>{icon}</div>
+        {trend && <span className={`stat-trend ${trend > 0 ? 'trend-up' : 'trend-down'}`} style={{ fontSize: '0.78rem', fontWeight: 700, color: trend > 0 ? '#00e676' : '#ef4444' }}>{trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%</span>}
       </div>
-      <div className="stat-value" style={{ color: color || 'var(--text-1)' }}>{value}</div>
-      <div className="stat-label">{label}</div>
+      <div className="stat-value" style={{ fontSize: '1.6rem', fontWeight: 900, color: 'white', lineHeight: 1.1 }}>{value}</div>
+      <div className="stat-label" style={{ fontSize: '0.78rem', color: 'var(--text-3)', fontWeight: 600, marginTop: 4 }}>{label}</div>
     </div>
   )
 }
@@ -233,11 +234,11 @@ function AIRecommendation({ profile, exams, setActiveStudyPoint, updateSyllabusP
   const typeIcon = { study: '📖', quiz: '⚡', mock: '📝', revise: '🔄' }
 
   return (
-    <div className="card card-p" style={{ border: '1px solid var(--purple-20)' }}>
+    <div className="prepinsta-card prepinsta-card-purple" style={{ padding: 24, background: 'rgba(15, 17, 26, 0.7)', border: '1px solid rgba(124, 77, 255, 0.2)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <BrainCircuit size={20} color="var(--purple)" />
-        <h4 style={{ margin: 0 }}>AI Daily Study Plan</h4>
-        <span className="badge badge-purple" style={{ marginLeft: 'auto' }}>Personalized</span>
+        <BrainCircuit size={20} color="var(--prime-purple)" />
+        <h4 style={{ margin: 0, color: 'white' }}>AI Daily Study Plan</h4>
+        <span className="prime-badge prime-badge-purple" style={{ marginLeft: 'auto' }}>Personalized</span>
       </div>
       <p style={{ fontSize: '0.82rem', marginBottom: 16, color: 'var(--text-3)' }}>
         Based on your performance + {(exams || []).length} target exam(s) — here's what to focus on today:

@@ -244,45 +244,45 @@ function TiltCard({ children, style = {} }) {
 function ExamCategoriesShowcase() {
   const { t } = useTranslation()
   const [activeTrack, setActiveTrack] = useState('govt') // 'govt' | 'entrance'
-  const [expandedCat, setExpandedCat] = useState('upsc')
 
   const govtCats = EXAM_CATEGORIES.filter(cat => cat.type === 'govt' || !cat.type)
   const entranceCats = EXAM_CATEGORIES.filter(cat => cat.type === 'entrance')
   const activeCats = activeTrack === 'govt' ? govtCats : entranceCats
 
   return (
-    <section id="categories" style={{ padding: 'clamp(50px,8vw,100px) clamp(16px,4vw,24px)', maxWidth: 1100, margin: '0 auto', position: 'relative' }}>
-      <div className="radial-glow-indigo" style={{ top: '10%', right: '-10%', opacity: 0.5 }} />
+    <section id="categories" style={{ padding: 'clamp(50px,8vw,100px) clamp(16px,4vw,24px)', maxWidth: 1200, margin: '0 auto', position: 'relative' }}>
+      <div className="radial-glow-prime-green" style={{ top: '10%', right: '-10%', opacity: 0.6 }} />
+      <div className="radial-glow-prime-purple" style={{ bottom: '5%', left: '-5%', opacity: 0.5 }} />
 
-      <RevealDiv style={{ textAlign: 'center', marginBottom: 44 }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--purple)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          Exam Catalog
+      <RevealDiv style={{ textAlign: 'center', marginBottom: 48 }}>
+        <div className="prime-badge" style={{ marginBottom: 16 }}>
+          ⚡ EXAM HUB PLATFORM
         </div>
-        <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: 12, color: 'white' }}>
-          {t('landing.catalog.title', 'Supported Tracks & Categories')}
+        <h2 style={{ fontSize: 'clamp(2rem, 5vw, 2.8rem)', fontWeight: 900, marginBottom: 14, color: 'white', letterSpacing: '-0.02em' }}>
+          Explore <span style={{ background: 'linear-gradient(90deg,#00e676,#7c4dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>PrepInsta Prime</span> Style Catalog
         </h2>
-        <p style={{ color: 'var(--text-2)', maxWidth: 580, margin: '0 auto 32px', fontSize: '0.92rem', lineHeight: 1.6 }}>
-          {t('landing.catalog.desc', 'Explore the exact competitive exams we cover. Instantly launch AI-generated mocks mapped to the latest trends.')}
+        <p style={{ color: 'var(--text-2)', maxWidth: 620, margin: '0 auto 36px', fontSize: '0.95rem', lineHeight: 1.7 }}>
+          Choose your competitive exam path. Instantly practice national mock exams, review official answer keys, and clear your concepts with 24/7 K² AI Tutor guidance.
         </p>
 
-        {/* Track switch buttons */}
-        <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 999, padding: 5, gap: 4 }}>
+        {/* Track Switcher */}
+        <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 999, padding: 6, gap: 4, boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.5)' }}>
           <button
-            onClick={() => { setActiveTrack('govt'); setExpandedCat(govtCats[0]?.id || '') }}
+            onClick={() => setActiveTrack('govt')}
             style={{
-              padding: '10px 24px', borderRadius: 999, border: 'none', background: activeTrack === 'govt' ? 'linear-gradient(135deg,#10b981,#6366f1)' : 'transparent',
-              color: activeTrack === 'govt' ? 'white' : 'var(--text-3)', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.25s',
-              minHeight: 44
+              padding: '12px 28px', borderRadius: 999, border: 'none', background: activeTrack === 'govt' ? 'var(--prime-grad-green)' : 'transparent',
+              color: activeTrack === 'govt' ? '#030408' : 'var(--text-3)', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', transition: 'all 0.25s',
+              minHeight: 46
             }}
           >
             💼 {t('landing.catalog.govt', 'Government Job Exams')}
           </button>
           <button
-            onClick={() => { setActiveTrack('entrance'); setExpandedCat(entranceCats[0]?.id || '') }}
+            onClick={() => setActiveTrack('entrance')}
             style={{
-              padding: '10px 24px', borderRadius: 999, border: 'none', background: activeTrack === 'entrance' ? 'linear-gradient(135deg,#10b981,#6366f1)' : 'transparent',
-              color: activeTrack === 'entrance' ? 'white' : 'var(--text-3)', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer', transition: 'all 0.25s',
-              minHeight: 44
+              padding: '12px 28px', borderRadius: 999, border: 'none', background: activeTrack === 'entrance' ? 'var(--prime-grad-purple)' : 'transparent',
+              color: activeTrack === 'entrance' ? 'white' : 'var(--text-3)', fontWeight: 800, fontSize: '0.88rem', cursor: 'pointer', transition: 'all 0.25s',
+              minHeight: 46
             }}
           >
             🎓 {t('landing.catalog.entrance', 'College Entrance & Boards')}
@@ -291,132 +291,102 @@ function ExamCategoriesShowcase() {
       </RevealDiv>
 
       {/* Grid structure */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, alignItems: 'start', position: 'relative', zIndex: 1 }}>
-        {/* Category Selector Cards */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {activeCats.map((cat) => {
-            const isSelected = expandedCat === cat.id
-            return (
-              <button
-                key={cat.id}
-                onClick={() => setExpandedCat(cat.id)}
-                className="bento-btn-interactive"
-                style={{
-                  textAlign: 'left',
-                  padding: '18px 20px',
-                  background: isSelected ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.008)',
-                  border: isSelected ? `1.5px solid ${cat.color || '#10b981'}` : '1px solid rgba(255,255,255,0.04)',
-                  borderRadius: 18,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  transition: 'all 0.2s ease',
-                  minHeight: 64
+      <div className="grid-3" style={{ gap: 24, position: 'relative', zIndex: 1 }}>
+        {activeCats.map((cat) => {
+          const catColor = cat.color || '#00e676';
+          return (
+            <RevealDiv key={cat.id} direction="scale">
+              <div 
+                className={`prepinsta-card ${activeTrack === 'entrance' ? 'prepinsta-card-purple' : ''}`}
+                style={{ 
+                  height: '100%', 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  borderTop: `3px solid ${catColor}`,
+                  boxShadow: `0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03)`
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <span style={{ fontSize: '1.4rem' }}>{cat.icon}</span>
-                  <div>
-                    <span style={{ display: 'block', color: 'white', fontWeight: 800, fontSize: '0.92rem' }}>{cat.label}</span>
-                    <span style={{ display: 'block', color: 'var(--text-3)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.04em', marginTop: 2, fontWeight: 600 }}>
-                      {cat.exams.length} active exams · {cat.id === 'state_psc' || cat.id === 'police' ? 'State Specific' : 'National'}
+                <div style={{ padding: '24px 24px 18px', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                    <span style={{ fontSize: '2rem' }}>{cat.icon}</span>
+                    <span 
+                      style={{ 
+                        fontSize: '0.68rem', 
+                        fontWeight: 800, 
+                        color: catColor, 
+                        background: `${catColor}0f`, 
+                        border: `1px solid ${catColor}33`, 
+                        borderRadius: 30, 
+                        padding: '3px 10px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.04em'
+                      }}
+                    >
+                      {cat.exams.length} Tracks
                     </span>
                   </div>
-                </div>
-                <ChevronDown size={18} style={{ transform: isSelected ? 'rotate(-90deg)' : 'none', color: isSelected ? cat.color : 'var(--text-4)', transition: 'transform 0.2s' }} />
-              </button>
-            )
-          })}
-        </div>
-
-        {/* Selected Category Expanded Info panel */}
-        <div style={{
-          background: 'rgba(10,11,18,0.7)',
-          border: '1px solid rgba(255,255,255,0.05)',
-          borderRadius: 24,
-          padding: '28px',
-          backdropFilter: 'blur(20px)',
-          minHeight: 380,
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
-        }}>
-          {(() => {
-            const cat = EXAM_CATEGORIES.find(c => c.id === expandedCat)
-            if (!cat) return <div style={{ color: 'var(--text-3)', margin: 'auto' }}>Select an exam category to explore</div>
-
-            return (
-              <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                  <span style={{ fontSize: '2rem' }}>{cat.icon}</span>
-                  <div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: 'white', margin: 0 }}>{cat.label}</h3>
-                    <div style={{ display: 'inline-block', background: `${cat.color}14`, border: `1px solid ${cat.color}33`, borderRadius: 6, padding: '3px 8px', fontSize: '0.68rem', fontWeight: 800, color: cat.color, marginTop: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                      {cat.id.toUpperCase()} syllabus active
-                    </div>
-                  </div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 900, color: 'white', marginBottom: 6 }}>{cat.label}</h3>
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-3)', lineHeight: 1.4 }}>
+                    Complete syllabus preparation including previous years question analysis.
+                  </p>
                 </div>
 
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--text-3)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Supported Exams &amp; Details</span>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 220, overflowY: 'auto', paddingRight: 6 }}>
-                    {cat.exams.map((exam) => (
-                      <div
-                        key={exam.id}
-                        style={{
-                          background: 'rgba(255,255,255,0.015)',
-                          border: '1px solid rgba(255,255,255,0.03)',
-                          borderRadius: 12,
-                          padding: '10px 14px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          gap: 12
-                        }}
-                      >
-                        <div>
-                          <span style={{ display: 'block', color: 'white', fontWeight: 700, fontSize: '0.85rem' }}>{exam.name}</span>
-                          <span style={{ display: 'block', color: 'var(--text-3)', fontSize: '0.72rem', marginTop: 1 }}>{exam.fullName}</span>
-                        </div>
-
-                        <div style={{ textAlign: 'right' }}>
-                          <span style={{ display: 'block', color: '#10b981', fontWeight: 800, fontSize: '0.78rem' }}>{exam.vacancies?.toLocaleString() || 'N/A'} Seats</span>
-                          <span style={{ display: 'block', color: 'var(--text-4)', fontSize: '0.64rem', marginTop: 1, fontWeight: 600 }}>Next: {exam.nextDate}</span>
-                        </div>
+                <div style={{ padding: 20, flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {cat.exams.slice(0, 4).map((exam) => (
+                    <div 
+                      key={exam.id}
+                      style={{
+                        background: 'rgba(255,255,255,0.01)',
+                        border: '1px solid rgba(255,255,255,0.03)',
+                        borderRadius: 12,
+                        padding: '10px 14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 12,
+                        transition: 'var(--t)'
+                      }}
+                      className="bento-btn-interactive"
+                    >
+                      <div style={{ minWidth: 0 }}>
+                        <span style={{ display: 'block', color: 'white', fontWeight: 700, fontSize: '0.82rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{exam.name}</span>
+                        <span style={{ display: 'block', color: 'var(--text-3)', fontSize: '0.68rem', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{exam.fullName}</span>
                       </div>
-                    ))}
-                  </div>
-                </div>
+                      <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                        {exam.vacancies ? (
+                          <span style={{ display: 'block', color: '#00e676', fontWeight: 800, fontSize: '0.76rem' }}>{exam.vacancies.toLocaleString()} seats</span>
+                        ) : (
+                          <span style={{ display: 'block', color: 'var(--text-3)', fontSize: '0.76rem', fontWeight: 700 }}>Active Track</span>
+                        )}
+                        <span style={{ display: 'block', color: 'var(--text-4)', fontSize: '0.6rem', marginTop: 1 }}>Date: {new Date(exam.nextDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</span>
+                      </div>
+                    </div>
+                  ))}
 
-                <Link
-                  to="/auth?signup=1"
-                  style={{
-                    background: 'linear-gradient(135deg,#10b981,#6366f1)',
-                    color: 'white',
-                    fontWeight: 800,
-                    fontSize: '0.88rem',
-                    textDecoration: 'none',
-                    padding: '14px 20px',
-                    borderRadius: 16,
-                    textAlign: 'center',
-                    boxShadow: '0 4px 20px rgba(16,185,129,0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)' }}
-                  onMouseLeave={e => { e.currentTarget.style.transform = 'none' }}
-                >
-                  Start {cat.label} Practice Mocks <ArrowRight size={16} />
-                </Link>
-              </>
-            )
-          })()}
-        </div>
+                  {cat.exams.length > 4 && (
+                    <div style={{ textAlign: 'center', fontSize: '0.75rem', color: 'var(--text-3)', fontWeight: 600, padding: '4px 0' }}>
+                      + {cat.exams.length - 4} more exams available in this track
+                    </div>
+                  )}
+
+                  <Link
+                    to="/auth?signup=1"
+                    className={`btn btn-sm ${activeTrack === 'govt' ? 'btn-prime-green' : 'btn-prime-purple'}`}
+                    style={{
+                      width: '100%',
+                      marginTop: 'auto',
+                      justifyContent: 'center',
+                      fontSize: '0.8rem',
+                      gap: 6
+                    }}
+                  >
+                    Start Practice <ArrowRight size={13} />
+                  </Link>
+                </div>
+              </div>
+            </RevealDiv>
+          )
+        })}
       </div>
     </section>
   )

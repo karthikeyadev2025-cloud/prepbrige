@@ -83,37 +83,62 @@ export default function ExamHub() {
             <h3 style={{ margin: 0, color: cat.color }}>{cat.label}</h3>
             <span style={{ fontSize: '0.78rem', background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', padding: '2px 10px', color: 'var(--text-3)' }}>{cat.exams.length} exams</span>
           </div>
-          <div className="grid-3" style={{ gap: 14 }}>
+          <div className="grid-3" style={{ gap: 20 }}>
             {cat.exams.map(exam => (
-              <div key={exam.id} className="card card-hover" style={{ padding: '18px 20px', position: 'relative', overflow: 'hidden', borderLeft: `3px solid ${cat.color}` }}>
-                <div style={{ position: 'absolute', top: 0, right: 0, width: 80, height: 80, background: cat.color, opacity: 0.06, borderRadius: '0 0 0 80px' }} />
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+              <div 
+                key={exam.id} 
+                className="prepinsta-card" 
+                style={{ 
+                  padding: '24px', 
+                  position: 'relative', 
+                  overflow: 'hidden', 
+                  background: 'rgba(15, 17, 26, 0.7)',
+                  border: '1px solid rgba(255, 255, 255, 0.04)',
+                  borderLeft: `3px solid ${cat.color || '#00e676'}`,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 12
+                }}
+              >
+                <div style={{ position: 'absolute', top: 0, right: 0, width: 80, height: 80, background: cat.color || '#00e676', opacity: 0.04, borderRadius: '0 0 0 80px' }} />
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 2 }}>{exam.name}</div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{exam.fullName}</div>
+                    <div style={{ fontWeight: 900, fontSize: '1.05rem', marginBottom: 4, color: 'white' }}>{exam.name}</div>
+                    <div style={{ fontSize: '0.76rem', color: 'var(--text-3)', fontWeight: 500 }}>{exam.fullName}</div>
                   </div>
-                  <span style={{ fontSize: '0.68rem', padding: '3px 8px', borderRadius: 'var(--r-full)', background: exam.level === 'central' ? 'rgba(124,58,237,0.15)' : 'rgba(8,145,178,0.15)', color: exam.level === 'central' ? 'var(--purple)' : 'var(--cyan)', fontWeight: 700 }}>
+                  <span className={`prime-badge ${exam.level === 'central' ? '' : 'prime-badge-purple'}`} style={{ fontSize: '0.65rem', padding: '3px 8px', textTransform: 'uppercase', flexShrink: 0 }}>
                     {exam.level === 'central' ? 'Central' : exam.state || 'State'}
                   </span>
                 </div>
-                <div style={{ display: 'flex', gap: 12, marginBottom: 14 }}>
+
+                <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginTop: 2 }}>
                   {exam.vacancies && (
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>
-                      <span style={{ fontWeight: 700, color: 'var(--emerald)', fontSize: '0.88rem' }}>{exam.vacancies.toLocaleString()}</span> vacancies
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', fontWeight: 500 }}>
+                      🔥 <span style={{ fontWeight: 900, color: '#00e676' }}>{exam.vacancies.toLocaleString()}</span> vacancies
                     </div>
                   )}
                   {exam.nextDate && (
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>
-                      📅 {new Date(exam.nextDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-3)', fontWeight: 500 }}>
+                      📅 <span style={{ fontWeight: 700, color: 'white' }}>{new Date(exam.nextDate).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}</span>
                     </div>
                   )}
                 </div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <Link to={`/app/mock-tests`} className="btn btn-primary btn-sm" style={{ flex: 1, justifyContent: 'center', fontSize: '0.78rem' }}>
+
+                <div style={{ display: 'flex', gap: 8, marginTop: 'auto', paddingTop: 8 }}>
+                  <Link 
+                    to={`/app/mock-tests`} 
+                    className="btn btn-prime-green btn-sm" 
+                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.78rem', borderRadius: 10, minHeight: 38 }}
+                  >
                     Mock Test
                   </Link>
-                  <Link to={`/app/question-papers`} className="btn btn-outline btn-sm" style={{ flex: 1, justifyContent: 'center', fontSize: '0.78rem' }}>
-                    PYQs
+                  <Link 
+                    to={`/app/question-papers`} 
+                    className="btn btn-outline btn-sm" 
+                    style={{ flex: 1, justifyContent: 'center', fontSize: '0.78rem', borderRadius: 10, minHeight: 38, border: '1px solid rgba(255,255,255,0.06)' }}
+                  >
+                    PYQ Mocks
                   </Link>
                 </div>
               </div>

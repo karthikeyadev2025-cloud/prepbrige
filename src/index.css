@@ -629,3 +629,171 @@ p { color: var(--text-2); line-height: 1.7; }
   .story-layout { flex-direction: column !important; }
   .story-image { width: 100% !important; max-height: 260px; }
 }
+
+/* =====================================================
+   PrepInsta v3.0 — Modern Prime Overhaul Styles
+   ===================================================== */
+:root {
+  --prime-green: #00e676;
+  --prime-green-15: rgba(0, 230, 118, 0.15);
+  --prime-green-30: rgba(0, 230, 118, 0.3);
+  --prime-purple: #7c4dff;
+  --prime-purple-15: rgba(124, 77, 255, 0.15);
+  --prime-purple-30: rgba(124, 77, 255, 0.3);
+  --prime-dark: #0a0b10;
+  --prime-card-bg: rgba(13, 14, 22, 0.7);
+  --prime-border: rgba(255, 255, 255, 0.05);
+  
+  --prime-grad-green: linear-gradient(135deg, #00e676, #00b0ff);
+  --prime-grad-purple: linear-gradient(135deg, #7c4dff, #ec4899);
+  --prime-grad-dark: linear-gradient(180deg, #0a0b10 0%, #050508 100%);
+}
+
+/* PrepInsta-style Glassmorphic Bento Cards */
+.prepinsta-card {
+  background: var(--prime-card-bg);
+  border: 1px solid var(--prime-border);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.prepinsta-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0, 230, 118, 0.3);
+  box-shadow: 0 12px 30px rgba(0, 230, 118, 0.08), 0 0 1px rgba(0, 230, 118, 0.2);
+}
+
+.prepinsta-card-purple:hover {
+  border-color: rgba(124, 77, 255, 0.3);
+  box-shadow: 0 12px 30px rgba(124, 77, 255, 0.08), 0 0 1px rgba(124, 77, 255, 0.2);
+}
+
+/* Glow highlights */
+.radial-glow-prime-green {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--prime-green-15) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(40px);
+}
+
+.radial-glow-prime-purple {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--prime-purple-15) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(40px);
+}
+
+/* Prime badges */
+.prime-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 30px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--prime-green-15);
+  color: var(--prime-green);
+  border: 1px solid var(--prime-green-30);
+}
+
+.prime-badge-purple {
+  background: var(--prime-purple-15);
+  color: var(--prime-purple);
+  border: 1px solid var(--prime-purple-30);
+}
+
+.prime-badge-yellow {
+  background: rgba(255, 215, 0, 0.08);
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+/* Buttons */
+.btn-prime-green {
+  background: var(--prime-grad-green);
+  color: #030408;
+  font-weight: 800;
+  box-shadow: 0 4px 15px rgba(0, 230, 118, 0.25);
+  transition: all 0.2s;
+}
+
+.btn-prime-green:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 230, 118, 0.45);
+  filter: brightness(1.1);
+}
+
+.btn-prime-purple {
+  background: var(--prime-grad-purple);
+  color: white;
+  font-weight: 800;
+  box-shadow: 0 4px 15px rgba(124, 77, 255, 0.25);
+  transition: all 0.2s;
+}
+
+.btn-prime-purple:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(124, 77, 255, 0.45);
+  filter: brightness(1.1);
+}
+
+/* Prime Dropdowns & navigation */
+.prime-nav-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: rgba(10, 11, 16, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+  padding: 20px;
+  width: 600px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  z-index: 500;
+  animation: primeFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes primeFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Floating AI tutor container */
+.floating-tutor-bubble {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  background: var(--prime-grad-purple);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 8px 30px rgba(124, 77, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.floating-tutor-bubble:hover {
+  transform: scale(1.1) rotate(10deg);
+}
+

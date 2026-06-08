@@ -350,30 +350,31 @@ export default function TestEngine() {
   const timerColor = timeLeft < 300 ? 'danger' : timeLeft < 600 ? 'warning' : ''
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--prime-dark)' }}>
       {/* Pinned Top Timer Banner */}
       <div style={{
-        background: 'var(--bg-2)',
-        borderBottom: '1px solid var(--border)',
+        background: 'rgba(10, 11, 16, 0.95)',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
         padding: '16px 24px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         position: 'sticky',
         top: 0,
-        zIndex: 50
+        zIndex: 50,
+        backdropFilter: 'blur(16px)'
       }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-1)' }}>{test.title}</div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 6 }}>
-            <ShieldCheck size={12} color="var(--emerald)" />
-            <span>Secured Session • {Object.keys(answers).length}/{questions.length} answered</span>
+          <div style={{ fontSize: '1rem', fontWeight: 900, color: 'white' }}>{test.title}</div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+            <ShieldCheck size={12} color="#00e676" />
+            <span>Secured Session • <span style={{ color: 'white', fontWeight: 700 }}>{Object.keys(answers).length}/{questions.length}</span> answered</span>
           </div>
         </div>
         <div className={`test-timer ${timerColor}`} style={{
-          fontSize: '1.25rem',
-          fontWeight: 800,
-          color: timerColor === 'danger' ? 'var(--red)' : timerColor === 'warning' ? 'var(--amber)' : 'var(--text-1)',
+          fontSize: '1.3rem',
+          fontWeight: 900,
+          color: timerColor === 'danger' ? 'var(--red)' : timerColor === 'warning' ? 'var(--amber)' : '#00e676',
           display: 'flex',
           alignItems: 'center',
           gap: 6
@@ -385,15 +386,15 @@ export default function TestEngine() {
           <button
             className="btn btn-outline btn-sm"
             onClick={handleFlag}
-            style={{ minHeight: '48px', minWidth: '48px', display: 'flex', alignItems: 'center', gap: 8 }}
+            style={{ minHeight: '48px', minWidth: '48px', display: 'flex', alignItems: 'center', gap: 8, borderRadius: 12, border: '1px solid rgba(255,255,255,0.06)' }}
           >
             <Flag size={14} fill={flagged.has(q.id) ? 'var(--amber)' : 'none'} color={flagged.has(q.id) ? 'var(--amber)' : 'currentColor'} />
             {!isMobile && (flagged.has(q.id) ? 'Unflag' : 'Flag')}
           </button>
           <button
-            className="btn btn-primary btn-sm"
+            className="btn btn-prime-green btn-sm"
             onClick={() => setShowExitConfirm(true)}
-            style={{ minHeight: '48px', padding: '0 20px', background: 'var(--grad)' }}
+            style={{ minHeight: '48px', padding: '0 24px', borderRadius: 12 }}
           >
             Submit
           </button>
@@ -454,9 +455,9 @@ export default function TestEngine() {
                     alignItems: 'center',
                     gap: 14,
                     padding: '16px 20px',
-                    borderRadius: 'var(--r-md)',
-                    background: answers[q.id] === i ? 'var(--purple-10)' : 'rgba(255,255,255,0.03)',
-                    border: answers[q.id] === i ? '1.5px solid var(--purple)' : '1.5px solid var(--border)',
+                    borderRadius: 14,
+                    background: answers[q.id] === i ? 'var(--prime-purple-15)' : 'rgba(255,255,255,0.02)',
+                    border: answers[q.id] === i ? '1.5px solid var(--prime-purple)' : '1.5px solid rgba(255,255,255,0.05)',
                     cursor: 'pointer',
                     transition: 'all 0.15s ease',
                     textAlign: 'left',
@@ -464,18 +465,19 @@ export default function TestEngine() {
                     fontSize: '0.95rem',
                     color: 'var(--text-1)',
                     minHeight: '48px', // Strict touch boundary metric
-                    width: '100%'
+                    width: '100%',
+                    boxShadow: answers[q.id] === i ? '0 0 15px rgba(124, 77, 255, 0.15)' : 'none'
                   }}
                   onMouseEnter={e => {
                     if (answers[q.id] !== i) {
-                      e.currentTarget.style.borderColor = 'var(--cyan)'
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                      e.currentTarget.style.borderColor = 'var(--prime-green)'
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
                     }
                   }}
                   onMouseLeave={e => {
                     if (answers[q.id] !== i) {
-                      e.currentTarget.style.borderColor = 'var(--border)'
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.03)'
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.02)'
                     }
                   }}
                 >
@@ -484,8 +486,8 @@ export default function TestEngine() {
                     height: 28,
                     borderRadius: '50%',
                     border: '1.5px solid',
-                    borderColor: answers[q.id] === i ? 'var(--purple)' : 'var(--border-2)',
-                    background: answers[q.id] === i ? 'var(--purple)' : 'transparent',
+                    borderColor: answers[q.id] === i ? 'var(--prime-purple)' : 'rgba(255,255,255,0.15)',
+                    background: answers[q.id] === i ? 'var(--prime-purple)' : 'transparent',
                     color: answers[q.id] === i ? 'white' : 'var(--text-2)',
                     display: 'flex',
                     alignItems: 'center',
@@ -496,7 +498,7 @@ export default function TestEngine() {
                   }}>
                     {String.fromCharCode(65 + i)}
                   </span>
-                  <span style={{ flex: 1 }}>{opt}</span>
+                  <span style={{ flex: 1, color: answers[q.id] === i ? 'white' : 'var(--text-2)' }}>{opt}</span>
                 </button>
               ))}
             </div>
@@ -533,43 +535,48 @@ export default function TestEngine() {
         {/* Right Canvas / Persistent Status Palette (Stacked on Mobile) */}
         <div style={{
           width: isMobile ? '100%' : '320px',
-          borderLeft: isMobile ? 'none' : '1px solid var(--border)',
-          borderTop: isMobile ? '1px solid var(--border)' : 'none',
+          borderLeft: isMobile ? 'none' : '1px solid rgba(255,255,255,0.05)',
+          borderTop: isMobile ? '1px solid rgba(255,255,255,0.05)' : 'none',
           padding: 24,
           overflowY: 'auto',
-          background: 'var(--bg-2)'
+          background: 'rgba(10, 11, 16, 0.98)'
         }}>
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: '0.8rem', fontWeight: 700, marginBottom: 12, color: 'var(--text-3)', letterSpacing: '0.05em' }}>QUESTION PALETTE</div>
+            <div style={{ fontSize: '0.78rem', fontWeight: 800, marginBottom: 16, color: 'var(--text-3)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>Question Palette</div>
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(5, 1fr)',
-              gap: 8
+              gap: 10
             }}>
               {questions.map((q2, i) => {
                 const isCurrent = i === current
                 const isAnswered = answers[q2.id] !== undefined
                 const isFlagged = flagged.has(q2.id)
+                
+                const targetColor = isCurrent ? 'var(--prime-purple)' : isFlagged ? 'var(--amber)' : isAnswered ? 'var(--prime-green)' : 'rgba(255,255,255,0.1)';
+                const targetBg = isCurrent ? 'var(--prime-purple-15)' : isFlagged ? 'rgba(245,158,11,0.06)' : isAnswered ? 'var(--prime-green-15)' : 'transparent';
+                
                 return (
                   <button
                     key={q2.id}
                     onClick={() => setCurrent(i)}
                     style={{
                       aspectRatio: '1',
-                      borderRadius: 'var(--r-sm)',
+                      borderRadius: 10,
                       border: '1.5px solid',
-                      borderColor: isCurrent ? 'var(--cyan)' : isFlagged ? 'var(--amber)' : isAnswered ? 'var(--purple)' : 'var(--border-2)',
-                      background: isCurrent ? 'var(--cyan-10)' : isFlagged ? 'rgba(245,158,11,0.06)' : isAnswered ? 'var(--purple-10)' : 'transparent',
-                      color: isCurrent ? 'var(--cyan)' : isFlagged ? 'var(--amber)' : isAnswered ? 'var(--purple)' : 'var(--text-3)',
+                      borderColor: targetColor,
+                      background: targetBg,
+                      color: isCurrent ? 'white' : isFlagged ? 'var(--amber)' : isAnswered ? 'var(--prime-green)' : 'var(--text-3)',
                       cursor: 'pointer',
                       fontSize: '0.85rem',
-                      fontWeight: 700,
+                      fontWeight: 800,
                       transition: 'all 0.2s',
                       minHeight: '44px',
                       minWidth: '44px',
                       display: 'flex',
                       alignItems: 'center',
-                      justifyContent: 'center'
+                      justifyContent: 'center',
+                      boxShadow: isCurrent ? '0 0 10px rgba(124, 77, 255, 0.15)' : isAnswered ? '0 0 10px rgba(0, 230, 118, 0.1)' : 'none'
                     }}
                   >
                     {i + 1}
@@ -581,24 +588,24 @@ export default function TestEngine() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: '0.78rem', color: 'var(--text-3)', marginBottom: 20 }}>
             {[
-              ['var(--purple)', 'Answered'],
-              ['var(--cyan)', 'Current'],
+              ['var(--prime-green)', 'Answered'],
+              ['var(--prime-purple)', 'Current'],
               ['var(--amber)', 'Flagged'],
               ['rgba(255,255,255,0.06)', 'Not Visited']
             ].map(([clr, lbl]) => (
               <div key={lbl} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <div style={{ width: 14, height: 14, borderRadius: 4, background: clr, border: '1.5px solid ' + clr }} />
-                <span>{lbl}</span>
+                <span style={{ fontWeight: 600 }}>{lbl}</span>
               </div>
             ))}
           </div>
 
-          <div style={{ height: 1, background: 'var(--border)', margin: '16px 0' }} />
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.05)', margin: '16px 0' }} />
           
           <div style={{ fontSize: '0.82rem', color: 'var(--text-3)', display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>Answered:</span>
-              <strong style={{ color: 'var(--purple)' }}>{Object.keys(answers).length}</strong>
+              <strong style={{ color: 'var(--prime-green)' }}>{Object.keys(answers).length}</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>Flagged:</span>

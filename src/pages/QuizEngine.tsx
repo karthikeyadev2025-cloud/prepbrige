@@ -214,55 +214,127 @@ export default function QuizEngine() {
   const answeredCount = Object.keys(answers).length
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--prime-dark)', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
-      <div style={{ background: 'var(--bg-2)', borderBottom: '1px solid var(--border)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, position: 'sticky', top: 0, zIndex: 10 }}>
+      <div style={{ background: 'rgba(10, 11, 16, 0.95)', borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12, position: 'sticky', top: 0, zIndex: 10, backdropFilter: 'blur(16px)' }}>
         <button onClick={() => navigate(-1)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-2)', padding: 4 }}>
           <ChevronLeft size={20} />
         </button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-3)', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{paper?.title}</p>
-          <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-3)' }}>{answeredCount}/{questions.length} answered</p>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: 'white', fontWeight: 900, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{paper?.title}</p>
+          <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-3)', fontWeight: 500 }}>{answeredCount}/{questions.length} answered</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 20, background: timeWarning ? 'rgba(239,68,68,0.12)' : 'rgba(30,64,175,0.12)', border: `1px solid ${timeWarning ? 'rgba(239,68,68,0.3)' : 'rgba(30,64,175,0.3)'}` }}>
-          <Clock size={13} color={timeWarning ? '#EF4444' : '#60A5FA'} />
-          <span style={{ fontSize: '0.88rem', fontWeight: 700, color: timeWarning ? '#EF4444' : '#60A5FA', fontVariantNumeric: 'tabular-nums' }}>{formatTime(timeLeft)}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 20, background: timeWarning ? 'rgba(239,68,68,0.12)' : 'var(--prime-green-15)', border: `1px solid ${timeWarning ? 'rgba(239,68,68,0.3)' : 'var(--prime-green-30)'}` }}>
+          <Clock size={13} color={timeWarning ? '#EF4444' : 'var(--prime-green)'} />
+          <span style={{ fontSize: '0.88rem', fontWeight: 900, color: timeWarning ? '#EF4444' : 'var(--prime-green)', fontVariantNumeric: 'tabular-nums' }}>{formatTime(timeLeft)}</span>
         </div>
       </div>
 
       {/* Question navigator dots */}
-      <div style={{ display: 'flex', gap: 5, padding: '10px 16px', overflowX: 'auto', scrollbarWidth: 'none', background: 'var(--bg-2)', borderBottom: '1px solid var(--border)' }}>
-        {questions.map((qn, i) => (
-          <button key={qn.id} onClick={() => setCurrentIdx(i)}
-            style={{ width: 28, height: 28, borderRadius: 8, border: i === currentIdx ? '2px solid #1E40AF' : '1px solid var(--border)', background: flagged[qn.id] ? 'rgba(245,158,11,0.2)' : answers[qn.id] ? 'rgba(16,185,129,0.15)' : 'var(--bg-3)', color: i === currentIdx ? '#60A5FA' : answers[qn.id] ? '#34D399' : 'var(--text-3)', fontSize: '0.72rem', fontWeight: 700, cursor: 'pointer', flexShrink: 0, padding: 0 }}>
-            {i + 1}
-          </button>
-        ))}
+      <div style={{ display: 'flex', gap: 6, padding: '10px 16px', overflowX: 'auto', scrollbarWidth: 'none', background: 'rgba(10, 11, 16, 0.95)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        {questions.map((qn, i) => {
+          const isCurrent = i === currentIdx;
+          const isAns = answers[qn.id] !== undefined;
+          const isFlg = flagged[qn.id];
+          
+          const targetColor = isCurrent ? 'var(--prime-purple)' : isFlg ? 'var(--amber)' : isAns ? 'var(--prime-green)' : 'rgba(255,255,255,0.1)';
+          const targetBg = isCurrent ? 'var(--prime-purple-15)' : isFlg ? 'rgba(245,158,11,0.08)' : isAns ? 'var(--prime-green-15)' : 'rgba(255,255,255,0.02)';
+          
+          return (
+            <button 
+              key={qn.id} 
+              onClick={() => setCurrentIdx(i)}
+              style={{ 
+                width: 28, 
+                height: 28, 
+                borderRadius: 8, 
+                border: '1.5px solid',
+                borderColor: targetColor, 
+                background: targetBg, 
+                color: isCurrent ? 'white' : isFlg ? 'var(--amber)' : isAns ? 'var(--prime-green)' : 'var(--text-3)', 
+                fontSize: '0.72rem', 
+                fontWeight: 800, 
+                cursor: 'pointer', 
+                flexShrink: 0, 
+                padding: 0,
+                boxShadow: isCurrent ? '0 0 8px rgba(124, 77, 255, 0.15)' : isAns ? '0 0 8px rgba(0, 230, 118, 0.1)' : 'none'
+              }}
+            >
+              {i + 1}
+            </button>
+          );
+        })}
       </div>
 
       {/* Question */}
-      <div style={{ flex: 1, padding: '20px 16px', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
+      <div style={{ flex: 1, padding: '24px 16px', overflowY: 'auto' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 24 }}>
           <div style={{ flex: 1 }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-3)', fontWeight: 600 }}>Q{currentIdx + 1} of {questions.length}</span>
-            <p style={{ margin: '8px 0 0', fontWeight: 600, fontSize: '1rem', lineHeight: 1.5 }}>{q.question_text}</p>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Question {currentIdx + 1} of {questions.length}</span>
+            <p style={{ margin: '8px 0 0', fontWeight: 600, fontSize: '1.05rem', lineHeight: 1.55, color: 'white', borderLeft: '3px solid var(--prime-purple)', paddingLeft: 14 }}>{q.question_text}</p>
           </div>
           <button onClick={toggleFlag}
-            style={{ background: isFlagged ? 'rgba(245,158,11,0.15)' : 'var(--bg-3)', border: `1px solid ${isFlagged ? 'rgba(245,158,11,0.4)' : 'var(--border)'}`, borderRadius: 10, padding: '8px 10px', cursor: 'pointer', color: isFlagged ? '#F59E0B' : 'var(--text-3)', flexShrink: 0 }}>
+            style={{ background: isFlagged ? 'rgba(245,158,11,0.12)' : 'rgba(255,255,255,0.02)', border: `1px solid ${isFlagged ? 'rgba(245,158,11,0.3)' : 'rgba(255,255,255,0.06)'}`, borderRadius: 10, padding: '8px 10px', cursor: 'pointer', color: isFlagged ? '#F59E0B' : 'var(--text-3)', flexShrink: 0 }}>
             <Flag size={15} />
           </button>
         </div>
 
         {/* Options */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {(['A', 'B', 'C', 'D'] as const).map(opt => {
             const text = q[`option_${opt.toLowerCase()}` as keyof PaperQuestion] as string
             const isSelected = answered === opt
             return (
-              <button key={opt} onClick={() => selectAnswer(opt)}
-                style={{ width: '100%', padding: '14px 16px', borderRadius: 'var(--r-md)', border: `1px solid ${isSelected ? '#1E40AF' : 'var(--border)'}`, background: isSelected ? 'rgba(30,64,175,0.12)' : 'var(--bg-3)', color: isSelected ? '#93C5FD' : 'var(--text-1)', cursor: 'pointer', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 12, transition: 'all 0.15s', fontSize: '0.9rem' }}>
-                <span style={{ width: 28, height: 28, borderRadius: 8, background: isSelected ? '#1E40AF' : 'var(--bg-4)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.78rem', color: isSelected ? 'white' : 'var(--text-3)', flexShrink: 0 }}>{opt}</span>
-                {text}
+              <button 
+                key={opt} 
+                onClick={() => selectAnswer(opt)}
+                style={{ 
+                  width: '100%', 
+                  padding: '16px', 
+                  borderRadius: 14, 
+                  border: `1.5px solid ${isSelected ? 'var(--prime-purple)' : 'rgba(255,255,255,0.05)'}`, 
+                  background: isSelected ? 'var(--prime-purple-15)' : 'rgba(255,255,255,0.02)', 
+                  color: isSelected ? 'white' : 'var(--text-2)', 
+                  cursor: 'pointer', 
+                  textAlign: 'left', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 14, 
+                  transition: 'all 0.15s', 
+                  fontSize: '0.9rem',
+                  boxShadow: isSelected ? '0 0 15px rgba(124, 77, 255, 0.15)' : 'none'
+                }}
+                onMouseEnter={e => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = 'var(--prime-green)'
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.04)'
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.05)'
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.02)'
+                  }
+                }}
+              >
+                <span style={{ 
+                  width: 28, 
+                  height: 28, 
+                  borderRadius: '50%', 
+                  background: isSelected ? 'var(--prime-purple)' : 'rgba(255,255,255,0.08)', 
+                  border: '1.5px solid',
+                  borderColor: isSelected ? 'var(--prime-purple)' : 'rgba(255,255,255,0.15)',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  fontWeight: 700, 
+                  fontSize: '0.78rem', 
+                  color: isSelected ? 'white' : 'var(--text-3)', 
+                  flexShrink: 0 
+                }}>
+                  {opt}
+                </span>
+                <span style={{ flex: 1, color: isSelected ? 'white' : 'var(--text-2)' }}>{text}</span>
               </button>
             )
           })}
@@ -270,19 +342,21 @@ export default function QuizEngine() {
       </div>
 
       {/* Footer nav */}
-      <div style={{ padding: '12px 16px', background: 'var(--bg-2)', borderTop: '1px solid var(--border)', display: 'flex', gap: 10 }}>
+      <div style={{ padding: '12px 16px', background: 'rgba(10, 11, 16, 0.95)', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: 10, alignItems: 'center' }}>
         <button onClick={() => setCurrentIdx(i => Math.max(0, i - 1))} disabled={currentIdx === 0}
-          style={{ flex: 1, padding: '12px', background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', color: currentIdx === 0 ? 'var(--text-4)' : 'var(--text-2)', cursor: currentIdx === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600 }}>
+          style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, color: currentIdx === 0 ? 'var(--text-4)' : 'var(--text-2)', cursor: currentIdx === 0 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700, minHeight: 46 }}>
           <ChevronLeft size={16} /> Prev
         </button>
         {currentIdx < questions.length - 1 ? (
           <button onClick={() => setCurrentIdx(i => i + 1)}
-            style={{ flex: 1, padding: '12px', background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 'var(--r-md)', color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 600 }}>
+            style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, color: 'var(--text-2)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, fontWeight: 700, minHeight: 46 }}>
             Next <ChevronRight size={16} />
           </button>
         ) : (
           <button onClick={handleSubmit}
-            style={{ flex: 2, padding: '12px', background: 'linear-gradient(135deg, #1E40AF, #0891B2)', border: 'none', borderRadius: 'var(--r-md)', color: 'white', cursor: 'pointer', fontWeight: 700, fontSize: '0.95rem' }}>
+            className="btn btn-prime-green"
+            style={{ flex: 2, padding: '12px', borderRadius: 12, fontSize: '0.95rem', minHeight: 46 }}
+          >
             Submit Test
           </button>
         )}

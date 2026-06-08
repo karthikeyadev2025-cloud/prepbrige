@@ -188,66 +188,90 @@ export default function Courses() {
         </button>
       </div>
 
-      <div className="grid-3" style={{ gap: 18 }}>
-        {filtered.map(course => (
-          <div key={course.id} className="card card-hover" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            {/* Course banner */}
-            <div style={{ background: `linear-gradient(135deg, ${course.color}33, ${course.color}11)`, borderBottom: `1px solid ${course.color}33`, padding: '24px 20px', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: -20, right: -20, fontSize: '5rem', opacity: 0.12 }}>{course.icon}</div>
-              <div style={{ fontSize: '2rem', marginBottom: 8 }}>{course.icon}</div>
-              <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: 4 }}>{course.title}</div>
-              <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{course.exam}</div>
-              {course.free && (
-                <span style={{ position: 'absolute', top: 12, right: 12, background: 'var(--emerald)', color: 'white', fontSize: '0.65rem', fontWeight: 800, padding: '3px 10px', borderRadius: 'var(--r-full)' }}>FREE</span>
-              )}
-              {isUserPrimaryTarget(course) && (
-                <span className="badge badge-purple animate-pulse" style={{ position: 'absolute', top: 12, right: course.free ? 70 : 12, background: 'var(--purple)', color: 'white', fontSize: '0.65rem', fontWeight: 800, padding: '3px 10px', borderRadius: 'var(--r-full)', border: 'none', boxShadow: '0 0 10px rgba(124, 58, 237, 0.5)' }}>🎯 TARGET</span>
-              )}
-            </div>
-            <div style={{ padding: '16px 20px', flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Play size={11} /> {course.lessons} lessons
-                </span>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Clock size={11} /> {course.hours}h
-                </span>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-3)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <Users size={11} /> {(course.students/1000).toFixed(0)}K
-                </span>
-                <span style={{ fontSize: '0.78rem', color: 'var(--amber)', display: 'flex', alignItems: 'center', gap: 3 }}>
-                  <Star size={11} fill="var(--amber)" /> {course.rating}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
-                {course.topics.slice(0,4).map(t => (
-                  <span key={t} style={{ fontSize: '0.66rem', background: 'var(--bg-3)', border: '1px solid var(--border)', borderRadius: 'var(--r-full)', padding: '2px 8px', color: 'var(--text-3)' }}>{t}</span>
-                ))}
-                {course.topics.length > 4 && <span style={{ fontSize: '0.66rem', color: 'var(--text-4)' }}>+{course.topics.length-4} more</span>}
+      <div className="grid-3" style={{ gap: 20 }}>
+        {filtered.map(course => {
+          const isTarget = isUserPrimaryTarget(course);
+          const accentColor = course.color || '#00e676';
+          return (
+            <div 
+              key={course.id} 
+              className={`prepinsta-card ${isTarget ? 'prepinsta-card-purple' : ''}`} 
+              style={{ 
+                overflow: 'hidden', 
+                display: 'flex', 
+                flexDirection: 'column',
+                background: 'rgba(15, 17, 26, 0.7)',
+                border: isTarget ? '1.5px solid rgba(124, 77, 255, 0.25)' : '1px solid rgba(255, 255, 255, 0.04)',
+                boxShadow: isTarget ? '0 8px 30px rgba(124, 77, 255, 0.08)' : '0 8px 32px rgba(0, 0, 0, 0.4)'
+              }}
+            >
+              {/* Course banner */}
+              <div style={{ background: `linear-gradient(135deg, ${accentColor}18, ${accentColor}06)`, borderBottom: `1px solid rgba(255,255,255,0.03)`, padding: '24px 20px', position: 'relative', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', top: -10, right: -10, fontSize: '4.5rem', opacity: 0.08 }}>{course.icon}</div>
+                <div style={{ fontSize: '1.8rem', marginBottom: 10 }}>{course.icon}</div>
+                <div style={{ fontWeight: 900, fontSize: '1.05rem', marginBottom: 4, color: 'white' }}>{course.title}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-3)', fontWeight: 600 }}>{course.exam}</div>
+                
+                {course.free && (
+                  <span className="prime-badge" style={{ position: 'absolute', top: 12, right: 12 }}>FREE</span>
+                )}
+                {isTarget && (
+                  <span className="prime-badge prime-badge-purple animate-pulse" style={{ position: 'absolute', top: 12, right: course.free ? 84 : 12 }}>🎯 TARGET</span>
+                )}
               </div>
 
-              {(() => {
-                const progress = getCourseProgressPct(course);
-                if (progress === null) return null;
-                return (
-                  <div style={{ margin: '4px 0', padding: '10px 12px', background: 'rgba(255,255,255,0.02)', borderRadius: 'var(--r-sm)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: '0.76rem' }}>
-                      <span style={{ color: 'var(--text-2)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4 }}>📚 Active Syllabus Progress</span>
-                      <span style={{ fontWeight: 700, color: course.color }}>{progress}%</span>
-                    </div>
-                    <div className="progress-bar" style={{ height: 5, background: 'rgba(255,255,255,0.1)' }}>
-                      <div className="progress-fill" style={{ width: `${progress}%`, background: course.color, height: 5 }} />
-                    </div>
-                  </div>
-                );
-              })()}
+              <div style={{ padding: 20, flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-2)', display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
+                    <Play size={12} color={accentColor} /> {course.lessons} lessons
+                  </span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-2)', display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
+                    <Clock size={12} color={accentColor} /> {course.hours}h
+                  </span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-2)', display: 'inline-flex', alignItems: 'center', gap: 4, fontWeight: 600 }}>
+                    <Users size={12} color={accentColor} /> {(course.students/1000).toFixed(0)}K studs
+                  </span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-2)', display: 'inline-flex', alignItems: 'center', gap: 3, fontWeight: 600 }}>
+                    <Star size={12} fill="var(--amber)" color="var(--amber)" /> {course.rating}
+                  </span>
+                </div>
 
-              <button className="btn btn-primary btn-sm" onClick={() => handleStartCourse(course)} style={{ marginTop: 'auto', justifyContent: 'center', gap: 6 }}>
-                {course.free ? <><Play size={13} /> Start Free</> : <><BookOpen size={13} /> Start Course</>}
-              </button>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  {course.topics.slice(0, 3).map(t => (
+                    <span key={t} style={{ fontSize: '0.68rem', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 30, padding: '3px 10px', color: 'var(--text-2)', fontWeight: 600 }}>{t}</span>
+                  ))}
+                  {course.topics.length > 3 && (
+                    <span style={{ fontSize: '0.68rem', color: 'var(--text-4)', fontWeight: 600, alignSelf: 'center' }}>+{course.topics.length - 3} more</span>
+                  )}
+                </div>
+
+                {(() => {
+                  const progress = getCourseProgressPct(course);
+                  if (progress === null) return null;
+                  return (
+                    <div style={{ margin: '4px 0', padding: '12px', background: 'rgba(255,255,255,0.01)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.03)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: '0.76rem' }}>
+                        <span style={{ color: 'var(--text-3)', fontWeight: 700 }}>Active Syllabus Coverage</span>
+                        <span style={{ fontWeight: 900, color: accentColor }}>{progress}%</span>
+                      </div>
+                      <div className="progress-bar" style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3 }}>
+                        <div className="progress-fill" style={{ width: `${progress}%`, background: accentColor, height: 6 }} />
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                <button 
+                  className={`btn ${isTarget ? 'btn-prime-purple' : 'btn-prime-green'}`} 
+                  onClick={() => handleStartCourse(course)} 
+                  style={{ marginTop: 'auto', justifyContent: 'center', gap: 8, borderRadius: 14 }}
+                >
+                  {course.free ? <><Play size={14} /> Start Free Prep</> : <><BookOpen size={14} /> Resume Course</>}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
