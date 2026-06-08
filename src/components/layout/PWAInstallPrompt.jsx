@@ -234,7 +234,7 @@ export default function PWAInstallPrompt() {
               marginBottom: '28px'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem' }}>
-                <div style={{ color: '#10b981', display: 'flex' }}>🚀</div>
+                <div style={{ color: '#00e676', display: 'flex' }}>🚀</div>
                 <div><strong>Runs on 2G:</strong> Compressed &amp; light (2MB)</div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.85rem' }}>

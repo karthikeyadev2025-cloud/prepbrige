@@ -34,7 +34,7 @@ function ParticleCanvas() {
           const dist = Math.sqrt(dx * dx + dy * dy)
           if (dist < 130) {
             ctx.beginPath()
-            ctx.strokeStyle = `rgba(99,102,241,${0.12 * (1 - dist / 130)})`
+            ctx.strokeStyle = `rgba(124,77,255,${0.12 * (1 - dist / 130)})`
             ctx.lineWidth = 0.5
             ctx.moveTo(particles[i].x, particles[i].y)
             ctx.lineTo(particles[j].x, particles[j].y)
@@ -141,13 +141,13 @@ const STORIES = [
 
 // ─── Hero Typewriter ──────────────────────────────────────────────────────────
 const JOB_WORDS = [
-  { word: 'IAS Officer',    gradient: 'linear-gradient(90deg,#10b981,#6366f1)', glow: 'rgba(16,185,129,0.6)' },
-  { word: 'SSC CGL Job',    gradient: 'linear-gradient(90deg,#10b981,#059669)', glow: 'rgba(16,185,129,0.6)'  },
-  { word: 'Bank PO',        gradient: 'linear-gradient(90deg,#059669,#10b981)', glow: 'rgba(16,185,129,0.6)' },
-  { word: 'Railway Job',    gradient: 'linear-gradient(90deg,#8b5cf6,#6366f1)', glow: 'rgba(99,102,241,0.6)'  },
-  { word: 'IPS Officer',    gradient: 'linear-gradient(90deg,#6366f1,#10b981)', glow: 'rgba(99,102,241,0.6)' },
-  { word: 'Police Officer', gradient: 'linear-gradient(90deg,#4f46e5,#6366f1)', glow: 'rgba(99,102,241,0.6)'  },
-  { word: 'Teacher (KVS)',  gradient: 'linear-gradient(90deg,#f59e0b,#10b981)', glow: 'rgba(16,185,129,0.6)'  },
+  { word: 'IAS Officer',    gradient: 'linear-gradient(90deg,#00e676,#7c4dff)', glow: 'rgba(0,230,118,0.6)' },
+  { word: 'SSC CGL Job',    gradient: 'linear-gradient(90deg,#00e676,#059669)', glow: 'rgba(0,230,118,0.6)'  },
+  { word: 'Bank PO',        gradient: 'linear-gradient(90deg,#059669,#00e676)', glow: 'rgba(0,230,118,0.6)' },
+  { word: 'Railway Job',    gradient: 'linear-gradient(90deg,#8b5cf6,#7c4dff)', glow: 'rgba(124,77,255,0.6)'  },
+  { word: 'IPS Officer',    gradient: 'linear-gradient(90deg,#7c4dff,#00e676)', glow: 'rgba(124,77,255,0.6)' },
+  { word: 'Police Officer', gradient: 'linear-gradient(90deg,#4f46e5,#7c4dff)', glow: 'rgba(124,77,255,0.6)'  },
+  { word: 'Teacher (KVS)',  gradient: 'linear-gradient(90deg,#f59e0b,#00e676)', glow: 'rgba(0,230,118,0.6)'  },
 ]
 
 function HeroTypewriter() {
@@ -183,9 +183,9 @@ function HeroTypewriter() {
 
   const { gradient, glow } = JOB_WORDS[wordIdx]
   
-  const cursorColor = glow.includes('16,185,129') ? '#10b981'
-    : glow.includes('99,102,241') ? '#6366f1'
-    : '#10b981'
+  const cursorColor = glow.includes('16,185,129') ? '#00e676'
+    : glow.includes('99,102,241') ? '#7c4dff'
+    : '#00e676'
 
   return (
     <div style={{ marginBottom: 24, animation: 'heroSlideIn 0.8s ease both' }}>
@@ -242,7 +242,7 @@ function HeroTypewriter() {
       }}>
         <span style={{ color: 'rgba(255,255,255,0.85)' }}>{t('landing.hero.title_line3_1', 'Starts Here.')}</span>
         <span style={{
-          backgroundImage: 'linear-gradient(90deg,#10b981 0%,#6366f1 30%,#ffffff 50%,#6366f1 70%,#10b981 100%)',
+          backgroundImage: 'linear-gradient(90deg,#00e676 0%,#7c4dff 30%,#ffffff 50%,#7c4dff 70%,#00e676 100%)',
           backgroundSize: '200% auto',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -284,9 +284,9 @@ export default function HeroVideo() {
       <ParticleCanvas />
 
       {/* Glowing blobs */}
-      <div style={{ position: 'absolute', top: '5%', left: '15%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(80px)', zIndex: 0, animation: 'blobPulse 8s ease-in-out infinite' }} />
-      <div style={{ position: 'absolute', bottom: '10%', right: '10%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(80px)', zIndex: 0, animation: 'blobPulse 10s ease-in-out 2s infinite' }} />
-      <div style={{ position: 'absolute', top: '40%', right: '25%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(99,102,241,0.1) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(60px)', zIndex: 0, animation: 'blobPulse 12s ease-in-out 4s infinite' }} />
+      <div style={{ position: 'absolute', top: '5%', left: '15%', width: 500, height: 500, background: 'radial-gradient(circle, rgba(124,77,255,0.15) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(80px)', zIndex: 0, animation: 'blobPulse 8s ease-in-out infinite' }} />
+      <div style={{ position: 'absolute', bottom: '10%', right: '10%', width: 400, height: 400, background: 'radial-gradient(circle, rgba(0,230,118,0.12) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(80px)', zIndex: 0, animation: 'blobPulse 10s ease-in-out 2s infinite' }} />
+      <div style={{ position: 'absolute', top: '40%', right: '25%', width: 300, height: 300, background: 'radial-gradient(circle, rgba(124,77,255,0.1) 0%, transparent 70%)', borderRadius: '50%', filter: 'blur(60px)', zIndex: 0, animation: 'blobPulse 12s ease-in-out 4s infinite' }} />
 
       {/* Floating exam cards */}
       {FLOATING_CARDS.map((c, i) => <FloatingCard key={i} {...c} />)}
@@ -295,8 +295,8 @@ export default function HeroVideo() {
       <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', padding: '0 16px', maxWidth: 860, width: '100%' }}>
 
         {/* Live badge */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 'var(--r-full)', padding: '8px 18px', marginBottom: 28, fontSize: '0.82rem', fontWeight: 600, color: '#10b981' }}>
-          <span style={{ width: 8, height: 8, background: '#10b981', borderRadius: '50%', boxShadow: '0 0 8px #10b981', animation: 'livePulse 2s ease-in-out infinite', display: 'inline-block' }} />
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,230,118,0.1)', border: '1px solid rgba(0,230,118,0.3)', borderRadius: 'var(--r-full)', padding: '8px 18px', marginBottom: 28, fontSize: '0.82rem', fontWeight: 600, color: '#00e676' }}>
+          <span style={{ width: 8, height: 8, background: '#00e676', borderRadius: '50%', boxShadow: '0 0 8px #00e676', animation: 'livePulse 2s ease-in-out infinite', display: 'inline-block' }} />
           {t('landing.hero.live_aspirants', { count: '2,45,832', defaultValue: '2,45,832 aspirants preparing right now · Free for everyone' })}
         </div>
 
@@ -309,7 +309,7 @@ export default function HeroVideo() {
 
         {/* CTA buttons */}
         <div className="hero-cta-row" style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 40, animation: 'heroSlideIn 0.8s ease 0.3s both', width: '100%', padding: '0 8px' }}>
-          <a href="/auth?signup=1" className="hero-cta-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '15px 28px', background: 'linear-gradient(135deg,#10b981,#6366f1)', borderRadius: 'var(--r-full)', fontWeight: 800, fontSize: '1rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 40px rgba(16,185,129,0.4)', transition: 'transform 0.2s,box-shadow 0.2s', flex: '1 1 auto', justifyContent: 'center', minWidth: 200, maxWidth: 340 }}
+          <a href="/auth?signup=1" className="hero-cta-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '15px 28px', background: 'linear-gradient(135deg,#00e676,#7c4dff)', borderRadius: 'var(--r-full)', fontWeight: 800, fontSize: '1rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 40px rgba(0,230,118,0.4)', transition: 'transform 0.2s,box-shadow 0.2s', flex: '1 1 auto', justifyContent: 'center', minWidth: 200, maxWidth: 340 }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)' }}
           >
@@ -326,9 +326,9 @@ export default function HeroVideo() {
         {/* Animated stats */}
         <div className="hero-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, maxWidth: 680, margin: '0 auto 40px', animation: 'heroSlideIn 0.8s ease 0.4s both', width: '100%' }}>
           {[
-            { value: 500000, suffix: '+', label: t('landing.stats.questions', 'Questions'), color: '#10b981', prefix: '' },
-            { value: 200, suffix: '+', label: t('landing.stats.exams', 'Exams Covered'), color: '#6366f1', prefix: '' },
-            { value: 249, suffix: '/mo', label: t('landing.stats.starts_at', 'Starts At Just'), color: '#10b981', prefix: '₹' },
+            { value: 500000, suffix: '+', label: t('landing.stats.questions', 'Questions'), color: '#00e676', prefix: '' },
+            { value: 200, suffix: '+', label: t('landing.stats.exams', 'Exams Covered'), color: '#7c4dff', prefix: '' },
+            { value: 249, suffix: '/mo', label: t('landing.stats.starts_at', 'Starts At Just'), color: '#00e676', prefix: '₹' },
             { value: 22, suffix: '', label: t('landing.stats.languages', 'Indian Languages'), color: '#f59e0b', prefix: '' },
           ].map(s => (
             <div key={s.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '16px 12px', backdropFilter: 'blur(10px)' }}>
@@ -341,13 +341,13 @@ export default function HeroVideo() {
         </div>
 
         {/* Success story ticker */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--r-full)', padding: '10px 20px', animation: 'heroSlideIn 0.8s ease 0.5s both' }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#10b981,#6366f1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', color: 'white', flexShrink: 0 }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 'var(--r-full)', padding: '10px 20px', animation: 'heroSlideIn 0.8s ease 0.5s both' }}>
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#00e676,#7c4dff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', color: 'white', flexShrink: 0 }}>
             {(STORIES[activeStory]?.name || '?')[0]}
           </div>
           <div style={{ textAlign: 'left', minWidth: 240 }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#fff', transition: 'all 0.4s' }}>
-              🎉 {STORIES[activeStory].name} — <span style={{ color: '#10b981' }}>{STORIES[activeStory].rank}</span>
+              🎉 {STORIES[activeStory].name} — <span style={{ color: '#00e676' }}>{STORIES[activeStory].rank}</span>
             </div>
             <div style={{ fontSize: '0.72rem', color: 'rgba(148,163,184,0.7)' }}>
               {STORIES[activeStory].state} · {STORIES[activeStory].year} · {t('landing.prepared_with', 'Prepared with PrepBridge')}
@@ -355,7 +355,7 @@ export default function HeroVideo() {
           </div>
           <div style={{ display: 'flex', gap: 4 }}>
             {STORIES.map((_, i) => (
-              <div key={i} onClick={() => setActiveStory(i)} style={{ width: i === activeStory ? 18 : 5, height: 5, borderRadius: 3, background: i === activeStory ? '#10b981' : 'rgba(255,255,255,0.2)', transition: 'all 0.3s', cursor: 'pointer' }} />
+              <div key={i} onClick={() => setActiveStory(i)} style={{ width: i === activeStory ? 18 : 5, height: 5, borderRadius: 3, background: i === activeStory ? '#00e676' : 'rgba(255,255,255,0.2)', transition: 'all 0.3s', cursor: 'pointer' }} />
             ))}
           </div>
         </div>
@@ -365,7 +365,7 @@ export default function HeroVideo() {
       <div style={{ position: 'absolute', bottom: 28, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, zIndex: 10, animation: 'bounce 2s ease-in-out infinite' }}>
         <span style={{ fontSize: '0.7rem', color: 'rgba(148,163,184,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{t('landing.hero.scroll_explore', 'Scroll to explore')}</span>
         <div style={{ width: 24, height: 38, border: '2px solid rgba(255,255,255,0.15)', borderRadius: 12, display: 'flex', justifyContent: 'center', paddingTop: 6 }}>
-          <div style={{ width: 4, height: 8, background: 'rgba(16,185,129,0.7)', borderRadius: 2, animation: 'scrollDot 2s ease-in-out infinite' }} />
+          <div style={{ width: 4, height: 8, background: 'rgba(0,230,118,0.7)', borderRadius: 2, animation: 'scrollDot 2s ease-in-out infinite' }} />
         </div>
       </div>
 
@@ -385,8 +385,8 @@ export default function HeroVideo() {
           to { opacity:1; transform: translateY(0); }
         }
         @keyframes livePulse {
-          0%,100% { box-shadow:0 0 8px #10b981; }
-          50% { box-shadow:0 0 18px #10b981, 0 0 30px rgba(16,185,129,0.4); }
+          0%,100% { box-shadow:0 0 8px #00e676; }
+          50% { box-shadow:0 0 18px #00e676, 0 0 30px rgba(0,230,118,0.4); }
         }
         @keyframes scrollDot {
           0% { transform:translateY(0); opacity:1; }

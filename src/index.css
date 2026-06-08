@@ -23,8 +23,8 @@
 
   /* Accent */
   --cyan: #00d4ff;
-  --purple: #7c3aed;
-  --emerald: #10b981;
+  --purple: #7c4dff;
+  --emerald: #00e676;
   --amber: #f59e0b;
   --red: #ef4444;
   --blue: #3b82f6;
@@ -33,9 +33,9 @@
   /* Dim */
   --cyan-10: rgba(0,212,255,0.1);
   --cyan-20: rgba(0,212,255,0.2);
-  --purple-10: rgba(124,58,237,0.1);
-  --purple-20: rgba(124,58,237,0.2);
-  --emerald-10: rgba(16,185,129,0.1);
+  --purple-10: rgba(124,77,255,0.1);
+  --purple-20: rgba(124,77,255,0.2);
+  --emerald-10: rgba(0,230,118,0.1);
   --amber-10: rgba(245,158,11,0.1);
   --red-10: rgba(239,68,68,0.1);
 
@@ -49,12 +49,12 @@
   --border: rgba(255,255,255,0.07);
   --border-2: rgba(255,255,255,0.12);
   --border-cyan: rgba(0,212,255,0.3);
-  --border-purple: rgba(124,58,237,0.3);
+  --border-purple: rgba(124,77,255,0.3);
 
   /* Gradient */
-  --grad: linear-gradient(135deg, #00d4ff, #7c3aed);
-  --grad-soft: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(124,58,237,0.15));
-  --grad-emerald: linear-gradient(135deg, #10b981, #059669);
+  --grad: linear-gradient(135deg, #00e676, #7c4dff);
+  --grad-soft: linear-gradient(135deg, rgba(0,230,118,0.15), rgba(124,77,255,0.15));
+  --grad-emerald: linear-gradient(135deg, #00e676, #00b0ff);
   --grad-amber: linear-gradient(135deg, #f59e0b, #ef4444);
 
   /* Shape */

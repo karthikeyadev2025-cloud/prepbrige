@@ -25,11 +25,11 @@ const MILESTONES = [
     sub: 'Accessing 5 Lakh+ questions & native K² tutor at ₹249/mo.',
     body: 'Raju onboarded onto PrepBridge. With the AI tutor translating complex historical and legal syllabus articles into Hindi instantly, he practiced daily timed mocks and got detailed diagnostic feedback on slow networks.',
     quote: '"For the first time, a Hindi medium aspirant from a village had the exact same resources as a Delhi topper."',
-    color: '#6366f1',
+    color: '#7c4dff',
     metrics: [
-      { label: 'Platform Price', val: '₹249/mo', labelColor: '#10b981' },
-      { label: 'Mock Attempts', val: '1,420 Mocks', labelColor: '#6366f1' },
-      { label: 'AI Doubt Resolution', val: 'Instant (Hindi)', labelColor: '#6366f1' }
+      { label: 'Platform Price', val: '₹249/mo', labelColor: '#00e676' },
+      { label: 'Mock Attempts', val: '1,420 Mocks', labelColor: '#7c4dff' },
+      { label: 'AI Doubt Resolution', val: 'Instant (Hindi)', labelColor: '#7c4dff' }
     ],
     visualization: 'ai_acceleration'
   },
@@ -40,11 +40,11 @@ const MILESTONES = [
     sub: 'Documented national success. From kerosene lamp to service.',
     body: 'Raju Kumar secured All India Rank 23 in the UPSC CSE 2024. Today he serves the nation as an IAS Officer, demonstrating that quality guidance is a right, not a luxury.',
     quote: '"PrepBridge democratized the exam. It was the bridge between a farmers son and the civil services."',
-    color: '#10b981',
+    color: '#00e676',
     metrics: [
-      { label: 'Final UPSC Rank', val: 'AIR 23', labelColor: '#10b981' },
-      { label: 'Percentile Score', val: '99.87%', labelColor: '#10b981' },
-      { label: 'Current Role', val: 'IAS Officer', labelColor: '#10b981' }
+      { label: 'Final UPSC Rank', val: 'AIR 23', labelColor: '#00e676' },
+      { label: 'Percentile Score', val: '99.87%', labelColor: '#00e676' },
+      { label: 'Current Role', val: 'IAS Officer', labelColor: '#00e676' }
     ],
     visualization: 'rank_result'
   }
@@ -97,8 +97,8 @@ export default function StorySection() {
             display: 'inline-flex',
             alignItems: 'center',
             gap: 8,
-            background: 'rgba(16,185,129,0.06)',
-            border: '1px solid rgba(16,185,129,0.15)',
+            background: 'rgba(0,230,118,0.06)',
+            border: '1px solid rgba(0,230,118,0.15)',
             borderRadius: 99,
             padding: '6px 16px',
             marginBottom: 16
@@ -107,16 +107,16 @@ export default function StorySection() {
               width: 6,
               height: 6,
               borderRadius: '50%',
-              background: '#10b981',
-              boxShadow: '0 0 8px #10b981',
+              background: '#00e676',
+              boxShadow: '0 0 8px #00e676',
               animation: 'storyBlink 2s infinite'
             }} />
-            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#10b981', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#00e676', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
               {t('landing.story.badge', 'Verified Success Case Study')}
             </span>
           </div>
           <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: 'white', letterSpacing: '-0.02em', margin: 0 }}>
-            Democratizing <span style={{ background: 'linear-gradient(90deg,#10b981,#6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Exam Preparation</span>
+            Democratizing <span style={{ background: 'linear-gradient(90deg,#00e676,#7c4dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Exam Preparation</span>
           </h2>
           <p style={{ color: 'var(--text-2)', marginTop: 8, fontSize: '0.92rem', maxWidth: 600, margin: '8px auto 0' }}>
             A farmers son, a ₹6,000 phone, and an AI tutor. Raju Kumar\'s documented path to the civil services.
@@ -324,7 +324,7 @@ export default function StorySection() {
               padding: '12px 28px',
               fontSize: '0.88rem',
               fontWeight: 800,
-              color: '#10b981',
+              color: '#00e676',
               textDecoration: 'none',
               transition: 'all 0.2s ease'
             }}

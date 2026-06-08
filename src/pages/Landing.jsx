@@ -74,7 +74,7 @@ function AppDownloadSection() {
       <div style={{ maxWidth: 1000, margin: '0 auto', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 48, flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: 280, opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(15px)', transition: 'opacity 0.6s ease, transform 0.6s ease' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--r-full)', padding: '5px 14px', fontSize: '0.75rem', fontWeight: 800, color: '#10b981', marginBottom: 18, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 'var(--r-full)', padding: '5px 14px', fontSize: '0.75rem', fontWeight: 800, color: '#00e676', marginBottom: 18, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
               📱 {t('landing.pricing.beta', 'Free During Beta Active')}
             </div>
             <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', fontWeight: 900, marginBottom: 14, letterSpacing: '-0.02em', lineHeight: 1.2, color: 'white' }}>
@@ -140,15 +140,15 @@ function AppDownloadSection() {
                     <span>9:41</span><span>●●●●</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                    <div style={{ width: 24, height: 24, background: 'linear-gradient(135deg,#10b981,#6366f1)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: 24, height: 24, background: 'linear-gradient(135deg,#00e676,#7c4dff)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Zap size={12} color="white" />
                     </div>
                     <span style={{ fontSize: '0.72rem', fontWeight: 900, color: 'white', letterSpacing: '-0.02em' }}>PrepBridge</span>
                   </div>
                   {[
-                    { label: 'Daily Quiz', sub: '+10 pts', color: '#10b981' },
-                    { label: 'AI Tutor', sub: 'Ask K²', color: '#6366f1' },
-                    { label: 'Mock Test', sub: 'Active session', color: '#10b981' },
+                    { label: 'Daily Quiz', sub: '+10 pts', color: '#00e676' },
+                    { label: 'AI Tutor', sub: 'Ask K²', color: '#7c4dff' },
+                    { label: 'Mock Test', sub: 'Active session', color: '#00e676' },
                   ].map((c, i) => (
                     <div key={i} style={{ background: `${c.color}0c`, border: `1px solid ${c.color}22`, borderRadius: 12, padding: '10px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'white' }}>{c.label}</span>
@@ -166,7 +166,7 @@ function AppDownloadSection() {
                   ))}
                 </div>
               </div>
-              <div style={{ position: 'absolute', bottom: -20, left: '50%', transform: 'translateX(-50%)', width: 180, height: 40, background: 'rgba(16,185,129,0.2)', filter: 'blur(16px)', borderRadius: '50%', pointerEvents: 'none' }} />
+              <div style={{ position: 'absolute', bottom: -20, left: '50%', transform: 'translateX(-50%)', width: 180, height: 40, background: 'rgba(0,230,118,0.2)', filter: 'blur(16px)', borderRadius: '50%', pointerEvents: 'none' }} />
             </div>
           </div>
         </div>
@@ -456,7 +456,7 @@ function InteractiveMockDemo() {
 
       <div style={{ maxWidth: 780, margin: '0 auto', position: 'relative', zIndex: 1 }}>
         <RevealDiv style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--r-full)', padding: '6px 16px', fontSize: '0.75rem', fontWeight: 800, color: '#10b981', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 'var(--r-full)', padding: '6px 16px', fontSize: '0.75rem', fontWeight: 800, color: '#00e676', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             ⚡ Interactive Demo
           </div>
           <h2 style={{ fontSize: 'clamp(1.8rem, 3.5vw, 2.5rem)', fontWeight: 900, marginBottom: 12, color: 'white' }}>
@@ -484,7 +484,7 @@ function InteractiveMockDemo() {
                   <span style={{ fontSize: '0.82rem', color: 'var(--text-3)', fontWeight: 800 }}>
                     Question {currentIdx + 1} of {questions.length}
                   </span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(99,102,241,0.12)', color: '#818cf8', fontSize: '0.72rem', fontWeight: 800, padding: '4px 12px', borderRadius: 999, border: '1px solid rgba(99,102,241,0.2)' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(124,77,255,0.12)', color: '#818cf8', fontSize: '0.72rem', fontWeight: 800, padding: '4px 12px', borderRadius: 999, border: '1px solid rgba(124,77,255,0.2)' }}>
                     <Sparkles size={12} /> Simulated Negative Marking: -0.25
                   </span>
                 </div>
@@ -502,14 +502,14 @@ function InteractiveMockDemo() {
                     let bgCol = 'rgba(255,255,255,0.008)'
 
                     if (isSelected) {
-                      borderCol = '#6366f1'
-                      bgCol = 'rgba(99,102,241,0.08)'
+                      borderCol = '#7c4dff'
+                      bgCol = 'rgba(124,77,255,0.08)'
                     }
 
                     if (checked) {
                       if (i === activeQuestion.correct) {
-                        borderCol = '#10b981'
-                        bgCol = 'rgba(16,185,129,0.08)'
+                        borderCol = '#00e676'
+                        bgCol = 'rgba(0,230,118,0.08)'
                       } else if (isSelected) {
                         borderCol = '#ef4444'
                         bgCol = 'rgba(239,68,68,0.08)'
@@ -539,7 +539,7 @@ function InteractiveMockDemo() {
                         }}
                       >
                         <span>{opt}</span>
-                        {checked && i === activeQuestion.correct && <Check size={18} color="#10b981" />}
+                        {checked && i === activeQuestion.correct && <Check size={18} color="#00e676" />}
                         {checked && isSelected && i !== activeQuestion.correct && <X size={18} color="#ef4444" />}
                       </button>
                     )
@@ -556,7 +556,7 @@ function InteractiveMockDemo() {
                         padding: '12px 28px',
                         borderRadius: 12,
                         border: 'none',
-                        background: selectedOpt === null ? 'rgba(255,255,255,0.03)' : 'linear-gradient(135deg,#10b981,#6366f1)',
+                        background: selectedOpt === null ? 'rgba(255,255,255,0.03)' : 'linear-gradient(135deg,#00e676,#7c4dff)',
                         color: selectedOpt === null ? 'var(--text-4)' : 'white',
                         fontWeight: 800,
                         fontSize: '0.92rem',
@@ -574,7 +574,7 @@ function InteractiveMockDemo() {
                         padding: '12px 28px',
                         borderRadius: 12,
                         border: 'none',
-                        background: 'linear-gradient(135deg,#10b981,#6366f1)',
+                        background: 'linear-gradient(135deg,#00e676,#7c4dff)',
                         color: 'white',
                         fontWeight: 800,
                         fontSize: '0.92rem',
@@ -592,9 +592,9 @@ function InteractiveMockDemo() {
                 {checked && (
                   <div style={{
                     marginTop: 24,
-                    background: 'rgba(99,102,241,0.04)',
-                    border: '1px solid rgba(99,102,241,0.2)',
-                    borderLeft: '4px solid #6366f1',
+                    background: 'rgba(124,77,255,0.04)',
+                    border: '1px solid rgba(124,77,255,0.2)',
+                    borderLeft: '4px solid #7c4dff',
                     borderRadius: '4px 14px 14px 4px',
                     padding: '16px 20px',
                     animation: 'slideIn 0.3s ease forwards'
@@ -638,12 +638,12 @@ function InteractiveMockDemo() {
                     style={{
                       padding: '12px 28px',
                       borderRadius: 12,
-                      background: 'linear-gradient(135deg,#10b981,#6366f1)',
+                      background: 'linear-gradient(135deg,#00e676,#7c4dff)',
                       color: 'white',
                       fontWeight: 800,
                       fontSize: '0.9rem',
                       textDecoration: 'none',
-                      boxShadow: '0 4px 20px rgba(16,185,129,0.3)',
+                      boxShadow: '0 4px 20px rgba(0,230,118,0.3)',
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: 6,
@@ -688,7 +688,7 @@ function AddonSpotlight() {
               backdropFilter: 'blur(20px)'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-                <span style={{ fontSize: '0.68rem', background: 'rgba(99,102,241,0.12)', color: '#818cf8', padding: '4px 10px', borderRadius: 6, fontWeight: 800, border: '1px solid rgba(99,102,241,0.2)' }}>
+                <span style={{ fontSize: '0.68rem', background: 'rgba(124,77,255,0.12)', color: '#818cf8', padding: '4px 10px', borderRadius: 6, fontWeight: 800, border: '1px solid rgba(124,77,255,0.2)' }}>
                   K² PEAKPREDICT ACTIVE
                 </span>
                 <span style={{ fontSize: '0.85rem', fontWeight: 900, color: 'white' }}>₹149 Unlock Addon</span>
@@ -697,8 +697,8 @@ function AddonSpotlight() {
               {/* Syllabus weightage bar chart mock */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {[
-                  { topic: 'Constitutional Amendments', freq: '84%', color: '#6366f1', width: '84%' },
-                  { topic: 'Fundamental Rights & Writs', freq: '79%', color: '#10b981', width: '79%' },
+                  { topic: 'Constitutional Amendments', freq: '84%', color: '#7c4dff', width: '84%' },
+                  { topic: 'Fundamental Rights & Writs', freq: '79%', color: '#00e676', width: '79%' },
                   { topic: 'Federalism & Interstate laws', freq: '38%', color: 'var(--text-3)', width: '38%' },
                   { topic: 'Judiciary appointments', freq: '22%', color: 'var(--text-3)', width: '22%' },
                 ].map((item, idx) => (
@@ -714,7 +714,7 @@ function AddonSpotlight() {
                 ))}
               </div>
 
-              <div style={{ display: 'flex', gap: 10, marginTop: 20, background: 'rgba(99,102,241,0.06)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: 12, padding: 12 }}>
+              <div style={{ display: 'flex', gap: 10, marginTop: 20, background: 'rgba(124,77,255,0.06)', border: '1px solid rgba(124,77,255,0.15)', borderRadius: 12, padding: 12 }}>
                 <AlertCircle size={16} color="#818cf8" style={{ flexShrink: 0, marginTop: 2 }} />
                 <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-2)', lineHeight: 1.45 }}>
                   <strong>Important Note:</strong> We strictly respect exam integrity and do not leak actual papers. PrepPredict leverages historical frequency statistics to isolate high-probability syllabus areas.
@@ -725,7 +725,7 @@ function AddonSpotlight() {
 
           {/* Right: text info */}
           <div style={{ flex: 1.2, minWidth: 300 }}>
-            <div style={{ display: 'inline-block', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: 'var(--r-full)', padding: '5px 14px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--purple)', marginBottom: 14, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            <div style={{ display: 'inline-block', background: 'rgba(124,77,255,0.08)', border: '1px solid rgba(124,77,255,0.2)', borderRadius: 'var(--r-full)', padding: '5px 14px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--purple)', marginBottom: 14, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
               📊 AI Syllabus Telemetry
             </div>
             <h3 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', fontWeight: 900, marginBottom: 14, color: 'white', lineHeight: 1.2 }}>
@@ -767,7 +767,7 @@ function AddonSpotlight() {
         <div style={{ display: 'flex', flexWrap: 'wrap-reverse', gap: 48, alignItems: 'center' }}>
           {/* Left: text info */}
           <div style={{ flex: 1.2, minWidth: 300 }}>
-            <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--r-full)', padding: '5px 14px', fontSize: '0.75rem', fontWeight: 800, color: '#10b981', marginBottom: 14, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+            <div style={{ display: 'inline-block', background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 'var(--r-full)', padding: '5px 14px', fontSize: '0.75rem', fontWeight: 800, color: '#00e676', marginBottom: 14, letterSpacing: '0.04em', textTransform: 'uppercase' }}>
               🔒 Secured online environment
             </div>
             <h3 style={{ fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', fontWeight: 900, marginBottom: 14, color: 'white', lineHeight: 1.2 }}>
@@ -809,7 +809,7 @@ function AddonSpotlight() {
             <div className="radial-glow-indigo" style={{ inset: 0, opacity: 0.6 }} />
             <div style={{
               background: 'rgba(10,11,18,0.7)',
-              border: '1px solid rgba(16,185,129,0.2)',
+              border: '1px solid rgba(0,230,118,0.2)',
               borderRadius: 24,
               padding: 24,
               boxShadow: '0 16px 40px rgba(0,0,0,0.5)',
@@ -825,7 +825,7 @@ function AddonSpotlight() {
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px' }}>
-                  <BookOpen size={16} color="#10b981" />
+                  <BookOpen size={16} color="#00e676" />
                   <span style={{ fontSize: '0.82rem', color: 'white', fontWeight: 700 }}>Secured Exam Runner Mode Active</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px' }}>
@@ -833,7 +833,7 @@ function AddonSpotlight() {
                   <span style={{ fontSize: '0.82rem', color: 'white', fontWeight: 700 }}>Secure Browser Anti-Cheat Monitoring</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px' }}>
-                  <Award size={16} color="#6366f1" />
+                  <Award size={16} color="#7c4dff" />
                   <span style={{ fontSize: '0.82rem', color: 'white', fontWeight: 700 }}>Graded Certificate with All India Rank</span>
                 </div>
               </div>
@@ -874,7 +874,7 @@ export default function Landing() {
   // Bento features data for the redesign
   const bentoFeatures = [
     {
-      icon: <MessageSquare size={24} color="#6366f1" />,
+      icon: <MessageSquare size={24} color="#7c4dff" />,
       title: "24/7 AI tutor in 22 regional Indian languages",
       desc: "Real-time AI explains any complex syllabus topic in 22 regional Indian languages instantly.",
       badge: "K² AI powered",
@@ -882,7 +882,7 @@ export default function Landing() {
       layoutClass: "bento-large-card"
     },
     {
-      icon: <BarChart2 size={24} color="#10b981" />,
+      icon: <BarChart2 size={24} color="#00e676" />,
       title: "K² PeakPredict AI weightage analysis",
       desc: "Isolate recurring subject topics and practice high-probability syllabus areas.",
       badge: "₹149 Addon",
@@ -927,17 +927,17 @@ export default function Landing() {
     <div style={{ background: '#030408', minHeight: '100vh', overflowX: 'hidden' }}>
 
       {/* ── Scroll Progress Bar ── */}
-      <div style={{ position: 'fixed', top: 0, left: 0, height: 3, width: `${scrollProgress}%`, background: 'linear-gradient(90deg,#10b981,#6366f1,#00d4ff)', zIndex: 9999, transition: 'width 0.1s', boxShadow: '0 0 10px rgba(16,185,129,0.8)' }} />
+      <div style={{ position: 'fixed', top: 0, left: 0, height: 3, width: `${scrollProgress}%`, background: 'linear-gradient(90deg,#00e676,#7c4dff,#00d4ff)', zIndex: 9999, transition: 'width 0.1s', boxShadow: '0 0 10px rgba(0,230,118,0.8)' }} />
 
       {/* ── Navbar ── */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(3,4,8,0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-          <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg,#10b981,#6366f1)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(16,185,129,0.4)', animation: 'logoPulse 3s ease-in-out infinite', flexShrink: 0 }}>
+          <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg,#00e676,#7c4dff)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(0,230,118,0.4)', animation: 'logoPulse 3s ease-in-out infinite', flexShrink: 0 }}>
             <Zap size={18} color="white" />
           </div>
           <span style={{ fontSize: '1.25rem', fontWeight: 900, letterSpacing: '-0.03em', whiteSpace: 'nowrap', color: 'white' }}>
-            Prep<span style={{ background: 'linear-gradient(90deg,#10b981,#6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bridge</span>
+            Prep<span style={{ background: 'linear-gradient(90deg,#00e676,#7c4dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bridge</span>
           </span>
         </div>
 
@@ -993,7 +993,7 @@ export default function Landing() {
                       width: '100%',
                       textAlign: 'left',
                       padding: '8px 12px',
-                      background: i18n.language === l.code ? 'rgba(16,185,129,0.12)' : 'transparent',
+                      background: i18n.language === l.code ? 'rgba(0,230,118,0.12)' : 'transparent',
                       border: 'none',
                       borderRadius: 10,
                       color: i18n.language === l.code ? 'white' : 'var(--text-3)',
@@ -1008,7 +1008,7 @@ export default function Landing() {
                   >
                     <span>{l.flag}</span>
                     <span style={{ flex: 1 }}>{l.native}</span>
-                    {i18n.language === l.code && <Check size={12} color="#10b981" />}
+                    {i18n.language === l.code && <Check size={12} color="#00e676" />}
                   </button>
                 ))}
               </div>
@@ -1018,7 +1018,7 @@ export default function Landing() {
           <Link to="/auth" className="nav-login-btn" style={{ color: 'var(--text-2)', fontSize: '0.85rem', fontWeight: 700, textDecoration: 'none', padding: '7px 18px', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 'var(--r-full)', transition: 'all 0.2s', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', minHeight: 36 }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.color = 'white' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'var(--text-2)' }}>{t('nav.login', 'Login')}</Link>
-          <Link to="/auth?signup=1" style={{ background: 'linear-gradient(135deg,#10b981,#6366f1)', color: 'white', fontWeight: 800, fontSize: '0.85rem', textDecoration: 'none', padding: '8px 20px', borderRadius: 'var(--r-full)', boxShadow: '0 4px 16px rgba(16,185,129,0.3)', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 4, minHeight: 36 }}>
+          <Link to="/auth?signup=1" style={{ background: 'linear-gradient(135deg,#00e676,#7c4dff)', color: 'white', fontWeight: 800, fontSize: '0.85rem', textDecoration: 'none', padding: '8px 20px', borderRadius: 'var(--r-full)', boxShadow: '0 4px 16px rgba(0,230,118,0.3)', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 4, minHeight: 36 }}>
             {t('nav.start_free', 'Start Free')} →
           </Link>
         </div>
@@ -1036,7 +1036,7 @@ export default function Landing() {
             <span style={{ fontSize: '0.85rem', color: 'var(--text-3)', fontWeight: 700 }}>Language:</span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
               {ALL_LANGUAGES.slice(0, 5).map(l => (
-                <button key={l.code} onClick={() => changeLanguage(l.code)} style={{ padding: '6px 12px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, background: i18n.language === l.code ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.02)', color: 'white', fontSize: '0.78rem', fontWeight: 700 }}>
+                <button key={l.code} onClick={() => changeLanguage(l.code)} style={{ padding: '6px 12px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 8, background: i18n.language === l.code ? 'rgba(0,230,118,0.15)' : 'rgba(255,255,255,0.02)', color: 'white', fontSize: '0.78rem', fontWeight: 700 }}>
                   {l.native}
                 </button>
               ))}
@@ -1044,7 +1044,7 @@ export default function Landing() {
           </div>
           <div style={{ display: 'flex', gap: 12 }}>
             <Link to="/auth" style={{ flex: 1, textAlign: 'center', padding: '12px', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, color: 'white', fontSize: '0.88rem', fontWeight: 700 }}>{t('nav.login', 'Login')}</Link>
-            <Link to="/auth?signup=1" style={{ flex: 1, textAlign: 'center', padding: '12px', background: 'linear-gradient(135deg,#10b981,#6366f1)', borderRadius: 12, color: 'white', fontSize: '0.88rem', fontWeight: 800 }}>{t('nav.start_free', 'Start Free')}</Link>
+            <Link to="/auth?signup=1" style={{ flex: 1, textAlign: 'center', padding: '12px', background: 'linear-gradient(135deg,#00e676,#7c4dff)', borderRadius: 12, color: 'white', fontSize: '0.88rem', fontWeight: 800 }}>{t('nav.start_free', 'Start Free')}</Link>
           </div>
         </div>
       )}
@@ -1059,7 +1059,7 @@ export default function Landing() {
         <div style={{ display: 'flex', gap: 18, animation: 'marquee 22s linear infinite', whiteSpace: 'nowrap' }}>
           {[...EXAMS_MARQUEE, ...EXAMS_MARQUEE].map((e, i) => (
             <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: '0.8rem', fontWeight: 800, color: 'var(--text-2)', padding: '6px 14px', background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 'var(--r-full)', flexShrink: 0 }}>
-              <CheckCircle size={12} color="#10b981" /> {e}
+              <CheckCircle size={12} color="#00e676" /> {e}
             </span>
           ))}
         </div>
@@ -1073,8 +1073,8 @@ export default function Landing() {
         <div className="radial-glow-emerald" style={{ top: '-10%', right: '-15%', opacity: 0.5 }} />
 
         <RevealDiv style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.75rem', fontWeight: 800, color: '#10b981', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Platform Features</div>
-          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: 8, color: 'white' }}>Everything to <span style={{ background: 'linear-gradient(90deg,#10b981,#6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>crack any exam</span></h2>
+          <div style={{ display: 'inline-block', background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.75rem', fontWeight: 800, color: '#00e676', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Platform Features</div>
+          <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: 8, color: 'white' }}>Everything to <span style={{ background: 'linear-gradient(90deg,#00e676,#7c4dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>crack any exam</span></h2>
         </RevealDiv>
 
         {/* Bento grid layout */}
@@ -1085,8 +1085,8 @@ export default function Landing() {
             <TiltCard style={{ padding: '30px', background: 'rgba(10, 11, 18, 0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24, height: '100%', display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: 12, flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <MessageSquare size={18} color="#6366f1" />
+                  <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(124,77,255,0.08)', border: '1px solid rgba(124,77,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <MessageSquare size={18} color="#7c4dff" />
                   </div>
                   <div>
                     <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'white', margin: 0 }}>24/7 AI tutor in 22 regional Indian languages</h3>
@@ -1107,7 +1107,7 @@ export default function Landing() {
                       onClick={() => setChatLang(l.code)}
                       style={{
                         padding: '4px 10px',
-                        background: chatLang === l.code ? '#6366f1' : 'transparent',
+                        background: chatLang === l.code ? '#7c4dff' : 'transparent',
                         color: chatLang === l.code ? 'white' : 'var(--text-3)',
                         border: 'none',
                         borderRadius: 6,
@@ -1133,8 +1133,8 @@ export default function Landing() {
                    'আর্টিকেল ২১ কী?'}
                 </div>
                 
-                <div style={{ alignSelf: 'flex-start', background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', padding: '10px 16px', borderRadius: '12px 12px 12px 0', fontSize: '0.78rem', color: '#a5b4fc', maxWidth: '85%', lineHeight: 1.5 }}>
-                  <div style={{ fontWeight: 800, color: '#6366f1', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ alignSelf: 'flex-start', background: 'rgba(124,77,255,0.08)', border: '1px solid rgba(124,77,255,0.15)', padding: '10px 16px', borderRadius: '12px 12px 12px 0', fontSize: '0.78rem', color: '#a5b4fc', maxWidth: '85%', lineHeight: 1.5 }}>
+                  <div style={{ fontWeight: 800, color: '#7c4dff', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <Sparkles size={12} /> K² AI Tutor
                   </div>
                   {chatLang === 'hi' ? 'भारतीय संविधान का अनुच्छेद 21 जीवन और व्यक्तिगत स्वतंत्रता के अधिकार की गारंटी देता है। यह किसी भी नागरिक को कानून द्वारा स्थापित प्रक्रिया के बिना जीवन से वंचित करने से रोकता है।' :
@@ -1150,8 +1150,8 @@ export default function Landing() {
           <RevealDiv direction="scale" style={{ gridColumn: 'span 1' }}>
             <TiltCard style={{ padding: '30px', background: 'rgba(10, 11, 18, 0.6)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 24, height: '100%', display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <BarChart2 size={18} color="#10b981" />
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <BarChart2 size={18} color="#00e676" />
                 </div>
                 <div>
                   <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'white', margin: 0 }}>AI Weightage</h3>
@@ -1162,8 +1162,8 @@ export default function Landing() {
               {/* Telemetry vector/bars */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10, justifyContent: 'center', background: 'rgba(255,255,255,0.005)', padding: 12, borderRadius: 16, border: '1px solid rgba(255,255,255,0.02)' }}>
                 {[
-                  { topic: 'Amendments', freq: '84%', color: '#10b981' },
-                  { topic: 'Fundamental Rights', freq: '79%', color: '#6366f1' },
+                  { topic: 'Amendments', freq: '84%', color: '#00e676' },
+                  { topic: 'Fundamental Rights', freq: '79%', color: '#7c4dff' },
                   { topic: 'Directive Principles', freq: '42%', color: 'var(--text-3)' }
                 ].map((item, idx) => (
                   <div key={idx}>
@@ -1205,7 +1205,7 @@ export default function Landing() {
                 </div>
                 <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
                   {['A', 'B', 'C', 'D'].map(o => (
-                    <div key={o} style={{ flex: 1, aspectRatio: 1, background: o === 'C' ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.02)', border: o === 'C' ? '1.5px solid #6366f1' : '1px solid rgba(255,255,255,0.04)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, color: o === 'C' ? 'white' : 'var(--text-3)' }}>
+                    <div key={o} style={{ flex: 1, aspectRatio: 1, background: o === 'C' ? 'rgba(124,77,255,0.2)' : 'rgba(255,255,255,0.02)', border: o === 'C' ? '1.5px solid #7c4dff' : '1px solid rgba(255,255,255,0.04)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.7rem', fontWeight: 800, color: o === 'C' ? 'white' : 'var(--text-3)' }}>
                       {o}
                     </div>
                   ))}
@@ -1289,7 +1289,7 @@ export default function Landing() {
                   <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#purpleGrad)" strokeWidth="8" strokeDasharray="125" strokeDashoffset="12" strokeLinecap="round" />
                   <defs>
                     <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#6366f1" />
+                      <stop offset="0%" stopColor="#7c4dff" />
                       <stop offset="100%" stopColor="#a855f7" />
                     </linearGradient>
                   </defs>
@@ -1320,7 +1320,7 @@ export default function Landing() {
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <RevealDiv style={{ textAlign: 'center', marginBottom: 56 }}>
             <div style={{ display: 'inline-block', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 800, color: '#f59e0b', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Success Stories</div>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: 'white' }}>Real students. <span style={{ background: 'linear-gradient(90deg,#f59e0b,#10b981)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Real results.</span></h2>
+            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: 'white' }}>Real students. <span style={{ background: 'linear-gradient(90deg,#f59e0b,#00e676)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Real results.</span></h2>
           </RevealDiv>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 20 }}>
@@ -1354,7 +1354,7 @@ export default function Landing() {
         
         <div style={{ position: 'relative', zIndex: 1 }}>
           <RevealDiv>
-            <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 800, color: '#10b981', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Simple Pricing</div>
+            <div style={{ display: 'inline-block', background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 800, color: '#00e676', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Simple Pricing</div>
             <h2 style={{ marginBottom: 8, fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: 'white' }}>{t('landing.pricing.title', 'One plan. All exams. Try free.')}</h2>
             <p style={{ marginBottom: 24, color: 'var(--text-3)', fontSize: '0.92rem', fontWeight: 600 }}>{t('landing.pricing.desc', '2-day free trial for all new students. No credit card required. Cancel anytime.')}</p>
             
@@ -1364,7 +1364,7 @@ export default function Landing() {
                 onClick={() => setBillingCycle('monthly')}
                 style={{
                   padding: '8px 18px',
-                  background: billingCycle === 'monthly' ? '#10b981' : 'transparent',
+                  background: billingCycle === 'monthly' ? '#00e676' : 'transparent',
                   color: billingCycle === 'monthly' ? 'white' : 'var(--text-3)',
                   border: 'none',
                   borderRadius: 999,
@@ -1381,7 +1381,7 @@ export default function Landing() {
                 onClick={() => setBillingCycle('annual')}
                 style={{
                   padding: '8px 18px',
-                  background: billingCycle === 'annual' ? '#10b981' : 'transparent',
+                  background: billingCycle === 'annual' ? '#00e676' : 'transparent',
                   color: billingCycle === 'annual' ? 'white' : 'var(--text-3)',
                   border: 'none',
                   borderRadius: 999,
@@ -1401,16 +1401,16 @@ export default function Landing() {
           </RevealDiv>
 
           <RevealDiv delay={0.08} direction="scale">
-            <div style={{ display: 'inline-block', padding: 1.5, borderRadius: 28, background: 'linear-gradient(135deg,#10b981,#6366f1,#00d4ff,#f59e0b)', backgroundSize: '300% 300%', animation: 'borderSpin 4s linear infinite', boxShadow: '0 0 60px rgba(16,185,129,0.2)' }}>
+            <div style={{ display: 'inline-block', padding: 1.5, borderRadius: 28, background: 'linear-gradient(135deg,#00e676,#7c4dff,#00d4ff,#f59e0b)', backgroundSize: '300% 300%', animation: 'borderSpin 4s linear infinite', boxShadow: '0 0 60px rgba(0,230,118,0.2)' }}>
               <div style={{ maxWidth: 500, background: '#07090e', borderRadius: 27, padding: '36px clamp(16px,6vw,40px)', textAlign: 'center' }}>
-                <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: 'var(--r-full)', padding: '5px 16px', fontSize: '0.78rem', fontWeight: 900, color: '#10b981', marginBottom: 20 }}>
+                <div style={{ display: 'inline-block', background: 'rgba(0,230,118,0.08)', border: '1px solid rgba(0,230,118,0.25)', borderRadius: 'var(--r-full)', padding: '5px 16px', fontSize: '0.78rem', fontWeight: 900, color: '#00e676', marginBottom: 20 }}>
                   ✨ {t('landing.pricing.beta', 'Free During Beta Active')}
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: 12, marginBottom: 28 }}>
                   {[
-                    { label: 'Monthly', price: '₹249', sub: '/month', tag: null, discount: 'Free in Beta', border: 'rgba(16,185,129,0.25)', glow: 'rgba(16,185,129,0.03)' },
-                    { label: '6 Months', price: '₹1,195', sub: '≈₹199/mo', tag: 'Popular', discount: 'Free in Beta', border: 'rgba(99,102,241,0.25)', glow: 'rgba(99,102,241,0.03)' },
+                    { label: 'Monthly', price: '₹249', sub: '/month', tag: null, discount: 'Free in Beta', border: 'rgba(0,230,118,0.25)', glow: 'rgba(0,230,118,0.03)' },
+                    { label: '6 Months', price: '₹1,195', sub: '≈₹199/mo', tag: 'Popular', discount: 'Free in Beta', border: 'rgba(124,77,255,0.25)', glow: 'rgba(124,77,255,0.03)' },
                     { label: 'Annual', price: billingCycle === 'annual' ? '₹1,999' : '₹2,388', sub: billingCycle === 'annual' ? '≈₹167/mo' : '≈₹199/mo', tag: 'Best Value', discount: 'Free in Beta', border: 'rgba(245,158,11,0.25)', glow: 'rgba(245,158,11,0.04)' },
                   ].map((p, i) => (
                     <div key={i} style={{
@@ -1419,14 +1419,14 @@ export default function Landing() {
                       boxShadow: `0 0 20px ${p.glow}`
                     }}>
                       {p.tag && (
-                        <div style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: i === 2 ? '#f59e0b' : '#6366f1', color: '#fff', fontSize: '0.58rem', fontWeight: 900, padding: '2px 8px', borderRadius: 999, whiteSpace: 'nowrap' }}>
+                        <div style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: i === 2 ? '#f59e0b' : '#7c4dff', color: '#fff', fontSize: '0.58rem', fontWeight: 900, padding: '2px 8px', borderRadius: 999, whiteSpace: 'nowrap' }}>
                           {p.tag}
                         </div>
                       )}
                       <div style={{ fontSize: '0.62rem', fontWeight: 700, color: 'var(--text-3)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6, marginTop: p.tag ? 4 : 0 }}>{p.label}</div>
                       <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'white', lineHeight: 1 }}>{p.price}</div>
                       <div style={{ fontSize: '0.6rem', color: 'rgba(148,163,184,0.4)', marginTop: 3, fontWeight: 600 }}>{p.sub}</div>
-                      {p.discount && <div style={{ fontSize: '0.62rem', color: '#10b981', fontWeight: 800, marginTop: 4 }}>{p.discount}</div>}
+                      {p.discount && <div style={{ fontSize: '0.62rem', color: '#00e676', fontWeight: 800, marginTop: 4 }}>{p.discount}</div>}
                     </div>
                   ))}
                 </div>
@@ -1435,13 +1435,13 @@ export default function Landing() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left', marginBottom: 32 }}>
                   {['Access all 200+ central & state mocks', '5 Lakh+ database mock question runs', '22 regional Indian languages available', 'Step-by-step K² AI detailed explanations', 'Secure online simulator matching exam laws'].map((feat, idx) => (
                     <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <CheckCircle size={15} color="#10b981" style={{ flexShrink: 0 }} />
+                      <CheckCircle size={15} color="#00e676" style={{ flexShrink: 0 }} />
                       <span style={{ fontSize: '0.87rem', color: 'var(--text-2)' }}>{feat}</span>
                     </div>
                   ))}
                 </div>
 
-                <Link to="/auth?signup=1" style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', padding: '16px 28px', background: 'linear-gradient(135deg,#10b981,#6366f1)', borderRadius: 16, fontWeight: 900, fontSize: '1rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 30px rgba(16,185,129,0.3)', width: '100%', boxSizing: 'border-box', minHeight: 48 }}>
+                <Link to="/auth?signup=1" style={{ display: 'inline-flex', justifyContent: 'center', alignItems: 'center', padding: '16px 28px', background: 'linear-gradient(135deg,#00e676,#7c4dff)', borderRadius: 16, fontWeight: 900, fontSize: '1rem', color: 'white', textDecoration: 'none', boxShadow: '0 0 30px rgba(0,230,118,0.3)', width: '100%', boxSizing: 'border-box', minHeight: 48 }}>
                   {t('landing.pricing.start_trial', 'Start Free Beta Trial')} <ArrowRight size={18} style={{ marginLeft: 8 }} />
                 </Link>
                 <div style={{ marginTop: 14, fontSize: '0.78rem', color: 'var(--text-3)', fontWeight: 600 }}>No credit card required. Start solving instantly.</div>
@@ -1458,11 +1458,11 @@ export default function Landing() {
       <footer style={{ padding: '44px 24px', borderTop: '1px solid rgba(255,255,255,0.03)', textAlign: 'center', background: '#030408' }}>
         <RevealDiv>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 14 }}>
-            <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg,#10b981,#6366f1)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: 28, height: 28, background: 'linear-gradient(135deg,#00e676,#7c4dff)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Zap size={15} color="white" />
             </div>
             <span style={{ fontSize: '1.1rem', fontWeight: 900, color: 'white' }}>
-              Prep<span style={{ background: 'linear-gradient(90deg,#10b981,#6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bridge</span>
+              Prep<span style={{ background: 'linear-gradient(90deg,#00e676,#7c4dff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bridge</span>
             </span>
           </div>
           <p style={{ fontSize: '0.82rem', color: 'var(--text-3)', marginBottom: 8, fontWeight: 600 }}>One dashboard for all central &amp; state competitive exams. Made in India, for India.</p>
@@ -1481,7 +1481,7 @@ export default function Landing() {
       {/* ── ANIMATIONS AND CUSTOM GLOBAL RULES ── */}
       <style>{`
         @keyframes marquee         { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-        @keyframes logoPulse       { 0%,100%{box-shadow:0 0 12px rgba(16,185,129,0.4)} 50%{box-shadow:0 0 28px rgba(16,185,129,0.8),0 0 50px rgba(99,102,241,0.2)} }
+        @keyframes logoPulse       { 0%,100%{box-shadow:0 0 12px rgba(0,230,118,0.4)} 50%{box-shadow:0 0 28px rgba(0,230,118,0.8),0 0 50px rgba(124,77,255,0.2)} }
         @keyframes blobPulse       { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-50%) scale(1.1)} }
         @keyframes borderSpin      { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
         @keyframes slideIn         { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
@@ -1495,7 +1495,7 @@ export default function Landing() {
           position: absolute;
           width: 500px;
           height: 500px;
-          background: radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(124,77,255,0.07) 0%, transparent 70%);
           filter: blur(60px);
           pointer-events: none;
         }
@@ -1504,7 +1504,7 @@ export default function Landing() {
           position: absolute;
           width: 500px;
           height: 500px;
-          background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(0,230,118,0.07) 0%, transparent 70%);
           filter: blur(60px);
           pointer-events: none;
         }
@@ -1547,7 +1547,7 @@ const EXAMS_MARQUEE = [
 ]
 
 const TESTIMONIALS = [
-  { name: 'Ramesh Kumar', state: 'Bihar', exam: 'IAS Rank 23 — UPSC 2024', text: 'PrepBridge made full-length UPSC syllabi accessible in native Hindi. K² explanations helped me resolve core doubts without expensive coaching fees.', avatar: 'R', color: '#6366f1' },
-  { name: 'Priya Nair', state: 'Kerala', exam: 'SSC CGL AIR 4 — 2024', text: 'The PeakPredict syllabus highlights were outstanding. Highly accurate topic predictions allowed me to distribute my study cycles extremely efficiently.', avatar: 'P', color: '#10b981' },
-  { name: 'Suresh Patel', state: 'Gujarat', exam: 'RRB NTPC AIR 11 — 2024', text: 'I completed my mocks in Gujarati. The native translation engine feels absolute. Live timed sections prepared me perfectly.', avatar: 'S', color: '#10b981' },
+  { name: 'Ramesh Kumar', state: 'Bihar', exam: 'IAS Rank 23 — UPSC 2024', text: 'PrepBridge made full-length UPSC syllabi accessible in native Hindi. K² explanations helped me resolve core doubts without expensive coaching fees.', avatar: 'R', color: '#7c4dff' },
+  { name: 'Priya Nair', state: 'Kerala', exam: 'SSC CGL AIR 4 — 2024', text: 'The PeakPredict syllabus highlights were outstanding. Highly accurate topic predictions allowed me to distribute my study cycles extremely efficiently.', avatar: 'P', color: '#00e676' },
+  { name: 'Suresh Patel', state: 'Gujarat', exam: 'RRB NTPC AIR 11 — 2024', text: 'I completed my mocks in Gujarati. The native translation engine feels absolute. Live timed sections prepared me perfectly.', avatar: 'S', color: '#00e676' },
 ]
