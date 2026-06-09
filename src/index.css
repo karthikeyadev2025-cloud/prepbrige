@@ -871,7 +871,7 @@ p { color: var(--text-2); line-height: 1.7; }
   --light-bg-sec: #F5F5F5;
   --light-text-title: #1A1A2E;
   --light-text-body: #575775;
-  --light-prime-grad: linear-gradient(135deg, #6C63FF, #00C9A7);
+  --light-prime-grad: linear-gradient(135deg, #3B82F6, #7C3AED, #00C9A7);
   --light-card-shadow: 0 10px 35px rgba(26, 26, 46, 0.06);
 }
 

@@ -141,13 +141,13 @@ const STORIES = [
 
 // ─── Hero Typewriter ──────────────────────────────────────────────────────────
 const JOB_WORDS = [
-  { word: 'IAS Officer',    gradient: 'linear-gradient(90deg,#6C63FF,#00C9A7)', glow: 'rgba(108,99,255,0.6)' },
-  { word: 'SSC CGL Job',    gradient: 'linear-gradient(90deg,#00C9A7,#6C63FF)', glow: 'rgba(0,201,167,0.6)'  },
-  { word: 'Bank PO',        gradient: 'linear-gradient(90deg,#6C63FF,#00C9A7)', glow: 'rgba(108,99,255,0.6)' },
-  { word: 'Railway Job',    gradient: 'linear-gradient(90deg,#6C63FF,#00C9A7)', glow: 'rgba(108,99,255,0.6)'  },
-  { word: 'IPS Officer',    gradient: 'linear-gradient(90deg,#00C9A7,#6C63FF)', glow: 'rgba(0,201,167,0.6)' },
-  { word: 'Police Officer', gradient: 'linear-gradient(90deg,#6C63FF,#00C9A7)', glow: 'rgba(108,99,255,0.6)'  },
-  { word: 'Teacher (KVS)',  gradient: 'linear-gradient(90deg,#6C63FF,#00C9A7)', glow: 'rgba(108,99,255,0.6)'  },
+  { word: 'IAS Officer',    gradient: 'linear-gradient(90deg,#3B82F6,#7C3AED,#00C9A7)', glow: 'rgba(124,77,255,0.6)' },
+  { word: 'SSC CGL Job',    gradient: 'linear-gradient(90deg,#00C9A7,#3B82F6,#7C3AED)', glow: 'rgba(0,201,167,0.6)'  },
+  { word: 'Bank PO',        gradient: 'linear-gradient(90deg,#3B82F6,#7C3AED,#00C9A7)', glow: 'rgba(124,77,255,0.6)' },
+  { word: 'Railway Job',    gradient: 'linear-gradient(90deg,#3B82F6,#7C3AED,#00C9A7)', glow: 'rgba(124,77,255,0.6)'  },
+  { word: 'IPS Officer',    gradient: 'linear-gradient(90deg,#00C9A7,#3B82F6,#7C3AED)', glow: 'rgba(0,201,167,0.6)' },
+  { word: 'Police Officer', gradient: 'linear-gradient(90deg,#3B82F6,#7C3AED,#00C9A7)', glow: 'rgba(124,77,255,0.6)'  },
+  { word: 'Teacher (KVS)',  gradient: 'linear-gradient(90deg,#3B82F6,#7C3AED,#00C9A7)', glow: 'rgba(124,77,255,0.6)'  },
 ]
 
 function HeroTypewriter() {
@@ -237,7 +237,7 @@ function HeroTypewriter() {
       }}>
         <span style={{ color: 'var(--light-text-title)' }}>{t('landing.hero.title_line3_1', 'Starts Here.')}</span>
         <span style={{
-          backgroundImage: 'linear-gradient(90deg,#6C63FF 0%,#00C9A7 50%,#6C63FF 100%)',
+          backgroundImage: 'linear-gradient(90deg,#3B82F6 0%,#7C3AED 50%,#00C9A7 100%)',
           backgroundSize: '200% auto',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -314,10 +314,10 @@ export default function HeroVideo() {
         {/* Animated stats */}
         <div className="hero-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, maxWidth: 680, margin: '0 auto 40px', animation: 'heroSlideIn 0.8s ease 0.4s both', width: '100%' }}>
           {[
-            { value: 500000, suffix: '+', label: t('landing.stats.questions', 'Questions'), color: '#6C63FF', prefix: '' },
-            { value: 200, suffix: '+', label: t('landing.stats.exams', 'Exams Covered'), color: '#00C9A7', prefix: '' },
-            { value: 249, suffix: '/mo', label: t('landing.stats.starts_at', 'Starts At Just'), color: '#6C63FF', prefix: '₹' },
-            { value: 22, suffix: '', label: t('landing.stats.languages', 'Indian Languages'), color: '#00C9A7', prefix: '' },
+            { value: 500000, suffix: '+', label: t('landing.stats.questions', 'Questions'), color: '#3B82F6', prefix: '' },
+            { value: 200, suffix: '+', label: t('landing.stats.exams', 'Exams Covered'), color: '#7C3AED', prefix: '' },
+            { value: 249, suffix: '/mo', label: t('landing.stats.starts_at', 'Starts At Just'), color: '#00C9A7', prefix: '₹' },
+            { value: 22, suffix: '', label: t('landing.stats.languages', 'Indian Languages'), color: '#3B82F6', prefix: '' },
           ].map(s => (
             <div key={s.label} style={{ background: '#ffffff', border: '1px solid rgba(26,26,46,0.06)', borderRadius: 16, padding: '16px 12px', boxShadow: 'var(--light-card-shadow)' }}>
               <div style={{ fontSize: 'clamp(1.4rem,3vw,2rem)', fontWeight: 900, color: s.color, marginBottom: 4 }}>
@@ -330,7 +330,7 @@ export default function HeroVideo() {
 
         {/* Success story ticker */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, background: 'rgba(108,99,255,0.04)', border: '1px solid rgba(108,99,255,0.15)', borderRadius: 'var(--r-full)', padding: '10px 20px', animation: 'heroSlideIn 0.8s ease 0.5s both' }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#6C63FF,#00C9A7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', color: 'white', flexShrink: 0 }}>
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'linear-gradient(135deg,#3B82F6,#7C3AED,#00C9A7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.9rem', color: 'white', flexShrink: 0 }}>
             {(STORIES[activeStory]?.name || '?')[0]}
           </div>
           <div style={{ textAlign: 'left', minWidth: 240 }}>

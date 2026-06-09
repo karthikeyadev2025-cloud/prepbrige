@@ -896,17 +896,17 @@ export default function Landing() {
     <div className="light-theme-landing" style={{ minHeight: '100vh', overflowX: 'hidden' }}>
 
       {/* ── Scroll Progress Bar ── */}
-      <div style={{ position: 'fixed', top: 0, left: 0, height: 3, width: `${scrollProgress}%`, background: 'linear-gradient(90deg,#6C63FF,#00C9A7)', zIndex: 9999, transition: 'width 0.1s', boxShadow: '0 0 10px rgba(108,99,255,0.4)' }} />
+      <div style={{ position: 'fixed', top: 0, left: 0, height: 3, width: `${scrollProgress}%`, background: 'linear-gradient(90deg,#3B82F6,#7C3AED,#00C9A7)', zIndex: 9999, transition: 'width 0.1s', boxShadow: '0 0 10px rgba(59,130,246,0.4)' }} />
 
       {/* ── Navbar ── */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(26,26,46,0.08)', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-          <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg,#6C63FF,#00C9A7)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(108,99,255,0.3)', animation: 'logoPulse 3s ease-in-out infinite', flexShrink: 0 }}>
+          <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg,#3B82F6,#7C3AED,#00C9A7)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 16px rgba(59,130,246,0.3)', animation: 'logoPulse 3s ease-in-out infinite', flexShrink: 0 }}>
             <Zap size={18} color="white" />
           </div>
           <span style={{ fontSize: '1.25rem', fontWeight: 900, letterSpacing: '-0.03em', whiteSpace: 'nowrap', color: '#1A1A2E' }}>
-            Prep<span style={{ background: 'linear-gradient(90deg,#6C63FF,#00C9A7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bridge</span>
+            Prep<span style={{ background: 'linear-gradient(90deg,#3B82F6,#7C3AED,#00C9A7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bridge</span>
           </span>
         </div>
 
@@ -1049,8 +1049,8 @@ export default function Landing() {
 
         <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 clamp(16px,4vw,24px)' }}>
           <RevealDiv style={{ textAlign: 'center', marginBottom: 56 }}>
-            <div style={{ display: 'inline-block', background: 'rgba(108, 99, 255, 0.08)', border: '1px solid rgba(108, 99, 255, 0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.75rem', fontWeight: 800, color: '#6C63FF', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Platform Features</div>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: 8, color: '#1A1A2E' }}>Everything to <span style={{ background: 'linear-gradient(90deg,#6C63FF,#00C9A7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>crack any exam</span></h2>
+            <div style={{ display: 'inline-block', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.75rem', fontWeight: 800, color: '#3B82F6', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Platform Features</div>
+            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, marginBottom: 8, color: '#1A1A2E' }}>Everything to <span style={{ background: 'linear-gradient(90deg,#3B82F6,#7C3AED,#00C9A7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>crack any exam</span></h2>
           </RevealDiv>
 
           {/* Bento grid layout */}
@@ -1190,25 +1190,25 @@ export default function Landing() {
               </div>
             </RevealDiv>
 
-            {/* Card 4 (col-span-1): Zero-Lag Offline PWA support */}
+            {/* Card 4 (col-span-1): Affordable Access */}
             <RevealDiv direction="scale" style={{ gridColumn: 'span 1' }}>
               <div className="light-card-feature" style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 14 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Signal size={18} color="#f59e0b" />
+                  <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(0, 201, 167, 0.08)', border: '1px solid rgba(0, 201, 167, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Landmark size={18} color="#00C9A7" />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#1A1A2E', margin: 0 }}>Offline Support</h3>
-                    <span style={{ display: 'block', fontSize: '0.68rem', color: '#575775', fontWeight: 600, marginTop: 1 }}>Robust PWA for slow networks</span>
+                    <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#1A1A2E', margin: 0 }}>Affordable Access</h3>
+                    <span style={{ display: 'block', fontSize: '0.68rem', color: '#575775', fontWeight: 600, marginTop: 1 }}>Premium prep at a fraction of coaching fees</span>
                   </div>
                 </div>
 
-                {/* Offline Sync Widget */}
-                <div style={{ flex: 1, background: 'rgba(245, 158, 11, 0.03)', border: '1px solid rgba(245, 158, 11, 0.1)', borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#f59e0b', boxShadow: '0 0 8px #f59e0b', animation: 'storyBlink 1.5s infinite' }} />
+                {/* Affordability sync Widget */}
+                <div style={{ flex: 1, background: 'rgba(0, 201, 167, 0.03)', border: '1px solid rgba(0, 201, 167, 0.1)', borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#00C9A7', boxShadow: '0 0 8px #00C9A7', animation: 'storyBlink 1.5s infinite' }} />
                   <div style={{ flex: 1 }}>
-                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#1A1A2E', fontWeight: 800 }}>Offline Mode Active</span>
-                    <span style={{ display: 'block', fontSize: '0.62rem', color: '#575775', fontWeight: 600, marginTop: 2 }}>42.5 MB pre-cached logs</span>
+                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#1A1A2E', fontWeight: 800 }}>Starting ₹199/month</span>
+                    <span style={{ display: 'block', fontSize: '0.62rem', color: '#575775', fontWeight: 600, marginTop: 2 }}>Zero cost barrier. Unlimited exam mock access.</span>
                   </div>
                 </div>
               </div>
@@ -1296,19 +1296,19 @@ export default function Landing() {
         <div className="radial-glow-indigo" style={{ bottom: '-5%', right: '-5%', opacity: 0.15 }} />
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <RevealDiv style={{ textAlign: 'center', marginBottom: 56 }}>
-            <div style={{ display: 'inline-block', background: 'rgba(108, 99, 255, 0.08)', border: '1px solid rgba(108, 99, 255, 0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 800, color: '#6C63FF', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Success Stories</div>
-            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: '#1A1A2E' }}>Real students. <span style={{ background: 'linear-gradient(90deg,#6C63FF,#00C9A7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Real results.</span></h2>
+            <div style={{ display: 'inline-block', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 800, color: '#3B82F6', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Success Stories</div>
+            <h2 style={{ fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: '#1A1A2E' }}>Real students. <span style={{ background: 'linear-gradient(90deg,#3B82F6,#7C3AED,#00C9A7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Real results.</span></h2>
           </RevealDiv>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: 20 }}>
             {TESTIMONIALS.map((t, i) => (
               <RevealDiv key={i} delay={i * 0.1}>
                 <div style={{ padding: '28px', background: '#FFFFFF', border: `1px solid rgba(26,26,46,0.06)`, borderRadius: 24, boxShadow: 'var(--light-card-shadow)', height: '100%', position: 'relative', cursor: 'default' }}>
-                  <div style={{ position: 'absolute', top: -1, left: -1, right: -1, height: 3, background: 'linear-gradient(90deg, #6C63FF, #00C9A7)', borderRadius: '24px 24px 0 0' }} />
-                  <div style={{ fontSize: '2.5rem', color: 'rgba(108,99,255,0.15)', fontFamily: 'serif', lineHeight: 1, marginBottom: 10 }}>"</div>
+                  <div style={{ position: 'absolute', top: -1, left: -1, right: -1, height: 3, background: 'linear-gradient(90deg,#3B82F6,#7C3AED,#00C9A7)', borderRadius: '24px 24px 0 0' }} />
+                  <div style={{ fontSize: '2.5rem', color: 'rgba(59, 130, 246, 0.15)', fontFamily: 'serif', lineHeight: 1, marginBottom: 10 }}>"</div>
                   <p style={{ fontSize: '0.92rem', lineHeight: 1.75, color: '#575775', marginBottom: 20 }}>{t.text}</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg,#6C63FF,#00C9A7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 850, fontSize: '1.1rem', color: 'white', flexShrink: 0 }}>{t.avatar}</div>
+                    <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg,#3B82F6,#7C3AED,#00C9A7)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 850, fontSize: '1.1rem', color: 'white', flexShrink: 0 }}>{t.avatar}</div>
                     <div>
                       <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#1A1A2E' }}>{t.name}</div>
                       <div style={{ fontSize: '0.72rem', color: '#6C63FF', fontWeight: 800 }}>{t.exam}</div>
@@ -1332,7 +1332,7 @@ export default function Landing() {
         
         <div style={{ maxWidth: 1100, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <RevealDiv>
-            <div style={{ display: 'inline-block', background: 'rgba(108, 99, 255, 0.08)', border: '1px solid rgba(108, 99, 255, 0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 800, color: '#6C63FF', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Simple Pricing</div>
+            <div style={{ display: 'inline-block', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: 'var(--r-full)', padding: '6px 18px', fontSize: '0.8rem', fontWeight: 800, color: '#3B82F6', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Simple Pricing</div>
             <h2 style={{ marginBottom: 8, fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', fontWeight: 900, color: '#1A1A2E' }}>{t('landing.pricing.title', 'Simple, transparent plans.')}</h2>
             <p style={{ marginBottom: 24, color: '#575775', fontSize: '0.92rem', fontWeight: 600 }}>{t('landing.pricing.desc', 'Unlock full preparation with structured practice. Try standard free for 2 days.')}</p>
             
@@ -1424,17 +1424,17 @@ export default function Landing() {
             <RevealDiv delay={0.1} direction="scale" style={{ display: 'flex' }}>
               <div style={{
                 background: '#FFFFFF',
-                border: '2.5px solid #6C63FF',
+                border: '2.5px solid #7C3AED',
                 borderRadius: 24,
                 padding: '36px clamp(16px, 4vw, 32px)',
-                boxShadow: '0 20px 40px rgba(108, 99, 255, 0.1)',
+                boxShadow: '0 20px 40px rgba(124, 58, 237, 0.1)',
                 display: 'flex',
                 flexDirection: 'column',
                 width: '100%',
                 justifyContent: 'space-between',
                 position: 'relative'
               }}>
-                <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(90deg, #6C63FF, #00C9A7)', color: 'white', fontSize: '0.72rem', fontWeight: 900, padding: '4px 14px', borderRadius: 999, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+                <div style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', background: 'linear-gradient(90deg, #3B82F6, #7C3AED, #00C9A7)', color: 'white', fontSize: '0.72rem', fontWeight: 900, padding: '4px 14px', borderRadius: 999, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
                   Most Popular
                 </div>
 
@@ -1599,11 +1599,11 @@ export default function Landing() {
             {/* Brand Column */}
             <div style={{ gridColumn: 'span 2', minWidth: 260 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-                <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg,#6C63FF,#00C9A7)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 34, height: 34, background: 'linear-gradient(135deg,#3B82F6,#7C3AED,#00C9A7)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <Zap size={18} color="white" />
                 </div>
                 <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'white', letterSpacing: '-0.03em' }}>
-                  Prep<span style={{ background: 'linear-gradient(90deg,#6C63FF,#00C9A7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bridge</span>
+                  Prep<span style={{ background: 'linear-gradient(90deg,#3B82F6,#7C3AED,#00C9A7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Bridge</span>
                 </span>
               </div>
               <p style={{ fontSize: '0.88rem', lineHeight: 1.6, color: '#94a3b8', marginBottom: 24, maxWidth: 320 }}>
